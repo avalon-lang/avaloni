@@ -1,0 +1,17 @@
+-[
+if statement
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import d
+
+def __main__ = (val args : [string]) -> void:
+    var z = Just(0)
+    while True:
+        if z === Just(n:int):
+            pass
+        else:
+            pass

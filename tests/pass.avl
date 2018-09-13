@@ -1,0 +1,10 @@
+-[
+pass statement
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+def __main__ = (val args : [string]) -> void:    
+    pass

@@ -1,0 +1,70 @@
+-[
+multiple declarations
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+namespace -(
+-- type
+type sex = ():
+    Male
+    | Female
+    | Unknown
+
+type user = (a):
+    User(
+        name   : string,
+        age    : int,
+        sex    : maybe(a)
+    )
+
+-- global variable --
+var sex_var = Male
+var settings = (
+    name    = "avalon/interpreter",
+    version = "1.0.1",
+    year    = 2018
+)
+
+-- cast function --
+def __cast__ = (a : sex) -> maybe(sex):
+    return Just(a)
+
+-- getitem function --
+def __getitem_name__ : a = (u : user(a)) -> string:
+    if u === User(
+        name = name:string,
+        age = _, 
+        sex = _
+    ):
+        return name
+    else:
+        return ""
+
+-- getattr function --
+def __getattr_age__ : a = (u : user(a)) -> int:
+    if u === User(
+        name = _,
+        age = age:int,
+        sex = _
+    ):
+        return age
+    else:
+        return 0
+
+-- getitem function --
+def __getitem_sex__ : a = (u : user(a)) -> sex:
+    if u === User(
+        name = _,
+        age = _,
+        sex = sex:maybe(a)
+    ):
+        if sex === Just(value:a):
+            return value
+        else:
+            return Unknown
+    else:
+        return Unknown
+)-

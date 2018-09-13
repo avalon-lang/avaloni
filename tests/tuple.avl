@@ -1,0 +1,27 @@
+-[
+tuples
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+namespace pq -(
+-- type instance infered
+var unit    = (),
+    single  = ("Hello")
+
+-- type instance on variable
+var user:(string, int)       = ("John Doe", 32),
+    user_named:(string, int) = (
+        name = "John Doe",
+        age  = 32
+    )
+
+-- type instance on expression
+var user        = ("John Doe", 32):(string, int),
+    user_named  = (
+        name = "John Doe",
+        age  = 32
+    ):(string, int)
+)-

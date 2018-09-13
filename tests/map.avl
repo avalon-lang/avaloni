@@ -1,0 +1,23 @@
+-[
+maps
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+namespace pq -(
+-- type instance infered
+var user = {
+    "name"      : "Jonh Doe",
+    "address"   : "#666, 6th cross, Antichrist Avenue"
+}
+
+-- type instance on variable
+var users:{string:int} = {
+    "age" : 10
+}
+
+-- type instance on expression
+var others = {}:{string:int}
+)-
