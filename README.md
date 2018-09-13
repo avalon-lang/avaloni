@@ -1,41 +1,23 @@
-# Avalon - Frontend
+# Avalon - Quantum interpreter
 
-This is the frontend of the language.  
-It performs lexing, parsing and semantic analysis.
+This is an interpreter of the quantum version of the language. 
+
+## What it looks like
+
+![Avalon sample program in my editor](images/main.avl.png "Avalon program in Sublime Text")
 
 ## State of the project
 
-The whole of the frontend is done.  
-At least, the basis of it is done.
-As the language evolves, it will keep changing to reflect the same.
+**The interpreter IS DONE!**  
+**Next step is documentation.**
 
-* `Lexer` : done.
-* `Parser` : done.
-* `Importer` : done.
-* `Semantic analysis and type inference`:
-    - `Type declarations`: done.
-    - `Function declarations`: done.
-    - `Variable declarations`: done.
-    - `Statement declarations`:
-        - `While statements`: done.
-        - `If statements`: done.
-        - `Pass statements`: done.
-        - `Return statements`: done.
-        - `Break statements`: done.
-        - `Continue statements`: done.
-        - `Expression statements`:
-            - `Literal expressionss`: done.
-            - `Container expressions`: done.
-            - `Constructor initializers`: done.
-            - `Function calls`: done.
-            - `Variable expressions`: done.
-            - `Grouped expressions`: done.
-            - `Cast expressions`: done.
-            - `Unary expressions`: done.
-            - `Binary expressions`: done.
-            - `Match expressions`: done.
-            - `Assignment expressions`: done.
-* `Cleaner`: done.
+After compiling the program, please run:
+```shell
+$ ./avalon tests/main.avl
+```
+
+It contains a test programs that performs a linear search from an array.  
+Feel free to play with it as well.
 
 ## Installation
 
