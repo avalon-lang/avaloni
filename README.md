@@ -8,8 +8,7 @@ This is an interpreter of the quantum version of the language.
 
 ## State of the project
 
-**The interpreter IS DONE!**  
-**Next step is documentation.**
+**The interpreter in progress**  
 
 After compiling the program, please run:
 ```shell
