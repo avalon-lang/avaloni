@@ -423,7 +423,7 @@ namespace avalon {
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
-            throw invalid_call("[compiler error] the decimal __div__ function expects only two arguments.");
+            throw invalid_call("[compiler error] the decimal __eq__ function expects only two arguments.");
 
         // make sure each argument is an literal expression
         std::shared_ptr<expr>& arg_one = arguments[0];        
@@ -483,16 +483,16 @@ namespace avalon {
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
-            throw invalid_call("[compiler error] the decimal __div__ function expects only two arguments.");
+            throw invalid_call("[compiler error] the decimal __ne__ function expects only two arguments.");
 
         // make sure each argument is an literal expression
         std::shared_ptr<expr>& arg_one = arguments[0];        
         if(arg_one -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __ne__ function expects its arguments to be decimals.");
 
         std::shared_ptr<expr>& arg_two = arguments[1];
         if(arg_two -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __ne__ function expects its arguments to be decimals.");
 
         // get the literal expressions
         std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
@@ -501,11 +501,11 @@ namespace avalon {
         // double check the type instance
         type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_one_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __ne__ function expects its argument to be decimals.");
 
         type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_two_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __ne__ function expects its argument to be decimals.");
 
         // compare both arguments
         boost::multiprecision::cpp_dec_float_100 arg_one_val = arg_one_lit -> get_dec_value();
@@ -543,16 +543,16 @@ namespace avalon {
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
-            throw invalid_call("[compiler error] the decimal __div__ function expects only two arguments.");
+            throw invalid_call("[compiler error] the decimal __gt__ function expects only two arguments.");
 
         // make sure each argument is an literal expression
         std::shared_ptr<expr>& arg_one = arguments[0];        
         if(arg_one -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __gt__ function expects its arguments to be decimals.");
 
         std::shared_ptr<expr>& arg_two = arguments[1];
         if(arg_two -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __gt__ function expects its arguments to be decimals.");
 
         // get the literal expressions
         std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
@@ -561,11 +561,11 @@ namespace avalon {
         // double check the type instance
         type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_one_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __gt__ function expects its argument to be decimals.");
 
         type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_two_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __gt__ function expects its argument to be decimals.");
 
         // compare both arguments
         boost::multiprecision::cpp_dec_float_100 arg_one_val = arg_one_lit -> get_dec_value();
@@ -603,16 +603,16 @@ namespace avalon {
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
-            throw invalid_call("[compiler error] the decimal __div__ function expects only two arguments.");
+            throw invalid_call("[compiler error] the decimal __ge__ function expects only two arguments.");
 
         // make sure each argument is an literal expression
         std::shared_ptr<expr>& arg_one = arguments[0];        
         if(arg_one -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __ge__ function expects its arguments to be decimals.");
 
         std::shared_ptr<expr>& arg_two = arguments[1];
         if(arg_two -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __ge__ function expects its arguments to be decimals.");
 
         // get the literal expressions
         std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
@@ -621,11 +621,11 @@ namespace avalon {
         // double check the type instance
         type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_one_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __ge__ function expects its argument to be decimals.");
 
         type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_two_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __ge__ function expects its argument to be decimals.");
 
         // compare both arguments
         boost::multiprecision::cpp_dec_float_100 arg_one_val = arg_one_lit -> get_dec_value();
@@ -663,16 +663,16 @@ namespace avalon {
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
-            throw invalid_call("[compiler error] the decimal __div__ function expects only two arguments.");
+            throw invalid_call("[compiler error] the decimal __lt__ function expects only two arguments.");
 
         // make sure each argument is an literal expression
         std::shared_ptr<expr>& arg_one = arguments[0];        
         if(arg_one -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __lt__ function expects its arguments to be decimals.");
 
         std::shared_ptr<expr>& arg_two = arguments[1];
         if(arg_two -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __lt__ function expects its arguments to be decimals.");
 
         // get the literal expressions
         std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
@@ -681,11 +681,11 @@ namespace avalon {
         // double check the type instance
         type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_one_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __lt__ function expects its argument to be decimals.");
 
         type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_two_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __lt__ function expects its argument to be decimals.");
 
         // compare both arguments
         boost::multiprecision::cpp_dec_float_100 arg_one_val = arg_one_lit -> get_dec_value();
@@ -723,16 +723,16 @@ namespace avalon {
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
-            throw invalid_call("[compiler error] the decimal __div__ function expects only two arguments.");
+            throw invalid_call("[compiler error] the decimal __le__ function expects only two arguments.");
 
         // make sure each argument is an literal expression
         std::shared_ptr<expr>& arg_one = arguments[0];        
         if(arg_one -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __le__ function expects its arguments to be decimals.");
 
         std::shared_ptr<expr>& arg_two = arguments[1];
         if(arg_two -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its arguments to be decimals.");
+            throw invalid_call("[compiler error] the decimal __le__ function expects its arguments to be decimals.");
 
         // get the literal expressions
         std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
@@ -741,11 +741,11 @@ namespace avalon {
         // double check the type instance
         type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_one_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __le__ function expects its argument to be decimals.");
 
         type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_two_instance, dec_instance) == false)
-            throw invalid_call("[compiler error] the decimal __eq__ function expects its argument to be decimals.");
+            throw invalid_call("[compiler error] the decimal __le__ function expects its argument to be decimals.");
 
         // compare both arguments
         boost::multiprecision::cpp_dec_float_100 arg_one_val = arg_one_lit -> get_dec_value();
