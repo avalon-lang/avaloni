@@ -42,6 +42,7 @@
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_string.hpp"
+#include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
 
 
@@ -78,6 +79,11 @@ namespace avalon {
         program& string_prog = avl_string.get_program();
         type_instance string_instance = avl_string.get_type_instance();
 
+        // bool type
+        avalon_bool avl_bool;
+        program& bool_prog = avl_bool.get_program();
+        type_instance bool_instance = avl_bool.get_type_instance();
+
         /* the program FQN */
         fqn l_fqn("__bifqn_bit__", "__bifqn_bit__");
         m_bit_prog.set_fqn(l_fqn);
@@ -95,6 +101,10 @@ namespace avalon {
         std::shared_ptr<import> string_import = std::make_shared<import>(import_tok, string_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_string_import = string_import;
         m_bit_prog.add_declaration(final_string_import);
+        // import bool program
+        std::shared_ptr<import> bool_import = std::make_shared<import>(import_tok, bool_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_bool_import = bool_import;
+        m_bit_prog.add_declaration(final_bool_import);
 
         /* create the namespace to the program */
         std::shared_ptr<ns> l_namespace = std::make_shared<ns>(star_tok);
@@ -213,7 +223,7 @@ namespace avalon {
         bit_eq_function -> set_scope(bit_eq_scope);
         bit_eq_function -> add_param(param_one);
         bit_eq_function -> add_param(param_two);
-        bit_eq_function -> set_return_type_instance(m_bit_instance);
+        bit_eq_function -> set_return_type_instance(bool_instance);
         std::shared_ptr<decl> eq_function_decl = bit_eq_function;
         l_namespace -> add_declaration(eq_function_decl);
 
@@ -229,7 +239,7 @@ namespace avalon {
         bit_ne_function -> set_scope(bit_ne_scope);
         bit_ne_function -> add_param(param_one);
         bit_ne_function -> add_param(param_two);
-        bit_ne_function -> set_return_type_instance(m_bit_instance);
+        bit_ne_function -> set_return_type_instance(bool_instance);
         std::shared_ptr<decl> ne_function_decl = bit_ne_function;
         l_namespace -> add_declaration(ne_function_decl);
 
