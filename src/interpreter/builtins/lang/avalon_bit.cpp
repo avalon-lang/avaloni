@@ -157,13 +157,13 @@ namespace avalon {
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
-            throw invalid_call("[compiler error] the bitwise __band__ function expects only two arguments.");
+            throw invalid_call("[compiler error] the bitwise __xor__ function expects only two arguments.");
 
         // make sure each argument is a literal expression
         std::shared_ptr<expr>& arg_one = arguments[0];
         std::shared_ptr<expr>& arg_two = arguments[1];
         if(arg_one -> is_literal_expression() == false || arg_two -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the bitwise __bxor__ function expects both its arguments to be bits.");
+            throw invalid_call("[compiler error] the bitwise __xor__ function expects both its arguments to be bits.");
 
         // get the literal expressions
         std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
@@ -172,11 +172,11 @@ namespace avalon {
         // double check the type instance
         type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_one_instance, bit_instance) == false)
-            throw invalid_call("[compiler error] the bitwise __bxor__ function expects its argument to be bits.");
+            throw invalid_call("[compiler error] the bitwise __xor__ function expects its argument to be bits.");
 
         type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_two_instance, bit_instance) == false)
-            throw invalid_call("[compiler error] the bitwise __bxor__ function expects its argument to be bits.");
+            throw invalid_call("[compiler error] the bitwise __xor__ function expects its argument to be bits.");
 
         // add both arguments
         boost::dynamic_bitset<> arg_one_val = arg_one_lit -> get_bit_value();

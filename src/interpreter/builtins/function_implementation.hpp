@@ -404,10 +404,10 @@ namespace avalon {
     };
 
     /**
-     * bxor_implementation
-     * implements the builtin __bxor__ function
+     * xor_implementation
+     * implements the builtin __xor__ function
      */
-    struct bxor_implementation : function_implementation {
+    struct xor_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
             return bit_xor(arguments);
         }

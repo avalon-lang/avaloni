@@ -85,7 +85,7 @@ namespace avalon {
         /* bitwise functions */
         band_implementation avl_band_implementation;
         bor_implementation avl_bor_implementation;
-        bxor_implementation avl_bxor_implementation;
+        xor_implementation avl_xor_implementation;
         bnot_implementation avl_bnot_implementation;
 
         m_implementations = {
@@ -127,7 +127,7 @@ namespace avalon {
             /* bitwise functions */
             {"__band__", std::make_shared<band_implementation>(avl_band_implementation)},
             {"__bor__", std::make_shared<bor_implementation>(avl_bor_implementation)},
-            {"__bxor__", std::make_shared<bxor_implementation>(avl_bxor_implementation)},
+            {"__xor__", std::make_shared<xor_implementation>(avl_xor_implementation)},
             {"__bnot__", std::make_shared<bnot_implementation>(avl_bnot_implementation)},
         };
     }
