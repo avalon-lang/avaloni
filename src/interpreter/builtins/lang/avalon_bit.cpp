@@ -282,8 +282,10 @@ namespace avalon {
 
         // create new literal with the new integer
         boost::dynamic_bitset<> arg_val = arg_lit -> get_bit_value();
-        std::string bit_str = "";
-        to_string(arg_val, bit_str);
+        std::string bit_str = "0b";
+        std::string tmp_str = "";
+        to_string(arg_val, tmp_str);
+        bit_str += tmp_str;
         token lit_tok(STRING, bit_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> string_lit = std::make_shared<literal_expression>(lit_tok, STRING_EXPR, bit_str);
         string_lit -> set_type_instance(string_instance);
