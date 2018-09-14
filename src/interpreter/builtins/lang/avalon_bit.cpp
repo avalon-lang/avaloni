@@ -320,7 +320,6 @@ namespace avalon {
                 bit_str.push_back('\'');
             bit_str.push_back(tmp_str[i]);
         }
-        std::cout << bit_str << std::endl;
         token lit_tok(STRING, bit_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> string_lit = std::make_shared<literal_expression>(lit_tok, STRING_EXPR, bit_str);
         string_lit -> set_type_instance(string_instance);
