@@ -123,7 +123,8 @@ namespace avalon {
         param_two.set_type_instance(m_bit_instance);
 
         // bitwise and
-        std::shared_ptr<function> bit_and_function = std::make_shared<function>(and_function_tok);
+        token bit_and_tok(IDENTIFIER, "__band__", 0, 0, "__bif__");
+        std::shared_ptr<function> bit_and_function = std::make_shared<function>(bit_and_tok);
         bit_and_function -> set_fqn(l_fqn);
         bit_and_function -> is_public(true);
         bit_and_function -> is_builtin(true);
@@ -138,7 +139,8 @@ namespace avalon {
         l_namespace -> add_declaration(and_function_decl);
 
         // bitwise or
-        std::shared_ptr<function> bit_or_function = std::make_shared<function>(or_function_tok);
+        token bit_or_tok(IDENTIFIER, "__bor__", 0, 0, "__bif__");
+        std::shared_ptr<function> bit_or_function = std::make_shared<function>(bit_or_tok);
         bit_or_function -> set_fqn(l_fqn);
         bit_or_function -> is_public(true);
         bit_or_function -> is_builtin(true);
@@ -153,7 +155,8 @@ namespace avalon {
         l_namespace -> add_declaration(or_function_decl);
 
         // bitwise xor
-        std::shared_ptr<function> bit_xor_function = std::make_shared<function>(xor_function_tok);
+        token bit_xor_tok(IDENTIFIER, "__band__", 0, 0, "__bif__");
+        std::shared_ptr<function> bit_xor_function = std::make_shared<function>(bit_xor_tok);
         bit_xor_function -> set_fqn(l_fqn);
         bit_xor_function -> is_public(true);
         bit_xor_function -> is_builtin(true);
@@ -168,7 +171,8 @@ namespace avalon {
         l_namespace -> add_declaration(xor_function_decl);
 
         // bitwise not
-        std::shared_ptr<function> bit_not_function = std::make_shared<function>(not_function_tok);
+        token bit_not_tok(IDENTIFIER, "__bnot__", 0, 0, "__bif__");
+        std::shared_ptr<function> bit_not_function = std::make_shared<function>(bit_not_tok);
         bit_not_function -> set_fqn(l_fqn);
         bit_not_function -> is_public(true);
         bit_not_function -> is_builtin(true);
