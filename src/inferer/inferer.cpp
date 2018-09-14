@@ -1266,7 +1266,7 @@ inferer::inferer() {
             fun_name = "__neg__";
         }
         else if(unary_expr -> get_expression_type() == BITWISE_NOT_EXPR) {
-            fun_name = "__bitnot__";
+            fun_name = "__bnot__";
         }
         else if(unary_expr -> get_expression_type() == LOGICAL_NOT_EXPR) {
             fun_name = "__not__";

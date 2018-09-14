@@ -363,9 +363,8 @@ namespace avalon {
             throw invalid_expression(call_expr -> get_token(), "Call expression cannot be resolved to either a function, a record constructor or a default constructor.");
         }
 
-        // replace this with an assertion
-        std::cout << "Call not found" << std::endl;
-        return star_instance;
+        // If we reach here then the call expression wasn't found
+        throw invalid_expression(call_expr -> get_token(), "Call expression cannot be resolved to either a function, a record constructor or a default constructor.");
     }
 
     /**
