@@ -163,6 +163,16 @@ namespace avalon {
      * this function simply returns the type instance for each type of literal
      */
     type_instance expression_checker::check_literal(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<literal_expression> const & lit_expr = std::static_pointer_cast<literal_expression>(an_expression);
+
+        // we make sure that a bit expression is exclusively made of 1s and 0s
+        if(lit_expr -> get_expression_type() == BIT_EXPR) {
+            const std::string& value = lit_expr -> get_value();
+            if(value.find_first_not_of("01") != std::string::npos) {
+                throw invalid_expression(lit_expr -> get_token(), "A bit string must only contain zeros and ones.");
+            }
+        }
+
         return m_inferrer.infer(an_expression, l_scope, ns_name);
     }
 
