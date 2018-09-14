@@ -38,6 +38,7 @@
 #include "interpreter/builtins/lang/avalon_bool.hpp"
 #include "interpreter/builtins/lang/avalon_cast.hpp"
 #include "interpreter/builtins/lang/avalon_hash.hpp"
+#include "interpreter/builtins/lang/avalon_bit.hpp"
 #include "interpreter/builtins/io/avalon_io.hpp"
 
 
@@ -371,6 +372,62 @@ namespace avalon {
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
             return avl_le(arguments);
+        }
+    };
+
+    /**
+     * band_implementation
+     * implements the builtin __band__ function
+     */
+    struct band_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return bit_and(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return bit_and(arguments);
+        }
+    };
+
+    /**
+     * bor_implementation
+     * implements the builtin __bor__ function
+     */
+    struct bor_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return bit_or(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return bit_or(arguments);
+        }
+    };
+
+    /**
+     * bxor_implementation
+     * implements the builtin __bxor__ function
+     */
+    struct bxor_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return bit_xor(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return bit_xor(arguments);
+        }
+    };
+
+    /**
+     * bnot_implementation
+     * implements the builtin __bnot__ function
+     */
+    struct bnot_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return bit_not(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return bit_not(arguments);
         }
     };
 }

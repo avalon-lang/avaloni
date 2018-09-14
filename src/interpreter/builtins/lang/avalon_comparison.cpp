@@ -42,12 +42,14 @@
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 #include "representer/builtins/lang/avalon_dec.hpp"
+#include "representer/builtins/lang/avalon_bit.hpp"
 
 /* Builtin functions */
 #include "interpreter/builtins/lang/avalon_comparison.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
 #include "interpreter/builtins/lang/avalon_int.hpp"
 #include "interpreter/builtins/lang/avalon_dec.hpp"
+#include "interpreter/builtins/lang/avalon_bit.hpp"
 
 /* Exceptions */
 #include "interpreter/exceptions/invalid_call.hpp"
@@ -70,6 +72,10 @@ namespace avalon {
         // dec type
         avalon_dec avl_dec;
         type_instance dec_instance = avl_dec.get_type_instance();
+
+        // bit type
+        avalon_bit avl_bit;
+        type_instance bit_instance = avl_bit.get_type_instance();
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
@@ -107,6 +113,9 @@ namespace avalon {
             else if(type_instance_strong_compare(arg_one_instance, dec_instance) && type_instance_strong_compare(arg_two_instance, dec_instance)) {
                 return dec_eq(arguments);
             }
+            else if(type_instance_strong_compare(arg_one_instance, bit_instance) && type_instance_strong_compare(arg_two_instance, bit_instance)) {
+                return bit_eq(arguments);
+            }
             else {
                 throw invalid_call("[compiler error] unexpected call to builtin function __eq__ using arguments of unsupported type instances");
             }
@@ -132,6 +141,10 @@ namespace avalon {
         // dec type
         avalon_dec avl_dec;
         type_instance dec_instance = avl_dec.get_type_instance();
+
+        // bit type
+        avalon_bit avl_bit;
+        type_instance bit_instance = avl_bit.get_type_instance();
 
         // make sure we got only two arguments
         if(arguments.size() != 2)
@@ -168,6 +181,9 @@ namespace avalon {
             }
             else if(type_instance_strong_compare(arg_one_instance, dec_instance) && type_instance_strong_compare(arg_two_instance, dec_instance)) {
                 return dec_ne(arguments);
+            }
+            else if(type_instance_strong_compare(arg_one_instance, bit_instance) && type_instance_strong_compare(arg_two_instance, bit_instance)) {
+                return bit_eq(arguments);
             }
             else {
                 throw invalid_call("[compiler error] unexpected call to builtin function __ne__ using arguments of unsupported type instances");

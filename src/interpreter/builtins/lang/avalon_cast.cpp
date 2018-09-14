@@ -44,12 +44,14 @@
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 #include "representer/builtins/lang/avalon_dec.hpp"
+#include "representer/builtins/lang/avalon_bit.hpp"
 
 /* Builtin functions */
 #include "interpreter/builtins/lang/avalon_float.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
 #include "interpreter/builtins/lang/avalon_int.hpp"
 #include "interpreter/builtins/lang/avalon_dec.hpp"
+#include "interpreter/builtins/lang/avalon_bit.hpp"
 
 /* Exceptions */
 #include "interpreter/exceptions/invalid_call.hpp"
@@ -76,6 +78,10 @@ namespace avalon {
         // float type
         avalon_float avl_float;
         type_instance float_instance = avl_float.get_type_instance();
+
+        // bit type
+        avalon_bit avl_bit;
+        type_instance bit_instance = avl_bit.get_type_instance();
 
         // make sure we got only one argument
         if(arguments.size() != 1)
@@ -108,6 +114,9 @@ namespace avalon {
             if(type_instance_strong_compare(arg_instance, float_instance)) {
                 return float_cast(arguments, ret_instance);
             }
+            if(type_instance_strong_compare(arg_instance, bit_instance)) {
+                return bit_cast(arguments, ret_instance);
+            }
             else {
                 throw invalid_call("[compiler error] unexpected call to builtin function __cast__ using arguments of unsupported type instances");
             }
@@ -138,6 +147,10 @@ namespace avalon {
         avalon_float avl_float;
         type_instance float_instance = avl_float.get_type_instance();
 
+        // bit type
+        avalon_bit avl_bit;
+        type_instance bit_instance = avl_bit.get_type_instance();
+
         // make sure we got only one argument
         if(arguments.size() != 1)
             throw invalid_call("[compiler error] the <string> function expects only one argument.");
@@ -167,6 +180,9 @@ namespace avalon {
             }
             if(type_instance_strong_compare(arg_instance, float_instance)) {
                 return float_string(arguments);
+            }
+            if(type_instance_strong_compare(arg_instance, bit_instance)) {
+                return bit_string(arguments);
             }
             else {
                 throw invalid_call("[compiler error] unexpected call to the <string> function using arguments of unsupported type instances");

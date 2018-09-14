@@ -82,6 +82,12 @@ namespace avalon {
         lt_implementation avl_lt_implementation;
         le_implementation avl_le_implementation;
 
+        /* bitwise functions */
+        band_implementation avl_band_implementation;
+        bor_implementation avl_bor_implementation;
+        bxor_implementation avl_bxor_implementation;
+        bnot_implementation avl_bnot_implementation;
+
         m_implementations = {
             /* boolean functions */
             {"__and__", std::make_shared<and_implementation>(avl_and_implementation)},
@@ -117,6 +123,12 @@ namespace avalon {
             {"__ge__", std::make_shared<ge_implementation>(avl_ge_implementation)},
             {"__lt__", std::make_shared<lt_implementation>(avl_lt_implementation)},
             {"__le__", std::make_shared<le_implementation>(avl_le_implementation)},
+
+            /* bitwise functions */
+            {"__band__", std::make_shared<band_implementation>(avl_band_implementation)},
+            {"__bor__", std::make_shared<bor_implementation>(avl_bor_implementation)},
+            {"__bxor__", std::make_shared<bxor_implementation>(avl_bxor_implementation)},
+            {"__bnot__", std::make_shared<bnot_implementation>(avl_bnot_implementation)},
         };
     }
 
