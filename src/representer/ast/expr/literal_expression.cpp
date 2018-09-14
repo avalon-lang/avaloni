@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <memory>
 
+#include <boost/dynamic_bitset.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
@@ -187,6 +188,21 @@ namespace avalon {
         }
         else {
             throw value_error("This literal expression doesn't contain a string.");
+        }
+    }
+
+    /**
+     * get_bit_value
+     * returns the bitset representating of this literal
+     * throws a value_error exception if it contains a different literal type
+     */
+    boost::dynamic_bitset<> literal_expression::get_bit_value() {
+        if(m_expr_type == BIT_EXPR) {
+            boost::dynamic_bitset<> bitstring(m_val);
+            return bitstring;
+        }
+        else {
+            throw value_error("This literal expression doesn't contain a bit string.");
         }
     }
 }

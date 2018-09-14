@@ -360,6 +360,7 @@ namespace avalon {
      */
     extern token and_function_tok;
     extern token or_function_tok;
+    extern token xor_function_tok;
     extern token not_function_tok;
     extern token pos_function_tok;
     extern token neg_function_tok;

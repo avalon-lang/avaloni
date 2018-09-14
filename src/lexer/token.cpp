@@ -323,6 +323,7 @@ token just_cons_tok(IDENTIFIER, "Just", 0, 0, "__bic__");
  */
 token and_function_tok(FUNCTION, "__and__", 0, 0, "__bif__");
 token or_function_tok(FUNCTION, "__or__", 0, 0, "__bif__");
+token xor_function_tok(FUNCTION, "__xor__", 0, 0, "__bif__");
 token not_function_tok(FUNCTION, "__not__", 0, 0, "__bif__");
 token pos_function_tok(FUNCTION, "__pos__", 0, 0, "__bif__");
 token neg_function_tok(FUNCTION, "__neg__", 0, 0, "__bif__");

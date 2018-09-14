@@ -29,6 +29,7 @@
 #include <memory>
 #include <string>
 
+#include <boost/dynamic_bitset.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
@@ -141,6 +142,13 @@ namespace avalon {
          * throws a value_error exception if it contains a different literal type
          */
         std::string get_string_value();
+
+        /**
+         * get_bit_value
+         * returns the bitset representating of this literal
+         * throws a value_error exception if it contains a different literal type
+         */
+        boost::dynamic_bitset<> get_bit_value();
 
         /**
          * token
