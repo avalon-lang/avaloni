@@ -87,6 +87,12 @@ namespace avalon {
         // add both arguments
         boost::dynamic_bitset<> arg_one_val = arg_one_lit -> get_bit_value();
         boost::dynamic_bitset<> arg_two_val = arg_two_lit -> get_bit_value();
+        if(arg_one_val.size() > arg_two_val.size()) {
+            arg_two_val.resize(arg_one_val.size(), false);
+        }
+        else if(arg_one_val.size() < arg_two_val.size()) {
+            arg_one_val.resize(arg_two_val.size(), false);
+        }
         boost::dynamic_bitset<> res_val = arg_one_val & arg_two_val;
         std::string res_str = "";
         to_string(res_val, res_str);
@@ -134,6 +140,12 @@ namespace avalon {
         // add both arguments
         boost::dynamic_bitset<> arg_one_val = arg_one_lit -> get_bit_value();
         boost::dynamic_bitset<> arg_two_val = arg_two_lit -> get_bit_value();
+        if(arg_one_val.size() > arg_two_val.size()) {
+            arg_two_val.resize(arg_one_val.size(), false);
+        }
+        else if(arg_one_val.size() < arg_two_val.size()) {
+            arg_one_val.resize(arg_two_val.size(), false);
+        }
         boost::dynamic_bitset<> res_val = arg_one_val | arg_two_val;
         std::string res_str = "";
         to_string(res_val, res_str);
@@ -181,6 +193,12 @@ namespace avalon {
         // add both arguments
         boost::dynamic_bitset<> arg_one_val = arg_one_lit -> get_bit_value();
         boost::dynamic_bitset<> arg_two_val = arg_two_lit -> get_bit_value();
+        if(arg_one_val.size() > arg_two_val.size()) {
+            arg_two_val.resize(arg_one_val.size(), false);
+        }
+        else if(arg_one_val.size() < arg_two_val.size()) {
+            arg_one_val.resize(arg_two_val.size(), false);
+        }
         boost::dynamic_bitset<> res_val = arg_one_val ^ arg_two_val;
         std::string res_str = "";
         to_string(res_val, res_str);
