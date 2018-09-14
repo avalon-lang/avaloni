@@ -303,7 +303,24 @@ namespace avalon {
         std::string bit_str = "0b";
         std::string tmp_str = "";
         to_string(arg_val, tmp_str);
-        bit_str += tmp_str;
+        //bit_str += tmp_str;
+        // we put a separator between every four characters
+        std::size_t bits_count = tmp_str.length();
+        std::size_t lbits_count = bits_count % 4;
+        std::size_t i = 0;
+        for(; i < lbits_count; ++i) {
+            bit_str.push_back(tmp_str[i]);
+        }
+        if(i != 0) {
+            bit_str.push_back('\'');
+        }
+        for(; i < bits_count; i++) {
+            std::size_t j = i - lbits_count;
+            if(j >= 4 && j % 4 == 0)
+                bit_str.push_back('\'');
+            bit_str.push_back(tmp_str[i]);
+        }
+        std::cout << bit_str << std::endl;
         token lit_tok(STRING, bit_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> string_lit = std::make_shared<literal_expression>(lit_tok, STRING_EXPR, bit_str);
         string_lit -> set_type_instance(string_instance);
