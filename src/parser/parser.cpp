@@ -1446,7 +1446,7 @@ parser::parser(
             std::shared_ptr<token>& left_brace = lookback();
             l_expression = parse_map_expression(left_brace);
         }
-        else if(match(INTEGER) || match(FLOATING_POINT) || match(DECIMAL) || match(STRING)) {
+        else if(match(INTEGER) || match(FLOATING_POINT) || match(DECIMAL) || match(STRING) || match(BITS) || match(QUBITS)) {
             std::shared_ptr<token>& literal_tok = lookback();
             std::shared_ptr<literal_expression> literal_expr = nullptr;
 
