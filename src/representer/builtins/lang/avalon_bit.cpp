@@ -155,7 +155,7 @@ namespace avalon {
         l_namespace -> add_declaration(or_function_decl);
 
         // bitwise xor
-        token bit_xor_tok(IDENTIFIER, "__band__", 0, 0, "__bif__");
+        token bit_xor_tok(IDENTIFIER, "__bxor__", 0, 0, "__bif__");
         std::shared_ptr<function> bit_xor_function = std::make_shared<function>(bit_xor_tok);
         bit_xor_function -> set_fqn(l_fqn);
         bit_xor_function -> is_public(true);

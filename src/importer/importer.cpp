@@ -216,6 +216,12 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         m_sorted_deps.push(void_prog.get_fqn().get_name());
         m_gtable.add_program(void_prog);
 
+        // bool declarations
+        avalon_bool avl_bool;
+        program& bool_prog = avl_bool.get_program();
+        m_sorted_deps.push(bool_prog.get_fqn().get_name());
+        m_gtable.add_program(bool_prog);
+
         // bit declarations
         avalon_bit avl_bit;
         program& bit_prog = avl_bit.get_program();
@@ -227,12 +233,6 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         program& qubit_prog = avl_qubit.get_program();
         m_sorted_deps.push(qubit_prog.get_fqn().get_name());
         m_gtable.add_program(qubit_prog);
-
-        // bool declarations
-        avalon_bool avl_bool;
-        program& bool_prog = avl_bool.get_program();
-        m_sorted_deps.push(bool_prog.get_fqn().get_name());
-        m_gtable.add_program(bool_prog);
 
         // floating point declarations
         avalon_float avl_float;
@@ -351,6 +351,13 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<decl> final_void_import = void_import;
         to.add_declaration(final_void_import);
 
+        // bool declarations
+        avalon_bool avl_bool;
+        program& bool_prog = avl_bool.get_program();
+        std::shared_ptr<import> bool_import = std::make_shared<import>(import_tok, bool_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_bool_import = bool_import;
+        to.add_declaration(final_bool_import);
+
         // bit declarations
         avalon_bit avl_bit;
         program& bit_prog = avl_bit.get_program();
@@ -364,13 +371,6 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<import> qubit_import = std::make_shared<import>(import_tok, qubit_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_qubit_import = qubit_import;
         to.add_declaration(final_qubit_import);
-
-        // bool declarations
-        avalon_bool avl_bool;
-        program& bool_prog = avl_bool.get_program();
-        std::shared_ptr<import> bool_import = std::make_shared<import>(import_tok, bool_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_bool_import = bool_import;
-        to.add_declaration(final_bool_import);
 
         // floating point declarations
         avalon_float avl_float;
