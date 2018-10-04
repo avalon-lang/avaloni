@@ -106,6 +106,12 @@ namespace avalon {
     std::shared_ptr<type> type_generator::generate(type_instance& instance) {
         token tok = instance.get_token();
 
+        // if the type instance is a reference type instance, we generate a type from the reference parameter
+        if(instance.is_reference()) {
+            std::vector<type_instance>& params = instance.get_params();
+            return type_generator::generate(params[0]);
+        }
+
         // first we make sure our type instance is complete
         if(instance.is_complete() == false)
             throw invalid_type(tok, "The type instance <" + mangle_type_instance(instance) + "> must be complete before generating a type declaration from it.");
