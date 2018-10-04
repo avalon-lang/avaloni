@@ -69,7 +69,7 @@ namespace avalon {
         }
 
         // we can only look for user defined type instances in the scope we have
-        if(instance.get_category() == USER) {            
+        if(instance.get_category() == USER) {
             // we try to find if the type instance has an associated type that builds
             try {
                 instance_type = l_scope -> get_type(ns_name, instance);
@@ -137,6 +137,12 @@ namespace avalon {
         }
         // if we have a built-in type, we check the type instances it depends on if any and set the type builder on it
         else {
+            if(instance.get_category() == LIST && instance_params.size() != 1)
+                throw invalid_type(instance.get_token(), "The type instance <" + mangle_type_instance(instance) + " is a list but has more or less than 1 parameter.");
+
+            if(instance.get_category() == MAP && instance_params.size() != 2)
+                throw invalid_type(instance.get_token(), "The type instance <" + mangle_type_instance(instance) + " is a list but has more or less than 2 parameter.");
+
             // we check dependent type instances, if any
             for(auto& instance_param : instance_params) {
                 try {
