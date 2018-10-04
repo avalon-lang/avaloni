@@ -303,7 +303,22 @@ namespace avalon {
         std::string bit_str = "0b";
         std::string tmp_str = "";
         to_string(arg_val, tmp_str);
-        bit_str += tmp_str;
+
+        // place the colon separator for easier reading
+        unsigned int lbits_count = tmp_str.length() % 4;
+        unsigned int i = 0;
+        // insert left most bits if any
+        for(i = 0; i < lbits_count; ++i)
+            bit_str.push_back(tmp_str[i]);
+        // if i != 0 then we did insert some left most bits; in which case we put the separator
+        if(i > 0)
+            bit_str.push_back('\'');
+        for(; i < tmp_str.length(); ++i) {
+            unsigned int j = i - lbits_count;
+            if(j > 0 && j % 4 == 0)
+                bit_str.push_back('\'');
+            bit_str.push_back(tmp_str[i]);
+        }
         token lit_tok(STRING, bit_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> string_lit = std::make_shared<literal_expression>(lit_tok, STRING_EXPR, bit_str);
         string_lit -> set_type_instance(string_instance);
