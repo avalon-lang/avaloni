@@ -304,18 +304,19 @@ namespace avalon {
         std::string tmp_str = "";
         to_string(arg_val, tmp_str);
 
-        // place the colon separator for easier reading
-        unsigned int lbits_count = tmp_str.length() % 4;
-        unsigned int i = 0;
-        // insert left most bits if any
-        for(i = 0; i < lbits_count; ++i)
+        // we put a separator between every four characters
+        std::size_t bits_count = tmp_str.length();
+        std::size_t lbits_count = bits_count % 4;
+        std::size_t i = 0;
+        for(; i < lbits_count; ++i) {
             bit_str.push_back(tmp_str[i]);
-        // if i != 0 then we did insert some left most bits; in which case we put the separator
-        if(i > 0)
+        }
+        if(i != 0) {
             bit_str.push_back('\'');
-        for(; i < tmp_str.length(); ++i) {
-            unsigned int j = i - lbits_count;
-            if(j > 0 && j % 4 == 0)
+        }
+        for(; i < bits_count; i++) {
+            std::size_t j = i - lbits_count;
+            if(j >= 4 && j % 4 == 0)
                 bit_str.push_back('\'');
             bit_str.push_back(tmp_str[i]);
         }

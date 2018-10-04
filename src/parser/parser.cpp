@@ -1139,7 +1139,7 @@ parser::parser(
         std::shared_ptr<expr> l_expression = nullptr;
         std::shared_ptr<expr> lval = bitwise_xor();
 
-        while(match(BITWISE_OR)) {
+        while(match(BITWISE_OR) || match(VERTICAL_BAR)) {
             std::shared_ptr<token>& op = lookback();
             std::shared_ptr<expr> rval = bitwise_xor();
             std::shared_ptr<binary_expression> expr = std::make_shared<binary_expression>(* op, BITWISE_OR_EXPR, lval, rval);
