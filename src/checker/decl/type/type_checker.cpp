@@ -68,6 +68,11 @@ namespace avalon {
             return ret;
         }
 
+        // if we have a reference type instance, we check its parameter instead
+        if(instance.is_reference()) {
+            return type_instance_checker::complex_check(instance_params[0], l_scope, ns_name, standins);
+        }
+
         // we can only look for user defined type instances in the scope we have
         if(instance.get_category() == USER) {
             // we try to find if the type instance has an associated type that builds
