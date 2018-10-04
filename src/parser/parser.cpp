@@ -1699,6 +1699,8 @@ parser::parser(
             
             // parse the remainder of the type instance as parameter to this reference type
             type_instance param = parse_type_instance();
+            if(param.is_reference())
+                throw parsing_error(true, param.get_token(), "References to references are not allowed.");
             instance.add_param(param);
 
             return instance;
@@ -1953,7 +1955,7 @@ parser::parser(
         return parse_error(m_error_handler, * tok, fatal, message);
     }
 
-    parse_error parser::parsing_error(bool fatal, token& tok, const std::string& message) {
+    parse_error parser::parsing_error(bool fatal, const token& tok, const std::string& message) {
         return parse_error(m_error_handler, tok, fatal, message);
     }
 

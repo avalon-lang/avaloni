@@ -548,7 +548,7 @@ namespace avalon {
          * contructs and returns a parse_error exception
          */
         parse_error parsing_error(bool fatal, std::shared_ptr<token>& tok, const std::string& message);
-        parse_error parsing_error(bool fatal, token& tok, const std::string& message);
+        parse_error parsing_error(bool fatal, const token& tok, const std::string& message);
 
         /**
          * synchronize
