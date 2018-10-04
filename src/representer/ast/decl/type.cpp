@@ -842,6 +842,15 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
         // if the type instances belong to different categories, they are not equal
         if(this_instance.get_category() != that_instance.get_category())
             return false;
+
+        // if both type instances are reference type instances, we compare their only parameters
+        if(this_instance.is_reference() == true && that_instance.is_reference() == true) {
+            return type_instance_strong_compare(this_params[0], that_params[0]);
+        }
+        // if one is a reference type instance and the other is not, they are not equal
+        else if(this_instance.is_reference() != that_instance.is_reference()) {
+            return false;
+        }
         
         // get this type instance type and parameters
         std::shared_ptr<type> this_type = nullptr;
@@ -910,6 +919,15 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
         // if the type instances belong to different categories, they are not equal
         if(this_instance.get_category() != that_instance.get_category())
             return false;
+
+        // if both type instances are reference type instances, we compare their only parameters
+        if(this_instance.is_reference() == true && that_instance.is_reference() == true) {
+            return type_instance_weak_compare(this_params[0], that_params[0]);
+        }
+        // if one is a reference type instance and the other is not, they are not equal
+        else if(this_instance.is_reference() != that_instance.is_reference()) {
+            return false;
+        }
         
         // get this type instance type and parameters
         std::shared_ptr<type> this_type = nullptr;
