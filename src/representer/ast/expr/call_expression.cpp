@@ -37,7 +37,7 @@ namespace avalon {
     /**
      * the constructor expects the token with type source information
      */
-    call_expression::call_expression(token& tok) : m_tok(tok), m_namespace("*"), m_name(tok.get_lexeme()), m_expr_type(FUNCTION_CALL_EXPR), m_type_instance_from_parser(false), m_return_type(star_instance) {
+    call_expression::call_expression(token& tok) : m_tok(tok), m_namespace("*"), m_name(tok.get_lexeme()), m_expr_type(FUNCTION_CALL_EXPR), m_type_instance_from_parser(false) {
     }
 
     /**
