@@ -121,6 +121,7 @@ lexer::lexer(
     m_keywords["private"]      = PRIVATE;
 
     // type declaration
+    m_keywords["ref"]          = REF;
     m_keywords["type"]         = TYPE;
 
     // function declaration
@@ -277,6 +278,7 @@ lexer::lexer(
                 break;
             case '/': add_token(DIV); break;
             case '%': add_token(MOD); break;
+            case '\'': add_token(QUOTE); break;
             case ',': add_token(COMMA); break;
             case ':': add_token(COLON); break;
             case '=':

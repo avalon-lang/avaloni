@@ -45,6 +45,7 @@ namespace avalon {
         PLUS,               // +
         DIV,                // /
         MOD,                // %
+        QUOTE,              // '
         COMMA,              // ,
         NEWLINE,            // \n
         INDENT,             // space or tab
@@ -93,6 +94,7 @@ namespace avalon {
         NAMESPACE,          // namespace
         PUBLIC,             // public
         PRIVATE,            // private
+        REF,                // reference
         TYPE,               // type
         FUNCTION,           // function
         VAR,                // var
