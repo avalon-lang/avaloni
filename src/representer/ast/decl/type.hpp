@@ -556,6 +556,14 @@ namespace avalon {
         bool is_parametrized();
 
         /**
+         * is_reference
+         * if the current type instance is a reference to another type, this function marks it as such.
+         */
+        void is_reference(bool is_reference);
+        bool is_reference() const;
+        bool is_reference();
+
+        /**
          * is_abstract
          * returns true if this type instance is a parametric type, false otherwise
          */
@@ -643,6 +651,11 @@ namespace avalon {
          * flag indicating whether this type instance depends on an abstract type instance
          */
         bool m_is_parametrized;
+
+        /*
+         * a flag indicating whether this type instance is a reference type instance
+         */
+        bool m_is_reference;
 
     /**
      * a friend function that helps us std::cout type instances

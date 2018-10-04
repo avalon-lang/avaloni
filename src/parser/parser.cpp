@@ -1686,8 +1686,25 @@ parser::parser(
      * parses the type instance to of a function call return type
      */
     type_instance parser::parse_type_instance() {
-        // if we have an identifier followed by a dot, that identifier is the namespace name
         std::string namespace_name("*");
+
+        // if we have a the <ref> keyword followed by a quote, we know this is a reference type
+        if(check(REF) && check_next(QUOTE)) {
+            // get the reference as the main type instance
+            std::shared_ptr<token>& instance_tok = consume(REF, "Expected the <ref> keyword in anticipation of a reference type instance.");
+            consume(QUOTE, "Expected a single quote <'> after the <ref> keyword.");
+            type_instance instance(* instance_tok, namespace_name);
+            instance.set_category(USER);
+            instance.is_reference(true);
+            
+            // parse the remainder of the type instance as parameter to this reference type
+            type_instance param = parse_type_instance();
+            instance.add_param(param);
+
+            return instance;
+        }
+
+        // if we have an identifier followed by a dot, that identifier is the namespace name
         if(check(IDENTIFIER) && check_next(DOT)) {
             std::shared_ptr<token>& namespace_tok = consume(IDENTIFIER, "Expected the namespace name where to find the type.");
             consume(DOT, "Expected a dot after the namespace name in type instance.");

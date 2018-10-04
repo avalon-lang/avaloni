@@ -378,19 +378,19 @@ type::type(token& tok, validation_state is_valid) : m_name(tok.get_lexeme()), m_
 /**
  * the default constructor expects nothing
  */
-type_instance::type_instance() : m_name(star_tok.get_lexeme()), m_tok(star_tok), m_old_tok(star_tok), m_tag(star_tok), m_category(USER), m_namespace("*"), m_type(nullptr), m_count(0), m_has_count(false), m_is_parametrized(false) {    
+type_instance::type_instance() : m_name(star_tok.get_lexeme()), m_tok(star_tok), m_old_tok(star_tok), m_tag(star_tok), m_category(USER), m_namespace("*"), m_type(nullptr), m_count(0), m_has_count(false), m_is_parametrized(false), m_is_reference(false) {
 }
 
 /*
  * type instance
  */
-type_instance::type_instance(token& tok, const std::string& namespace_name) : m_name(tok.get_lexeme()), m_tok(tok), m_old_tok(tok), m_tag(star_tok), m_category(USER), m_namespace(namespace_name), m_type(nullptr), m_count(0), m_has_count(false), m_is_parametrized(false) {
+type_instance::type_instance(token& tok, const std::string& namespace_name) : m_name(tok.get_lexeme()), m_tok(tok), m_old_tok(tok), m_tag(star_tok), m_category(USER), m_namespace(namespace_name), m_type(nullptr), m_count(0), m_has_count(false), m_is_parametrized(false), m_is_reference(false) {
 }
 
 /**
  * this constructor expects the token with source code information, the type that buils this instance and the namespace where to find that type
  */
-type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::string& namespace_name) : m_name(tok.get_lexeme()), m_tok(tok), m_old_tok(tok), m_tag(star_tok), m_category(USER), m_namespace(namespace_name), m_type(ty), m_count(0), m_has_count(false), m_is_parametrized(false)  {
+type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::string& namespace_name) : m_name(tok.get_lexeme()), m_tok(tok), m_old_tok(tok), m_tag(star_tok), m_category(USER), m_namespace(namespace_name), m_type(ty), m_count(0), m_has_count(false), m_is_parametrized(false), m_is_reference(false) {
 }
 
     /**
@@ -405,6 +405,7 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
         m_namespace = instance.get_namespace();
         m_type = instance.get_type();
         m_is_parametrized = instance.is_parametrized();
+        m_is_reference = instance.is_reference();
         /*
         // we avoid copying the count for now since we don't want to screw up generated functions
         // if we copied the count, we'd have to generate a new function to each count
@@ -658,6 +659,22 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
 
     bool type_instance::is_parametrized() {
         return m_is_parametrized;
+    }
+
+    /**
+     * is_reference
+     * if the current type instance is a reference to another type, this function marks it as such.
+     */
+    void type_instance::is_reference(bool is_reference) {
+        m_is_reference = is_reference;
+    }
+
+    bool type_instance::is_reference() const {
+        return m_is_reference;
+    }
+
+    bool type_instance::is_reference() {
+        return m_is_reference;
     }
 
     /**
