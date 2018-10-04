@@ -414,6 +414,7 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
         }
         */
         std::vector<type_instance>& params = instance.get_params();
+        m_params.clear();
         for(auto& param : params)
             m_params.push_back(param);
         return * this;
