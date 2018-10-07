@@ -121,8 +121,11 @@ lexer::lexer(
     m_keywords["private"]      = PRIVATE;
 
     // type declaration
-    m_keywords["ref"]          = REF;
     m_keywords["type"]         = TYPE;
+
+    // reference and derefence
+    m_keywords["ref"]          = REF;
+    m_keywords["dref"]         = DREF;
 
     // function declaration
     m_keywords["def"]          = FUNCTION;

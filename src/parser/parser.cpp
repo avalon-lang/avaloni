@@ -66,9 +66,11 @@
 #include "representer/ast/expr/binary_expression.hpp"
 #include "representer/ast/expr/grouped_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/underscore_expression.hpp"
+#include "representer/ast/expr/dereference_expression.hpp"
 /* Symbol table */
 #include "representer/symtable/fqn.hpp"
 #include "representer/symtable/scope.hpp"
@@ -1240,7 +1242,7 @@ parser::parser(
      */
     std::shared_ptr<expr> parser::factor() {
         std::shared_ptr<expr> l_expression = nullptr;
-        std::shared_ptr<expr> lval = cast();
+        std::shared_ptr<expr> lval = reference();
 
         while(match(MUL) || match(DIV) || match(MOD) || match(POW)) {
             std::shared_ptr<token>& op = lookback();
@@ -1258,6 +1260,56 @@ parser::parser(
         }
 
         l_expression = lval;
+        return l_expression;
+    }
+
+    /**
+     * reference
+     * matches a reference operator
+     */
+    std::shared_ptr<expr> parser::reference() {
+        std::shared_ptr<expr> l_expression = nullptr;
+
+        if(match(DREF)) {
+            std::shared_ptr<token>& op = lookback();
+            
+            // we get the expression to dereference
+            consume(LEFT_PAREN, "Excepted a single quote before expression to reference.");
+            std::shared_ptr<expr> val = parse_expression();
+            
+            // create the dereference expression
+            std::shared_ptr<reference_expression> expr = std::make_shared<reference_expression>(* op, val);
+            l_expression = expr;
+        }
+        else {
+            l_expression = dereference();
+        }
+
+        return l_expression;
+    }
+
+    /**
+     * dereference
+     * matches a dereference operator
+     */
+    std::shared_ptr<expr> parser::dereference() {
+        std::shared_ptr<expr> l_expression = nullptr;
+
+        if(match(DREF)) {
+            std::shared_ptr<token>& op = lookback();
+            
+            // we get the expression to dereference
+            consume(LEFT_PAREN, "Excepted a single quote before expression to dereference.");
+            std::shared_ptr<expr> val = parse_expression();
+            
+            // create the dereference expression
+            std::shared_ptr<dereference_expression> expr = std::make_shared<dereference_expression>(* op, val);
+            l_expression = expr;
+        }
+        else {
+            l_expression = cast();
+        }
+
         return l_expression;
     }
 

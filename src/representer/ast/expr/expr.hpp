@@ -108,6 +108,14 @@ namespace avalon {
         virtual bool is_literal_expression() {
             return false;
         }
+        /* reference expression */
+        virtual bool is_reference_expression() {
+            return false;
+        }
+        /* dereference expression */
+        virtual bool is_dereference_expression() {
+            return false;
+        }
         /* undescore expression */
         virtual bool is_underscore_expression() {
             return false;

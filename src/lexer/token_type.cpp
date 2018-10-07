@@ -97,6 +97,7 @@ namespace avalon {
         "PUBLIC",
         "PRIVATE",
         "REF",
+        "DREF",
         "TYPE",
         "FUNCTION",
         "VAR",

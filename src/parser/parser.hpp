@@ -357,6 +357,18 @@ namespace avalon {
         std::shared_ptr<expr> factor();
 
         /**
+         * reference
+         * matches a reference operator
+         */
+        std::shared_ptr<expr> reference();
+
+        /**
+         * dereference
+         * matches a dereference operator
+         */
+        std::shared_ptr<expr> dereference();
+
+        /**
          * cast
          * matches a type casting expression
          */

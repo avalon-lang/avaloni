@@ -95,6 +95,7 @@ namespace avalon {
         PUBLIC,             // public
         PRIVATE,            // private
         REF,                // reference
+        DREF,                // dereference
         TYPE,               // type
         FUNCTION,           // function
         VAR,                // var

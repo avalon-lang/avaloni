@@ -26,9 +26,11 @@
 #include <memory>
 
 /* AST */
+#include "representer/ast/expr/dereference_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/underscore_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/grouped_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/binary_expression.hpp"
@@ -56,6 +58,18 @@ namespace avalon {
             std::shared_ptr<underscore_expression> const & under_expr = std::static_pointer_cast<underscore_expression>(shared_from_this());
             std::shared_ptr<underscore_expression> l_under_expr = std::make_shared<underscore_expression>(under_expr);
             std::shared_ptr<expr> new_expression = l_under_expr;
+            return new_expression;
+        }
+        else if(this -> is_reference_expression()) {
+            std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(shared_from_this());
+            std::shared_ptr<reference_expression> l_ref_expr = std::make_shared<reference_expression>(ref_expr);
+            std::shared_ptr<expr> new_expression = l_ref_expr;
+            return new_expression;
+        }
+        else if(this -> is_dereference_expression()) {
+            std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(shared_from_this());
+            std::shared_ptr<dereference_expression> l_dref_expr = std::make_shared<dereference_expression>(dref_expr);
+            std::shared_ptr<expr> new_expression = l_dref_expr;
             return new_expression;
         }
         else if(this -> is_literal_expression()) {
