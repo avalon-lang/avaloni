@@ -1246,7 +1246,7 @@ parser::parser(
 
         while(match(MUL) || match(DIV) || match(MOD) || match(POW)) {
             std::shared_ptr<token>& op = lookback();
-            std::shared_ptr<expr> rval = cast();
+            std::shared_ptr<expr> rval = reference();
             std::shared_ptr<binary_expression> expr = nullptr;
             if(op -> get_type() == MUL)
                 expr = std::make_shared<binary_expression>(* op, MUL_EXPR, lval, rval);
@@ -1270,11 +1270,11 @@ parser::parser(
     std::shared_ptr<expr> parser::reference() {
         std::shared_ptr<expr> l_expression = nullptr;
 
-        if(match(DREF)) {
+        if(match(REF)) {
             std::shared_ptr<token>& op = lookback();
             
             // we get the expression to dereference
-            consume(LEFT_PAREN, "Excepted a single quote before expression to reference.");
+            consume(QUOTE, "Excepted a single quote before expression to reference.");
             std::shared_ptr<expr> val = parse_expression();
             
             // create the dereference expression
@@ -1299,7 +1299,7 @@ parser::parser(
             std::shared_ptr<token>& op = lookback();
             
             // we get the expression to dereference
-            consume(LEFT_PAREN, "Excepted a single quote before expression to dereference.");
+            consume(QUOTE, "Excepted a single quote before expression to dereference.");
             std::shared_ptr<expr> val = parse_expression();
             
             // create the dereference expression

@@ -309,6 +309,7 @@ token tuple_type_tok(TYPE, "(", 0, 0, "__bit__");
 token list_type_tok(TYPE, "[", 0, 0, "__bit__");
 token map_type_tok(TYPE, "{", 0, 0, "__bit__");
 token maybe_type_tok(TYPE, "maybe", 0, 0, "__bit__");
+token ref_type_tok(REF, "*", 0, 0, "__bit__");
 
 /**
  * constructor tokens

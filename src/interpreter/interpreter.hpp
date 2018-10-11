@@ -197,6 +197,18 @@ namespace avalon {
         std::shared_ptr<expr> interpret_expression(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
+         * interpret_reference
+         * given a reference expression, ...
+         */
+        std::shared_ptr<expr> interpret_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+
+        /**
+         * interpret_dereference
+         * given a dereference expression, ...
+         */
+        std::shared_ptr<expr> interpret_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+
+        /**
          * interpret_tuple
          * given a tuple expression, compute the effective values of its elements, constructor a new tuple with the new elements and return it
          */

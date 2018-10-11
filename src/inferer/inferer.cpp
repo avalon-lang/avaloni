@@ -60,6 +60,7 @@
 #include "representer/builtins/lang/avalon_dec.hpp"
 #include "representer/builtins/lang/avalon_map.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
+#include "representer/builtins/lang/avalon_ref.hpp"
 
 /* Checker */
 #include "checker/decl/function/function_checker.hpp"
@@ -493,9 +494,8 @@ inferer::inferer() {
         type_instance val_instance = infer(val, l_scope, ns_name);
 
         // create a new type instance that refers to the type instance of the expression referenced
-        type_instance ref_instance;
-        ref_instance.is_reference(true);
-        ref_instance.add_param(val_instance);
+        avalon_ref avl_ref;
+        type_instance ref_instance =  avl_ref.get_type_instance(val_instance);
 
         return ref_instance;
     }

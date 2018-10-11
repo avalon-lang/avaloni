@@ -462,6 +462,12 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         if(an_expression -> is_underscore_expression()) {
             return an_expression;
         }
+        else if(an_expression -> is_reference_expression()) {
+            return interpret_reference(an_expression, l_scope, ns_name);
+        }
+        else if(an_expression -> is_reference_expression()) {
+            return interpret_dereference(an_expression, l_scope, ns_name);
+        }
         else if(an_expression -> is_literal_expression()) {
             return an_expression;
         }
@@ -501,6 +507,22 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         else {
             throw interpretation_error(an_expression -> expr_token(), "[compiler error] unexpected expression encountered during expression interpretation.");
         }
+    }
+
+    /**
+     * interpret_reference
+     * given a reference expression, ...
+     */
+    std::shared_ptr<expr> interpreter::interpret_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        return nullptr;
+    }
+
+    /**
+     * interpret_dereference
+     * given a dereference expression, ...
+     */
+    std::shared_ptr<expr> interpreter::interpret_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        return nullptr;
     }
 
     /**
@@ -1307,6 +1329,9 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
             std::shared_ptr<identifier_expression> const & id_expr = std::static_pointer_cast<identifier_expression>(bin_rval);
             std::shared_ptr<variable>& var_decl = l_scope -> get_variable(id_expr -> get_namespace(), id_expr -> get_name());
             var_decl -> set_value(value);
+        }
+        else if(lval -> is_reference_expression()) {
+            
         }
         else {
             throw interpretation_error(lval -> expr_token(), "[compiler error] unexpected lval to assignment expression.");

@@ -373,6 +373,12 @@ namespace avalon {
         else if(an_expression -> is_literal_expression()) {
             return;
         }
+        else if(an_expression -> is_reference_expression()) {
+            return;
+        }
+        else if(an_expression -> is_dereference_expression()) {
+            return;
+        }
         else if(an_expression -> is_tuple_expression()) {
             generate_tuple(an_expression);
         }
@@ -407,7 +413,7 @@ namespace avalon {
             generate_assignment(an_expression);
         }
         else {
-            throw std::runtime_error("[compiler error] unexpected expression type in expression checker.");
+            throw std::runtime_error("[compiler error] unexpected expression type in expression function generator.");
         }
     }
 

@@ -346,6 +346,7 @@ namespace avalon {
     extern token list_type_tok;
     extern token map_type_tok;
     extern token maybe_type_tok;
+    extern token ref_type_tok;
 
     /**
      * constructor tokens
