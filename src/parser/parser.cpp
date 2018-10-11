@@ -1275,7 +1275,7 @@ parser::parser(
             
             // we get the expression to dereference
             consume(QUOTE, "Excepted a single quote before expression to reference.");
-            std::shared_ptr<expr> val = parse_expression();
+            std::shared_ptr<expr> val = dereference();
             
             // create the dereference expression
             std::shared_ptr<reference_expression> expr = std::make_shared<reference_expression>(* op, val);
@@ -1300,7 +1300,7 @@ parser::parser(
             
             // we get the expression to dereference
             consume(QUOTE, "Excepted a single quote before expression to dereference.");
-            std::shared_ptr<expr> val = parse_expression();
+            std::shared_ptr<expr> val = cast();
             
             // create the dereference expression
             std::shared_ptr<dereference_expression> expr = std::make_shared<dereference_expression>(* op, val);
