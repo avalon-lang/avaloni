@@ -57,8 +57,10 @@
 #include "representer/ast/stmt/pass_stmt.hpp"
 #include "representer/ast/stmt/if_stmt.hpp"
 /* Expressions */
+#include "representer/ast/expr/dereference_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/grouped_expression.hpp"
 #include "representer/ast/expr/binary_expression.hpp"
@@ -465,7 +467,7 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         else if(an_expression -> is_reference_expression()) {
             return interpret_reference(an_expression, l_scope, ns_name);
         }
-        else if(an_expression -> is_reference_expression()) {
+        else if(an_expression -> is_dereference_expression()) {
             return interpret_dereference(an_expression, l_scope, ns_name);
         }
         else if(an_expression -> is_literal_expression()) {
@@ -514,15 +516,22 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
      * given a reference expression, ...
      */
     std::shared_ptr<expr> interpreter::interpret_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
-        return nullptr;
+        return an_expression;
     }
 
     /**
      * interpret_dereference
-     * given a dereference expression, ...
+     * given a dereference expression, find the value contained in the dereferenced variable and return it
      */
     std::shared_ptr<expr> interpreter::interpret_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
-        return nullptr;
+        std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(an_expression);
+        std::shared_ptr<variable>& dref_var = dref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_expression = dref_var -> get_value();
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(ref_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& value = ref_var -> get_value();
+        std::shared_ptr<scope>& var_scope = (ref_var -> is_global() == true) ? ref_var -> get_scope() : l_scope;
+        return interpret_expression(value, var_scope, ns_name);
     }
 
     /**
@@ -1330,8 +1339,13 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
             std::shared_ptr<variable>& var_decl = l_scope -> get_variable(id_expr -> get_namespace(), id_expr -> get_name());
             var_decl -> set_value(value);
         }
-        else if(lval -> is_reference_expression()) {
-            
+        else if(lval -> is_dereference_expression()) {
+            std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(lval);
+            std::shared_ptr<variable>& dref_var = dref_expr -> get_variable();
+            std::shared_ptr<expr>& ref_expression = dref_var -> get_value();
+            std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(ref_expression);
+            std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+            ref_var -> set_value(value);
         }
         else {
             throw interpretation_error(lval -> expr_token(), "[compiler error] unexpected lval to assignment expression.");
