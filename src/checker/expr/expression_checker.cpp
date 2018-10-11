@@ -222,7 +222,7 @@ namespace avalon {
             }
         }
         else {
-            throw invalid_expression(ref_expr -> get_token(), "The expression to reference must be a variable expression.");
+            throw invalid_expression(val -> expr_token(), "The expression to reference must be a variable expression.");
         }
 
         return m_inferrer.infer(an_expression, l_scope, ns_name);
@@ -285,7 +285,7 @@ namespace avalon {
             }
         }
         else {
-            throw invalid_expression(dref -> get_token(), "The expression to dereference must be a variable expression.");
+            throw invalid_expression(val -> expr_token(), "The expression to dereference must be a variable expression.");
         }
 
         return m_inferrer.infer(an_expression, l_scope, ns_name);
