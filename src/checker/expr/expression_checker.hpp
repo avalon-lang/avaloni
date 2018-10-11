@@ -101,6 +101,12 @@ namespace avalon {
         type_instance check_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
+         * check_reference
+         * makes sure that the dereference expression refers to a variable in the current scope
+         */
+        type_instance check_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+
+        /**
          * check_literal
          * literals are built-in data (constructors)
          * this function simply returns the type instance for each type of literal

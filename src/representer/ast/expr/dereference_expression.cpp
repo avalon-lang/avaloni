@@ -25,6 +25,7 @@
 #include <memory>
 
 #include "representer/ast/expr/dereference_expression.hpp"
+#include "representer/ast/decl/variable.hpp"
 #include "representer/ast/expr/expr.hpp"
 #include "representer/ast/decl/type.hpp"
 #include "lexer/token.hpp"
@@ -34,22 +35,23 @@ namespace avalon {
     /**
      * the constructor expects the operand of the dereference operator
      */
-    dereference_expression::dereference_expression(token& tok, std::shared_ptr<expr> val) : m_tok(tok), m_val(val) {
+    dereference_expression::dereference_expression(token& tok, std::shared_ptr<expr> val) : m_tok(tok), m_val(val), m_var(nullptr) {
     }
 
     /**
      * copy constructor
      */
-    dereference_expression::dereference_expression(const std::shared_ptr<dereference_expression>& ref_expr) : m_tok(ref_expr -> get_token()), m_instance(ref_expr -> get_type_instance()), m_val(ref_expr -> get_val() -> copy()) {
+    dereference_expression::dereference_expression(const std::shared_ptr<dereference_expression>& dref_expr) : m_tok(dref_expr -> get_token()), m_instance(dref_expr -> get_type_instance()), m_val(dref_expr -> get_val() -> copy()), m_var(dref_expr -> get_variable()) {
     }
 
     /**
      * assignment copy operator
      */
-    dereference_expression& dereference_expression::operator=(const std::shared_ptr<dereference_expression>& ref_expr) {
-        m_tok = ref_expr -> get_token();
-        m_instance = ref_expr -> get_type_instance();
-        m_val = ref_expr -> get_val() -> copy();
+    dereference_expression& dereference_expression::operator=(const std::shared_ptr<dereference_expression>& dref_expr) {
+        m_tok = dref_expr -> get_token();
+        m_instance = dref_expr -> get_type_instance();
+        m_val = dref_expr -> get_val() -> copy();
+        m_var = dref_expr -> get_variable();
         return * this;
     }
 
@@ -94,5 +96,21 @@ namespace avalon {
      */
     std::shared_ptr<expr>& dereference_expression::get_val() {
         return m_val;
+    }
+
+    /**
+     * set_variable
+     * set the variable that is to be dereferenced
+     */
+    void dereference_expression::set_variable(std::shared_ptr<variable>& var) {
+        m_var = var;
+    }
+
+    /**
+     * get_variable
+     * get the variable that is to be dereferenced
+     */
+    std::shared_ptr<variable>& dereference_expression::get_variable() {
+        return m_var;
     }
 }

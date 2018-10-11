@@ -31,6 +31,7 @@
 #include <map>
 
 /* Expressions */
+#include "representer/ast/expr/dereference_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/underscore_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
@@ -426,6 +427,9 @@ inferer::inferer() {
         else if(an_expression -> is_reference_expression()) {
             return infer_reference(an_expression, l_scope, ns_name);
         }
+        else if(an_expression -> is_dereference_expression()) {
+            return infer_dereference(an_expression, l_scope, ns_name);
+        }
         else if(an_expression -> is_literal_expression()) {
             return infer_literal(an_expression, l_scope, ns_name);
         }
@@ -494,6 +498,16 @@ inferer::inferer() {
         ref_instance.add_param(val_instance);
 
         return ref_instance;
+    }
+
+    /**
+     * infer_reference
+     * infers the type instance of a dereference
+     */
+    type_instance inferer::infer_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name) {
+        std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(an_expression);
+        std::shared_ptr<variable>& var = dref_expr -> get_variable();
+        return var -> get_type_instance();
     }
 
     /**

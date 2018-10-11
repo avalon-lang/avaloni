@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "representer/ast/decl/variable.hpp"
 #include "representer/ast/expr/expr.hpp"
 #include "representer/ast/decl/type.hpp"
 #include "lexer/token.hpp"
@@ -81,6 +82,18 @@ namespace avalon {
         std::shared_ptr<expr>& get_val();
 
         /**
+         * set_variable
+         * set the variable that is to be dereferenced
+         */
+        void set_variable(std::shared_ptr<variable>& var);
+
+        /**
+         * get_variable
+         * get the variable that is to be dereferenced
+         */
+        std::shared_ptr<variable>& get_variable();
+
+        /**
          * token
          * returns this expression token
          * this is useful because it prevents us from casting each expression just to display error messages
@@ -129,6 +142,11 @@ namespace avalon {
          * the operand to the dereference operator
          */
         std::shared_ptr<expr> m_val;
+
+        /*
+         * the variable that is to be dereferenced
+         */
+        std::shared_ptr<variable> m_var;
     };
 }
 

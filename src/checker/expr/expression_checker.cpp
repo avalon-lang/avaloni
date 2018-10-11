@@ -113,6 +113,9 @@ namespace avalon {
         else if(an_expression -> is_reference_expression()) {
             return check_reference(an_expression, l_scope, ns_name);
         }
+        else if(an_expression -> is_dereference_expression()) {
+            return check_dereference(an_expression, l_scope, ns_name);
+        }
         else if(an_expression -> is_literal_expression()) {
             return check_literal(an_expression, l_scope, ns_name);
         }
@@ -182,6 +185,11 @@ namespace avalon {
             // the variable might xists, we get it and set it on the reference expression
             try {
                 std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, val -> expr_token().get_lexeme());
+                // we make sure that references to references are not allowed
+                type_instance var_instance = var_decl -> get_type_instance();
+                if(var_instance.is_reference())
+                    throw invalid_expression(val -> expr_token(), "References to references are not allowed.");
+                // all is fine, we set the variable referenced on the reference expression
                 ref_expr -> set_variable(var_decl);
             } catch(symbol_not_found err) {
                 throw invalid_expression(val -> expr_token(), "Reference to an invalid variable.");
@@ -203,6 +211,11 @@ namespace avalon {
 
             try {
                 std::shared_ptr<variable>& var_decl = l_scope -> get_variable(lval -> expr_token().get_lexeme(), rval -> expr_token().get_lexeme());
+                // we make sure that references to references are not allowed
+                type_instance var_instance = var_decl -> get_type_instance();
+                if(var_instance.is_reference())
+                    throw invalid_expression(val -> expr_token(), "References to references are not allowed.");
+                // all is fine, we set the variable referenced on the reference expression
                 ref_expr -> set_variable(var_decl);
             } catch(symbol_not_found err) {
                 throw invalid_expression(rval -> expr_token(), "Reference to an invalid variable.");
@@ -210,6 +223,69 @@ namespace avalon {
         }
         else {
             throw invalid_expression(ref_expr -> get_token(), "The expression to reference must be a variable expression.");
+        }
+
+        return m_inferrer.infer(an_expression, l_scope, ns_name);
+    }
+
+    /**
+     * check_reference
+     * makes sure that the dereference expression refers to a variable in the current scope
+     */
+    type_instance expression_checker::check_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<dereference_expression> const & dref = std::static_pointer_cast<dereference_expression>(an_expression);
+        std::shared_ptr<expr>& val = dref -> get_val();
+
+        // if we have a variable, we validate the variable
+        if(val -> is_identifier_expression()) {
+            // check the referenced variable
+            try {
+                check_identifier(val, l_scope, ns_name);
+            } catch(invalid_expression err) {
+                throw invalid_expression(dref -> get_token(), "Dereference of an invalid variable.");
+            }
+
+            // the variable might xists, we get it and set it on the reference expression
+            try {
+                std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, val -> expr_token().get_lexeme());
+                // we make sure that only variables with references are dereferenced
+                type_instance var_instance = var_decl -> get_type_instance();
+                if(var_instance.is_reference() == false)
+                    throw invalid_expression(val -> expr_token(), "Only variables containing references can be dereferenced.");
+                // all is fine, we set the variable dereferenced on the dereference expression
+                dref -> set_variable(var_decl);
+            } catch(symbol_not_found err) {
+                throw invalid_expression(val -> expr_token(), "Dereference of an invalid variable.");
+            }
+        }
+        // if we have a namespaced variable
+        else if(val -> is_binary_expression()) {
+            // check the referenced variable
+            try {
+                check_binary(val, l_scope, ns_name);
+            } catch(invalid_expression err) {
+                throw invalid_expression(dref -> get_token(), "Dereference of an invalid variable.");
+            }
+
+            // the variable might xists, we get it and set it on the reference expression
+            std::shared_ptr<binary_expression> const & bin_expr = std::static_pointer_cast<binary_expression>(val);
+            std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+            std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+
+            try {
+                std::shared_ptr<variable>& var_decl = l_scope -> get_variable(lval -> expr_token().get_lexeme(), rval -> expr_token().get_lexeme());
+                // we make sure that only variables with references are dereferenced
+                type_instance var_instance = var_decl -> get_type_instance();
+                if(var_instance.is_reference() == false)
+                    throw invalid_expression(val -> expr_token(), "Only variables containing references can be dereferenced.");
+                // all is fine, we set the variable dereferenced on the dereference expression
+                dref -> set_variable(var_decl);
+            } catch(symbol_not_found err) {
+                throw invalid_expression(rval -> expr_token(), "Dereference of an invalid variable.");
+            }
+        }
+        else {
+            throw invalid_expression(dref -> get_token(), "The expression to dereference must be a variable expression.");
         }
 
         return m_inferrer.infer(an_expression, l_scope, ns_name);

@@ -144,6 +144,12 @@ namespace avalon {
         type_instance infer_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name);
 
         /**
+         * infer_reference
+         * infers the type instance of a dereference
+         */
+        type_instance infer_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name);
+
+        /**
          * infer_literal
          * infers the type instance of a literal
          */
