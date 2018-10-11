@@ -22,6 +22,7 @@
  *  SOFTWARE.
  */
 
+#include <cstddef>
 #include <memory>
 
 #include "representer/ast/expr/reference_expression.hpp"
@@ -34,13 +35,13 @@ namespace avalon {
     /**
      * the constructor expects the operand of the reference operator
      */
-    reference_expression::reference_expression(token& tok, std::shared_ptr<expr> val) : m_tok(tok), m_val(val) {
+    reference_expression::reference_expression(token& tok, std::shared_ptr<expr> val) : m_tok(tok), m_val(val), m_var(nullptr) {
     }
 
     /**
      * copy constructor
      */
-    reference_expression::reference_expression(const std::shared_ptr<reference_expression>& ref_expr) : m_tok(ref_expr -> get_token()), m_instance(ref_expr -> get_type_instance()), m_val(ref_expr -> get_val() -> copy()) {
+    reference_expression::reference_expression(const std::shared_ptr<reference_expression>& ref_expr) : m_tok(ref_expr -> get_token()), m_instance(ref_expr -> get_type_instance()), m_val(ref_expr -> get_val() -> copy()), m_var(ref_expr -> get_variable()) {
     }
 
     /**
@@ -50,6 +51,7 @@ namespace avalon {
         m_tok = ref_expr -> get_token();
         m_instance = ref_expr -> get_type_instance();
         m_val = ref_expr -> get_val() -> copy();
+        m_var = ref_expr -> get_variable();
         return * this;
     }
 
@@ -94,5 +96,21 @@ namespace avalon {
      */
     std::shared_ptr<expr>& reference_expression::get_val() {
         return m_val;
+    }
+
+    /**
+     * set_variable
+     * set the variable that is referenced
+     */
+    void reference_expression::set_variable(std::shared_ptr<variable>& var) {
+        m_var = var;
+    }
+
+    /**
+     * get_variable
+     * get the variable that is referenced
+     */
+    std::shared_ptr<variable>& reference_expression::get_variable() {
+        return m_var;
     }
 }

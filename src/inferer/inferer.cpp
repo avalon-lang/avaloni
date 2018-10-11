@@ -34,6 +34,7 @@
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/underscore_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/grouped_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/binary_expression.hpp"
@@ -422,6 +423,9 @@ inferer::inferer() {
         if(an_expression -> is_underscore_expression()) {
             return infer_underscore(an_expression);
         }
+        else if(an_expression -> is_reference_expression()) {
+            return infer_reference(an_expression, l_scope, ns_name);
+        }
         else if(an_expression -> is_literal_expression()) {
             return infer_literal(an_expression, l_scope, ns_name);
         }
@@ -471,6 +475,25 @@ inferer::inferer() {
         std::shared_ptr<underscore_expression> const & und_expr = std::static_pointer_cast<underscore_expression>(an_expression);
         und_expr -> set_type_instance(star_instance);
         return star_instance;
+    }
+
+    /**
+     * infer_reference
+     * infers the type instance of a reference
+     */
+    type_instance inferer::infer_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<expr>& val = ref_expr -> get_val();
+
+        // we infer the type instance that we will refer to
+        type_instance val_instance = infer(val, l_scope, ns_name);
+
+        // create a new type instance that refers to the type instance of the expression referenced
+        type_instance ref_instance;
+        ref_instance.is_reference(true);
+        ref_instance.add_param(val_instance);
+
+        return ref_instance;
     }
 
     /**

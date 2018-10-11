@@ -33,8 +33,10 @@
 #include <map>
 
 /* Expressions */
+#include "representer/ast/expr/dereference_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/grouped_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/binary_expression.hpp"
@@ -108,6 +110,9 @@ namespace avalon {
         if(an_expression -> is_underscore_expression()) {
             return check_underscore(an_expression, l_scope, ns_name);
         }
+        else if(an_expression -> is_reference_expression()) {
+            return check_reference(an_expression, l_scope, ns_name);
+        }
         else if(an_expression -> is_literal_expression()) {
             return check_literal(an_expression, l_scope, ns_name);
         }
@@ -154,6 +159,59 @@ namespace avalon {
      * returns an abstract type instance since underscore expression can never have a concrete type
      */
     type_instance expression_checker::check_underscore(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        return m_inferrer.infer(an_expression, l_scope, ns_name);
+    }
+
+    /**
+     * check_reference
+     * makes sure that the reference expression refers to a variable in the current scope
+     */
+    type_instance expression_checker::check_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<expr>& val = ref_expr -> get_val();
+
+        // if we have a variable, we validate the variable
+        if(val -> is_identifier_expression()) {
+            // check the referenced variable
+            try {
+                check_identifier(val, l_scope, ns_name);
+            } catch(invalid_expression err) {
+                throw invalid_expression(ref_expr -> get_token(), "Reference to an invalid variable.");
+            }
+
+            // the variable might xists, we get it and set it on the reference expression
+            try {
+                std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, val -> expr_token().get_lexeme());
+                ref_expr -> set_variable(var_decl);
+            } catch(symbol_not_found err) {
+                throw invalid_expression(val -> expr_token(), "Reference to an invalid variable.");
+            }
+        }
+        // if we have a namespaced variable
+        else if(val -> is_binary_expression()) {
+            // check the referenced variable
+            try {
+                check_binary(val, l_scope, ns_name);
+            } catch(invalid_expression err) {
+                throw invalid_expression(ref_expr -> get_token(), "Reference to an invalid variable.");
+            }
+
+            // the variable might xists, we get it and set it on the reference expression
+            std::shared_ptr<binary_expression> const & bin_expr = std::static_pointer_cast<binary_expression>(val);
+            std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+            std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+
+            try {
+                std::shared_ptr<variable>& var_decl = l_scope -> get_variable(lval -> expr_token().get_lexeme(), rval -> expr_token().get_lexeme());
+                ref_expr -> set_variable(var_decl);
+            } catch(symbol_not_found err) {
+                throw invalid_expression(rval -> expr_token(), "Reference to an invalid variable.");
+            }
+        }
+        else {
+            throw invalid_expression(ref_expr -> get_token(), "The expression to reference must be a variable expression.");
+        }
+
         return m_inferrer.infer(an_expression, l_scope, ns_name);
     }
 
