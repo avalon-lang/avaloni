@@ -507,7 +507,9 @@ inferer::inferer() {
     type_instance inferer::infer_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name) {
         std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(an_expression);
         std::shared_ptr<variable>& var = dref_expr -> get_variable();
-        return var -> get_type_instance();
+        type_instance var_instance = var -> get_type_instance();
+        type_instance dref_instance = var_instance.get_params()[0];
+        return dref_instance;
     }
 
     /**
