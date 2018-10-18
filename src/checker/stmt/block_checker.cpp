@@ -298,31 +298,18 @@ namespace avalon {
         if(ret_stmt -> has_expression()) {
             std::shared_ptr<expr>& ret_expr = ret_stmt -> get_expression();
 
-            // we make sure that the type instance of the returned expression is the same as that the function returns
             try {
                 type_instance ret_instance = expr_checker.check(ret_expr, l_scope, ns_name);
-                if(type_instance_strong_compare(ret_instance, m_ret_instance) == false) {
+
+                // we make sure that the type instance of the returned expression is the same as that the function returns
+                if(type_instance_strong_compare(ret_instance, m_ret_instance) == false)
                     throw invalid_statement(ret_stmt -> get_token(), "The returned expression is of type <" + mangle_type_instance(ret_instance) + "> while the expected return type instance is <" + mangle_type_instance(m_ret_instance) + ">.");
-                }
+
+                // we make sure that the type instance of the returned expression is not a reference type instance and that it does not depend on a reference type instance
+                if(ret_instance.has_reference())
+                    throw invalid_statement(ret_stmt -> get_token(), "The expression returned cannot depend on reference type instances nor be it one itself.");
             } catch(invalid_expression err) {
                 throw err;
-            }
-
-            // if the returned expression is a variable expression that is also a reference expression, we make sure that it is not a reference to a temporary
-            if(ret_expr -> is_identifier_expression()) {
-                std::shared_ptr<identifier_expression> const & id_expr = std::static_pointer_cast<identifier_expression>(ret_expr);
-                const std::string& sub_ns_name = id_expr -> get_namespace();
-                if(l_scope -> variable_exists(sub_ns_name, id_expr -> get_name())) {
-                    std::shared_ptr<variable>& var_decl = l_scope -> get_variable(sub_ns_name, id_expr -> get_name());
-                    if(var_decl -> is_reference()) {
-                        std::shared_ptr<expr>& var_expr = var_decl -> get_value();
-                        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(var_expr);
-                        std::shared_ptr<variable>& var_ref = ref_expr -> get_variable();
-                        if(var_ref != nullptr && var_ref -> is_temporary() == true) {
-                            throw invalid_statement(ret_expr -> expr_token(), "A reference to a temporary cannot be returned from the function within which that temporary is created.");
-                        }
-                    }
-                }
             }
         }
         else {
