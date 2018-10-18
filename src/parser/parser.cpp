@@ -1274,7 +1274,6 @@ parser::parser(
             std::shared_ptr<token>& op = lookback();
             
             // we get the expression to dereference
-            consume(QUOTE, "Excepted a single quote before expression to reference.");
             std::shared_ptr<expr> val = dereference();
             
             // create the dereference expression
@@ -1299,7 +1298,6 @@ parser::parser(
             std::shared_ptr<token>& op = lookback();
             
             // we get the expression to dereference
-            consume(QUOTE, "Excepted a single quote before expression to dereference.");
             std::shared_ptr<expr> val = cast();
             
             // create the dereference expression
