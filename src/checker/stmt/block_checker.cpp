@@ -26,6 +26,7 @@
 #include <vector>
 
 /* AST */
+/* Statements */
 #include "representer/ast/stmt/expression_stmt.hpp"
 #include "representer/ast/stmt/continue_stmt.hpp"
 #include "representer/ast/stmt/return_stmt.hpp"
@@ -38,6 +39,10 @@
 #include "representer/ast/stmt/if_stmt.hpp"
 #include "representer/ast/decl/type.hpp"
 #include "representer/ast/decl/decl.hpp"
+
+/* Expressions */
+#include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_void.hpp"
@@ -88,7 +93,6 @@ namespace avalon {
             else if(block_decl -> is_statement()) {
                 check_statement(block_decl, l_scope, ns_name);
             }
-            
             else {
                 throw invalid_block("Block statements must contain variable or statement declarations alone.");
             }
@@ -118,6 +122,13 @@ namespace avalon {
         } catch(invalid_variable err) {
             throw err;
         }
+
+        // the variable is valid, we mark it as a temporary given that we a block can only occur inside a function or a statement inside a function
+        variable_decl -> is_temporary(true);
+
+        // if the variable type instance is a reference type instance, we set the variable as a reference to another variable as well
+        type_instance var_instance = variable_decl -> get_type_instance();
+        variable_decl -> is_reference(var_instance.is_reference());
     }
 
     /**
@@ -286,6 +297,8 @@ namespace avalon {
 
         if(ret_stmt -> has_expression()) {
             std::shared_ptr<expr>& ret_expr = ret_stmt -> get_expression();
+
+            // we make sure that the type instance of the returned expression is the same as that the function returns
             try {
                 type_instance ret_instance = expr_checker.check(ret_expr, l_scope, ns_name);
                 if(type_instance_strong_compare(ret_instance, m_ret_instance) == false) {
@@ -293,6 +306,23 @@ namespace avalon {
                 }
             } catch(invalid_expression err) {
                 throw err;
+            }
+
+            // if the returned expression is a variable expression that is also a reference expression, we make sure that it is not a reference to a temporary
+            if(ret_expr -> is_identifier_expression()) {
+                std::shared_ptr<identifier_expression> const & id_expr = std::static_pointer_cast<identifier_expression>(ret_expr);
+                const std::string& sub_ns_name = id_expr -> get_namespace();
+                if(l_scope -> variable_exists(sub_ns_name, id_expr -> get_name())) {
+                    std::shared_ptr<variable>& var_decl = l_scope -> get_variable(sub_ns_name, id_expr -> get_name());
+                    if(var_decl -> is_reference()) {
+                        std::shared_ptr<expr>& var_expr = var_decl -> get_value();
+                        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(var_expr);
+                        std::shared_ptr<variable>& var_ref = ref_expr -> get_variable();
+                        if(var_ref != nullptr && var_ref -> is_temporary() == true) {
+                            throw invalid_statement(ret_expr -> expr_token(), "A reference to a temporary cannot be returned from the function within which that temporary is created.");
+                        }
+                    }
+                }
             }
         }
         else {

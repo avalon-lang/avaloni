@@ -678,6 +678,32 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
     }
 
     /**
+     * has_reference
+     * if this type instance is a reference or at least one of its parameter depends on a reference, this function returns true
+     */
+    bool type_instance::has_reference() const {
+        if(m_is_reference)
+            return true;
+
+        for(auto& param : m_params)
+            if(param.has_reference())
+                return true;
+
+        return false;
+    }
+
+    bool type_instance::has_reference() {
+        if(m_is_reference)
+            return true;
+
+        for(auto& param : m_params)
+            if(param.has_reference())
+                return true;
+
+        return false;
+    }
+
+    /**
      * is_abstract
      * returns true if this type instance is a parametric type, false otherwise
      */
@@ -700,10 +726,15 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
      * returns true if the type instance is neither parametric nor abstract
      */
     bool type_instance::is_complete() {
-        if(m_type == nullptr || m_is_parametrized)
-            return false;
-        else
-            return true;
+        if(m_is_reference) {
+            return !m_is_parametrized;
+        }
+        else {
+            if(m_type == nullptr || m_is_parametrized)
+                return false;
+            else
+                return true;
+        }
     }
 
     bool type_instance::is_complete() const {

@@ -564,6 +564,13 @@ namespace avalon {
         bool is_reference();
 
         /**
+         * has_reference
+         * if this type instance is a reference or at least one of its parameter depends on a reference, this function returns true
+         */
+        bool has_reference() const;
+        bool has_reference();
+
+        /**
          * is_abstract
          * returns true if this type instance is a parametric type, false otherwise
          */

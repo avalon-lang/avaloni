@@ -227,6 +227,20 @@ namespace avalon {
         bool is_used() const;
 
         /**
+         * is_reference
+         * sets and returns a boolean indicating if this variable is a reference variable
+         */
+        void is_reference(bool reference);
+        bool is_reference() const;
+
+        /**
+         * is_temporary
+         * sets and returns a boolean indicating if this variable is function local variable
+         */
+        void is_temporary(bool temporary);
+        bool is_temporary() const;
+
+        /**
          * is_reachable
          * sets and returns a boolean indicating whether this variable declaration will be executed
          */
@@ -325,6 +339,16 @@ namespace avalon {
          * whether this variable has been used for any expression
          */
         bool m_is_used;
+
+        /*
+         * whether this variable is a reference variable
+         */
+        bool m_is_reference;
+
+        /*
+         * whether this variable is a local variable to a function
+         */
+        bool m_is_temporary;
 
         /*
          * this variable is true if this variable declaration will be executable
