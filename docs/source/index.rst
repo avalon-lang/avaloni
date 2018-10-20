@@ -27,14 +27,9 @@ Structure
 
 The programming language is made fo three parts:
 
-* `A classical interpreter`: an interpreter for classical computing
-or in layman's terms, an interpreter for your everyday computer.
-
-* `A classical reversible interpreter`: a classical interpreter
-that supports reversible computation on top of the non-reversible part.
-
-* `A quantum interpreter`: an interpreter that offers quantum data types and
-quantum gates that work on those types. It is built on top of the classical interpreter.
+* `A classical interpreter`: an interpreter for classical computing or in layman's terms, an interpreter for your everyday computer.
+* `A classical reversible interpreter`: a classical interpreter that supports reversible computation on top of the non-reversible part.
+* `A quantum interpreter`: an interpreter that offers quantum data types and quantum gates that work on those types. It is built on top of the classical interpreter.
 
 This documentation covers all the different parts but individual
 interpreters that omits certain parts will be made available.
