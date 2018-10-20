@@ -79,7 +79,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'default'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -106,7 +106,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'AvalonProgrammingLanguagedoc'
+htmlhelp_basename = 'avalon-doc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -133,7 +133,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'AvalonProgrammingLanguage.tex', 'Avalon Programming Language Documentation',
+    (master_doc, 'avalon-lang.tex', 'Avalon Programming Language Documentation',
      'Ntwali Bashige', 'manual'),
 ]
 
@@ -154,8 +154,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'AvalonProgrammingLanguage', 'Avalon Programming Language Documentation',
-     author, 'AvalonProgrammingLanguage', 'One line description of project.',
+    (master_doc, 'avalon-lang', 'Avalon Programming Language Documentation',
+     author, 'avalon-lang', 'One line description of project.',
      'Miscellaneous'),
 ]
 
