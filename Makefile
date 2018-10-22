@@ -8,9 +8,9 @@
 
 cc          := g++
 cflags      := -std=c++11 -g -Wall -pedantic
-ldflags		:= -lgmp -lboost_filesystem -lboost_system
-ldpaths		:= -L/usr/local/lib
-rdpaths 	:= -Wl,-rpath=/usr/local/lib
+ldflags     := -lboost_filesystem -lboost_system
+ldpaths     := -L/usr/local/lib
+rdpaths     := -Wl,-rpath=/usr/local/lib
 src_dir     := src
 inc         := -Isrc -Iinclude
 build_dir   := build

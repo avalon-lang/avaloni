@@ -30,8 +30,6 @@
 #include <memory>
 #include <string>
 
-#include <gmp.h>
-
 #include "lexer/token_type.hpp"
 
 
@@ -203,12 +201,6 @@ namespace avalon {
          * an empty string if none was provided
          */
         std::string get_data_type() const;
-
-        /**
-         * get_width
-         * returns an integer that specifies the bit length of the data based on the data type
-         */
-        mp_bitcnt_t get_width() const;
         
     private:
         /**

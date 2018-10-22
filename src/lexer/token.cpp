@@ -240,25 +240,6 @@ number::number(
     }
 
     /**
-     * get_width
-     * returns an integer that specifies the bit length of the data based on the data type
-     */
-    mp_bitcnt_t number::get_width() const {
-        if(m_data_type == "")
-            return 0;
-        else if(m_data_type == "i8")
-            return 8;
-        else if(m_data_type == "i16")
-            return 16;
-        else if(m_data_type == "i32")
-            return 32;
-        else if(m_data_type == "i64")
-            return 64;
-        else
-            throw std::runtime_error("Unknown data type attached to integer literal.");
-    }
-
-    /**
      * a friend function that helps us std::cout number tokens
      */
     std::ostream& operator<<(std::ostream& os, const number& num_tok) {
