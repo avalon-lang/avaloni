@@ -16,7 +16,7 @@ inc         := -Isrc -Iinclude
 sysinc      := -isystem deps/boost
 build_dir   := build
 bin_dir     := bin
-target      := $(bin_dir)/avalonic
+target      := $(bin_dir)/avaloniq
 
 src_ext     := cpp
 sources     := $(shell find $(src_dir) -type f -name *.$(src_ext))
