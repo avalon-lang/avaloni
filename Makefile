@@ -12,8 +12,8 @@ ldpaths     := -L/usr/local/lib
 rdpaths     := -Wl,-rpath=/usr/local/lib
 ldflags     := -lboost_filesystem -lboost_system
 src_dir     := src
-inc         := -Isrc -Iinclude
-sysinc      := -isystem deps/boost
+inc         := -Isrc -Ideps/qpp
+sysinc      := -isystem deps/boost -isystem deps/eigen
 build_dir   := build
 bin_dir     := bin
 target      := $(bin_dir)/avaloniq
