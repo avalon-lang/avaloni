@@ -18,13 +18,10 @@ $ ./avalon tests/main.avl
 It contains a test programs that performs a linear search from an array.  
 Feel free to play with it as well.
 
-## Installation
+## Documentation
 
-Download the code in this repository and make sure to have the latest versions of GMP and BOOST installed.  
-Then run the makefile.  
-```shell
-$ make clean && make
-```
+Documentation is currently being written as the language along with the language.  
+You can find the documentation at ![Read the docs](https://avalon-lang.readthedocs.io/en/latest)
 
 ## Contributing
 
