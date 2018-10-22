@@ -1,7 +1,7 @@
 Avalon Programming Language
 ===========================
 
-Quantum computing is slowly but surely taking shape and it promises solution to
+Quantum computing is slowly but surely taking shape and it promises solutions to
 some problems we find hard to solve using classical computing. While quantum computers
 are still not very powerful for practical computing, we can start prototyping.
 
