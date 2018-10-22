@@ -1,38 +1,52 @@
 Avalon Programming Language
 ===========================
 
-Avalon is new programming language based on algebraic data types.
-It is not based on the Hindley-Milner type system since its type system
-is a lot more flexible. Like any respectable programming language,
-it gives you a tool or two so you can hurt yourself:
-you can have two functions with the same names and same parameters
-but different return types.
+Quantum computing is slowly but surely taking shape and it promises solution to
+some problems we find hard to solve using classical computing. Reversible classical
+computing is also seeing renewed interest as it promises better energy efficiency.
 
-But why another programming language?
-The chief reason is that Avalon seeks to foray into Quantum computing.
-There are already a few programming languages that have entered the arena
-and Avalon seeks to provide additional value.
+While both quantum computers and reversible classical computers are still not very
+powerful for practical computing, they are here for making prototypes.
 
-This documentation is the material for the reference implementation
-that comes in the form of an interpreter. It will be updated as more
-features are implemented in the interpreter. Some features will not be
-documented even when available until they are approved as permanent in the language.
+Just like classical computers, quantum computers need to be instructed about what to do.
+There are many ways to do this but the most popular one is a quantum computer driven by
+a classical computer.  
+Right now, there are a few programming languages that target quantum computers
+but many seem not to be keeping pace with current developments.
 
-To get started with the language, please head to the :doc:`introduction`
-which will guide you into setting up your system and get started experimenting.
+That's the niche that the Avalon Programming Language seeks to fill.
+At the moment, the implementation is an interpreter that runs on your computer.
+This interpreter also serves as the reference implementation.
+The next step is to start porting to the Quil instruction set. This instruction set
+is the most promising in terms of where the classical-quantum computing architecture
+is headed.
 
+The Avalon Programming Language is a statically typed language based on algebraic data
+types. It features type inference for variable declaration where the compiler can
+deduce the complete type. With its extended multiple dispatch, it gives users the
+ability to create more powerful functions that are intuitive to users.
+The language also allows generic programming with the ability to parametrize both
+function and type declarations.
+
+The Avalon Programming Language is a free and open source project under the MIT license
+giving you the freedom to evolve the language and contribute back if you so desire.
+
+We hope you will find the language useful and more important, we hope it will make
+quantum computing accessible to you and everyone interested.
 
 Structure
 ---------
 
-The programming language is made fo three parts:
+The programming language is made of three parts:
 
 * `A classical interpreter`: an interpreter for classical computing or in layman's terms, an interpreter for your everyday computer.
 * `A classical reversible interpreter`: a classical interpreter that supports reversible computation on top of the non-reversible part.
 * `A quantum interpreter`: an interpreter that offers quantum data types and quantum gates that work on those types. It is built on top of the classical interpreter.
 
-This documentation covers all the different parts but individual
-interpreters that omits certain parts will be made available.
+This documentation covers all the different parts but individual interpreters
+that omits certain parts will be made available. At the moment though, only a single
+interpreter is available, the quantum interpreter since with it classical, reversible
+classical and quantum computing can be accomplished.
 
 
 
@@ -46,3 +60,10 @@ Topics
 
    introduction
    installation
+   tutorial/index
+   reference/syntax
+   reference/types
+   reference/functions
+   reference/variables
+   reference/control
+   reference/modularity
