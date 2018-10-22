@@ -28,9 +28,6 @@
 #include <string>
 #include <tuple>
 
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
-
 /* Error */
 #include "error/error.hpp"
 
@@ -1149,14 +1146,6 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         if(expr_type == INTEGER_EXPR) {
             long long int lval_value = lval_lit -> get_int_value();
             long long int rval_value = rval_lit -> get_int_value();
-            if(lval_value == rval_value)
-                return true_final_expr;
-            else
-                return false_final_expr;
-        }
-        else if(expr_type == DECIMAL_EXPR) {
-            boost::multiprecision::cpp_dec_float_100 lval_value = lval_lit -> get_dec_value();
-            boost::multiprecision::cpp_dec_float_100 rval_value = rval_lit -> get_dec_value();
             if(lval_value == rval_value)
                 return true_final_expr;
             else

@@ -26,8 +26,6 @@
 #include <memory>
 
 #include <boost/dynamic_bitset.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/exceptions/value_error.hpp"
@@ -144,21 +142,6 @@ namespace avalon {
         }
         else {
             throw value_error("This literal expression doesn't contain an integer.");
-        }
-    }
-
-    /**
-     * get_dec_value
-     * returns the decimal representation of this literal if it is a decimal
-     * throws a value_error exception if an attempt to retreive the wrong value type is attempted
-     */
-    boost::multiprecision::cpp_dec_float_100 literal_expression::get_dec_value() {
-        if(m_expr_type == DECIMAL_EXPR) {
-            boost::multiprecision::cpp_dec_float_100 value(m_val);
-            return value;
-        }
-        else {
-            throw value_error("This literal expression doesn't contain a decimal.");
         }
     }
 

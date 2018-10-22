@@ -1516,15 +1516,6 @@ parser::parser(
                 std::string value = integral + "." + decimal;
                 literal_expr = std::make_shared<literal_expression>(* literal_tok, FLOATING_POINT_EXPR, value);
             }
-            else if(literal_tok -> get_type() == DECIMAL) {
-                std::shared_ptr<number> const & literal_num = std::static_pointer_cast<number>(literal_tok);
-                std::string integral = literal_num -> get_integral();
-                integral.erase(std::remove(integral.begin(), integral.end(), '\''), integral.end());
-                std::string decimal = literal_num -> get_decimal();
-                decimal.erase(std::remove(decimal.begin(), decimal.end(), '\''), decimal.end());
-                std::string value = integral + "." + decimal;
-                literal_expr = std::make_shared<literal_expression>(* literal_tok, DECIMAL_EXPR, value);
-            }
             else if(literal_tok -> get_type() == STRING) {
                 literal_expr = std::make_shared<literal_expression>(* literal_tok, STRING_EXPR, literal_tok -> get_lexeme());
             }

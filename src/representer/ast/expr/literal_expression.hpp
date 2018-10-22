@@ -30,8 +30,6 @@
 #include <string>
 
 #include <boost/dynamic_bitset.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include "representer/ast/expr/expr.hpp"
 #include "representer/ast/decl/type.hpp"
@@ -41,7 +39,6 @@
 namespace avalon {
     enum literal_expression_type {
         INTEGER_EXPR,
-        DECIMAL_EXPR,
         FLOATING_POINT_EXPR,
         STRING_EXPR,
         BIT_EXPR,
@@ -121,13 +118,6 @@ namespace avalon {
          * throws a value_error exception if an attempt to retreive the wrong value type is attempted
          */
         long long int get_int_value();
-
-        /**
-         * get_dec_value
-         * returns the decimal representation of this literal if it is a decimal
-         * throws a value_error exception if an attempt to retreive the wrong value type is attempted
-         */
-        boost::multiprecision::cpp_dec_float_100 get_dec_value();
 
         /**
          * get_float_value

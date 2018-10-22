@@ -923,13 +923,11 @@ lexer::lexer(
                 if(data_type == "f")
                     num -> update_type(FLOATING_POINT);
                 else if(data_type == "d")
-                    num -> update_type(DECIMAL);
-                else
-                    throw lexing_error(true, "Unexpected real number type. Expected 'f' (for floats) or 'd' (for decimals).");
+                    throw lexing_error(true, "Unexpected real number type. Expected 'f' (for floats).");
             }
             // if we have no type, we let the user know that one must be provided in order to distinguish between floats and decimals
             else {
-                throw lexing_error(true, "Expected at real number type. Please choose between float and decimal.");
+                num -> update_type(FLOATING_POINT);
             }
         }
         else if(peek() == '.' && (num -> get_type() == BITS || num -> get_type() == QUBITS)) {

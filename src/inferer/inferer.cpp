@@ -57,7 +57,6 @@
 #include "representer/builtins/lang/avalon_list.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
-#include "representer/builtins/lang/avalon_dec.hpp"
 #include "representer/builtins/lang/avalon_map.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
 #include "representer/builtins/lang/avalon_ref.hpp"
@@ -547,10 +546,6 @@ inferer::inferer() {
         if(lit_expr -> get_expression_type() == INTEGER_EXPR) {
             avalon_int avl_int;
             inferred_type_instance =  avl_int.get_type_instance();
-        }
-        else if(lit_expr -> get_expression_type() == DECIMAL_EXPR) {
-            avalon_dec avl_dec;
-            inferred_type_instance =  avl_dec.get_type_instance();
         }
         else if(lit_expr -> get_expression_type() == FLOATING_POINT_EXPR) {
             avalon_float avl_float;

@@ -41,14 +41,12 @@
 #include "representer/builtins/lang/avalon_string.hpp"
 #include "representer/builtins/lang/avalon_float.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
-#include "representer/builtins/lang/avalon_dec.hpp"
 
 /* Builtin functions */
 #include "interpreter/builtins/lang/avalon_arithmetic.hpp"
 #include "interpreter/builtins/lang/avalon_string.hpp"
 #include "interpreter/builtins/lang/avalon_float.hpp"
 #include "interpreter/builtins/lang/avalon_int.hpp"
-#include "interpreter/builtins/lang/avalon_dec.hpp"
 
 /* Exceptions */
 #include "interpreter/exceptions/invalid_call.hpp"
@@ -63,10 +61,6 @@ namespace avalon {
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
-
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
 
         // float type
         avalon_float avl_float;
@@ -89,9 +83,6 @@ namespace avalon {
         if(type_instance_strong_compare(arg_instance, int_instance)) {
             return int_pos(arguments);
         }
-        else if(type_instance_strong_compare(arg_instance, dec_instance)) {
-            return dec_pos(arguments);
-        }
         else if(type_instance_strong_compare(arg_instance, float_instance)) {
             return float_pos(arguments);
         }
@@ -108,10 +99,6 @@ namespace avalon {
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
-
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
 
         // float type
         avalon_float avl_float;
@@ -138,9 +125,6 @@ namespace avalon {
         if(type_instance_strong_compare(arg_instance, int_instance)) {
             return int_neg(arguments);
         }
-        else if(type_instance_strong_compare(arg_instance, dec_instance)) {
-            return dec_neg(arguments);
-        }
         else if(type_instance_strong_compare(arg_instance, float_instance)) {
             return float_neg(arguments);
         }
@@ -160,10 +144,6 @@ namespace avalon {
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
-
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
 
         // float type
         avalon_float avl_float;
@@ -196,9 +176,6 @@ namespace avalon {
         if(type_instance_strong_compare(arg_one_instance, int_instance) && type_instance_strong_compare(arg_two_instance, int_instance)) {
             return int_add(arguments);
         }
-        if(type_instance_strong_compare(arg_one_instance, dec_instance) && type_instance_strong_compare(arg_two_instance, dec_instance)) {
-            return dec_add(arguments);
-        }
         if(type_instance_strong_compare(arg_one_instance, float_instance) && type_instance_strong_compare(arg_two_instance, float_instance)) {
             return float_add(arguments);
         }
@@ -218,10 +195,6 @@ namespace avalon {
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
-
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
 
         // float type
         avalon_float avl_float;
@@ -250,9 +223,6 @@ namespace avalon {
         if(type_instance_strong_compare(arg_one_instance, int_instance) && type_instance_strong_compare(arg_two_instance, int_instance)) {
             return int_sub(arguments);
         }
-        if(type_instance_strong_compare(arg_one_instance, dec_instance) && type_instance_strong_compare(arg_two_instance, dec_instance)) {
-            return dec_sub(arguments);
-        }
         if(type_instance_strong_compare(arg_one_instance, float_instance) && type_instance_strong_compare(arg_two_instance, float_instance)) {
             return float_sub(arguments);
         }
@@ -269,10 +239,6 @@ namespace avalon {
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
-
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
 
         // float type
         avalon_float avl_float;
@@ -301,9 +267,6 @@ namespace avalon {
         if(type_instance_strong_compare(arg_one_instance, int_instance) && type_instance_strong_compare(arg_two_instance, int_instance)) {
             return int_mul(arguments);
         }
-        if(type_instance_strong_compare(arg_one_instance, dec_instance) && type_instance_strong_compare(arg_two_instance, dec_instance)) {
-            return dec_mul(arguments);
-        }
         if(type_instance_strong_compare(arg_one_instance, float_instance) && type_instance_strong_compare(arg_two_instance, float_instance)) {
             return float_mul(arguments);
         }
@@ -320,10 +283,6 @@ namespace avalon {
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
-
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
 
         // float type
         avalon_float avl_float;
@@ -351,9 +310,6 @@ namespace avalon {
         type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_one_instance, int_instance) && type_instance_strong_compare(arg_two_instance, int_instance)) {
             return int_div(arguments);
-        }
-        if(type_instance_strong_compare(arg_one_instance, dec_instance) && type_instance_strong_compare(arg_two_instance, dec_instance)) {
-            return dec_div(arguments);
         }
         if(type_instance_strong_compare(arg_one_instance, float_instance) && type_instance_strong_compare(arg_two_instance, float_instance)) {
             return float_div(arguments);

@@ -27,8 +27,6 @@
 #include <memory>
 #include <vector>
 
-#include <boost/multiprecision/cpp_int.hpp>
-
 /* Lexer */
 #include "lexer/token.hpp"
 

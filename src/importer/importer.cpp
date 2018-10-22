@@ -43,7 +43,6 @@
 #include "representer/builtins/lang/avalon_qubit.hpp"
 #include "representer/builtins/lang/avalon_void.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
-#include "representer/builtins/lang/avalon_dec.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
 
@@ -246,12 +245,6 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         m_sorted_deps.push(int_prog.get_fqn().get_name());
         m_gtable.add_program(int_prog);
 
-        // decimal declarations
-        avalon_dec avl_dec;
-        program& dec_prog = avl_dec.get_program();
-        m_sorted_deps.push(dec_prog.get_fqn().get_name());
-        m_gtable.add_program(dec_prog);
-
         // string declarations
         avalon_string avl_string;
         program& string_prog = avl_string.get_program();
@@ -385,13 +378,6 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<import> int_import = std::make_shared<import>(import_tok, int_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_int_import = int_import;
         to.add_declaration(final_int_import);
-
-        // decimal declarations
-        avalon_dec avl_dec;
-        program& dec_prog = avl_dec.get_program();
-        std::shared_ptr<import> dec_import = std::make_shared<import>(import_tok, dec_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_dec_import = dec_import;
-        to.add_declaration(final_dec_import);
 
         // string declarations
         avalon_string avl_string;

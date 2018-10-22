@@ -43,14 +43,12 @@
 #include "representer/builtins/lang/avalon_float.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
-#include "representer/builtins/lang/avalon_dec.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
 
 /* Builtin functions */
 #include "interpreter/builtins/lang/avalon_float.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
 #include "interpreter/builtins/lang/avalon_int.hpp"
-#include "interpreter/builtins/lang/avalon_dec.hpp"
 #include "interpreter/builtins/lang/avalon_bit.hpp"
 
 /* Exceptions */
@@ -70,10 +68,6 @@ namespace avalon {
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
-
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
 
         // float type
         avalon_float avl_float;
@@ -108,9 +102,6 @@ namespace avalon {
             if(type_instance_strong_compare(arg_instance, int_instance)) {
                 return int_cast(arguments, ret_instance);
             }
-            if(type_instance_strong_compare(arg_instance, dec_instance)) {
-                return dec_cast(arguments, ret_instance);
-            }
             if(type_instance_strong_compare(arg_instance, float_instance)) {
                 return float_cast(arguments, ret_instance);
             }
@@ -138,10 +129,6 @@ namespace avalon {
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
-
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
 
         // float type
         avalon_float avl_float;
@@ -175,9 +162,6 @@ namespace avalon {
             if(type_instance_strong_compare(arg_instance, int_instance)) {
                 return int_string(arguments);
             }
-            if(type_instance_strong_compare(arg_instance, dec_instance)) {
-                return dec_string(arguments);
-            }
             if(type_instance_strong_compare(arg_instance, float_instance)) {
                 return float_string(arguments);
             }
@@ -202,10 +186,6 @@ namespace avalon {
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
 
-        // dec type
-        avalon_dec avl_dec;
-        type_instance dec_instance = avl_dec.get_type_instance();
-
         // make sure we got only one argument
         if(arguments.size() != 1)
             throw invalid_call("[compiler error] the <float> function expects only one argument.");
@@ -220,9 +200,6 @@ namespace avalon {
 
             if(type_instance_strong_compare(arg_instance, int_instance)) {
                 return int_float(arguments);
-            }
-            if(type_instance_strong_compare(arg_instance, dec_instance)) {
-                throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
             }
             else {
                 throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
