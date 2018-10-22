@@ -42,7 +42,8 @@ This code is licensed under the MIT license. Please see the LICENSE file for the
 
 ## Copyrights
 
-I, Ntwali Bashige Toussaint, retain all copyrights in and of the entirety of the work (source code and other files) in this repository whether explicitly mentionned or not in any of the files in this project.
+I, Ntwali Bashige Toussaint, retain all copyrights in and of the entirety of the work (source code and other files) in this repository whether explicitly mentionned or not in any of the files in this project.  
+This excludes all the files in the `deps` directory.
 
 In case you found code that is yours and I failed to give attribution or I am claiming copyright of the code, please do email me to resolve the issue.
 
