@@ -8,11 +8,12 @@
 
 cc          := g++
 cflags      := -std=c++11 -g -Wall -pedantic
+ldpaths     := -Lbin/libs
+rdpaths     := '-Wl,-rpath=$$ORIGIN/libs'
 ldflags     := -lboost_filesystem -lboost_system
-ldpaths     := -L/usr/local/lib
-rdpaths     := -Wl,-rpath=/usr/local/lib
 src_dir     := src
 inc         := -Isrc -Iinclude
+sysinc      := -isystem deps/boost
 build_dir   := build
 bin_dir     := bin
 target      := $(bin_dir)/avalon
@@ -31,16 +32,16 @@ $(target): $(objects)
 
 $(build_dir)/%.o: $(src_dir)/%.$(src_ext)
 	@mkdir -p $(dir $@)
-	@$(cc) $(cflags) $(inc) -c -o $@ $<
+	@$(cc) $(cflags) $(sysinc) $(inc) -c -o $@ $<
 
 .PHONY: setup
 setup:
 	@echo " Setting things up anew..."
 	@mkdir -p $(build_dir)
-	@mkdir -p $(bin_dir)
 
 .PHONY: clean
 clean:
 	@echo " Cleaning up the mess you made..."
 	@find . -exec touch {} \;
-	@rm -rf $(build_dir) $(bin_dir)
+	@rm -rf $(build_dir)
+	@rm -f $(bin_dir)/avalon
