@@ -17,7 +17,7 @@ dependencies that require separate compilation.
 First, you need to download the ``Boost libraries`` from
 `boost.org <https://www.boost.org/users/history/version_1_68_0.html>`_.
 
-..note::
+.. note::
     Make sure to use Boost 1.68 since it is the version against which developement
     is currently occuring. Also, development is occuring on a Linux system so please
     select the ``Unix`` variant of the libraries.
