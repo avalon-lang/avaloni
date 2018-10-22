@@ -21,7 +21,7 @@ Feel free to play with it as well.
 ## Documentation
 
 Documentation is currently being written as the language along with the language.  
-You can find the documentation at ![Read the docs](https://avalon-lang.readthedocs.io/en/latest)
+You can find the documentation at ![Read The Docs](https://avalon-lang.readthedocs.io/en/latest).
 
 ## Contributing
 
