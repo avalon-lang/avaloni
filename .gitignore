@@ -3,4 +3,5 @@ build/
 data/
 temp/
 docs/venv/
+docs/build/
 /*.avl

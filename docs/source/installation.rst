@@ -15,7 +15,7 @@ dependencies that require separate compilation.
 1. Download Boost
 
 First, you need to download the ``Boost libraries`` from
-`boost.org <https://www.boost.org/users/history/version_1_68_0.html>`.
+`boost.org <https://www.boost.org/users/history/version_1_68_0.html>`_.
 
 ..note::
     Make sure to use Boost 1.68 since it is the version against which developement
@@ -29,7 +29,7 @@ Extract the archive in a folder of your choice using::
 2. Download Avalon
 
 Now, download ``Avalon source`` from `github.com
-<https://github.com/avalon-lang/avalonic/archive/master.zip>`.
+<https://github.com/avalon-lang/avalonic/archive/master.zip>`_.
 
 Extract the archive and copy Avalon in the directory of your choice.
 From now on, this directory will be refered to as ``$AVALON``.
