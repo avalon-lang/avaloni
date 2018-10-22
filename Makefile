@@ -8,15 +8,15 @@
 
 cc          := g++
 cflags      := -std=c++11 -g -Wall -pedantic
-ldpaths     := -Lbin/libs
-rdpaths     := '-Wl,-rpath=$$ORIGIN/libs'
+ldpaths     := -L/usr/local/lib
+rdpaths     := -Wl,-rpath=/usr/local/lib
 ldflags     := -lboost_filesystem -lboost_system
 src_dir     := src
 inc         := -Isrc -Iinclude
 sysinc      := -isystem deps/boost
 build_dir   := build
 bin_dir     := bin
-target      := $(bin_dir)/avalon
+target      := $(bin_dir)/avalonic
 
 src_ext     := cpp
 sources     := $(shell find $(src_dir) -type f -name *.$(src_ext))
@@ -34,15 +34,17 @@ $(build_dir)/%.o: $(src_dir)/%.$(src_ext)
 	@mkdir -p $(dir $@)
 	@$(cc) $(cflags) $(sysinc) $(inc) -c -o $@ $<
 
+install:
+	@cp $(target) /usr/bin
+
 .PHONY: setup
 setup:
 	@echo " Setting things up anew..."
-	@mkdir -p $(bin_dir)/libs
+	@mkdir -p $(bin_dir)
 	@mkdir -p $(build_dir)
 
 .PHONY: clean
 clean:
 	@echo " Cleaning up the mess you made..."
 	@find . -path ./docs/venv -prune -o -exec touch {} \;
-	@rm -rf $(build_dir)
-	@rm -f $(bin_dir)/avalon
+	@rm -rf $(build_dir) $(bin_dir)
