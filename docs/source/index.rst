@@ -2,11 +2,8 @@ Avalon Programming Language
 ===========================
 
 Quantum computing is slowly but surely taking shape and it promises solution to
-some problems we find hard to solve using classical computing. Reversible classical
-computing is also seeing renewed interest as it promises better energy efficiency.
-
-While both quantum computers and reversible classical computers are still not very
-powerful for practical computing, they are here for making prototypes.
+some problems we find hard to solve using classical computing. While quantum computers
+are still not very powerful for practical computing, we can start prototyping.
 
 Just like classical computers, quantum computers need to be instructed about what to do.
 There are many ways to do this but the most popular one is a quantum computer driven by
@@ -22,11 +19,13 @@ is the most promising in terms of where the classical-quantum computing architec
 is headed.
 
 The Avalon Programming Language is a statically typed language based on algebraic data
-types. It features type inference for variable declaration where the compiler can
-deduce the complete type. With its extended multiple dispatch, it gives users the
+types. It features type inference for variable declaration when the compiler can
+deduce the complete type. With extended overloading, it gives users the
 ability to create more powerful functions that are intuitive to users.
 The language also allows generic programming with the ability to parametrize both
 function and type declarations.
+With pattern matching, you are able to inspect inside structures and make decision
+based on their content.
 
 The Avalon Programming Language is a free and open source project under the MIT license
 giving you the freedom to evolve the language and contribute back if you so desire.
@@ -34,19 +33,20 @@ giving you the freedom to evolve the language and contribute back if you so desi
 We hope you will find the language useful and more important, we hope it will make
 quantum computing accessible to you and everyone interested.
 
+**NOTE:** The quantum interpreter is not documented yet as its implementation is underway.
+
 Structure
 ---------
 
-The programming language is made of three parts:
+The programming language is made of two parts:
 
 * `A classical interpreter`: an interpreter for classical computing or in layman's terms, an interpreter for your everyday computer.
-* `A classical reversible interpreter`: a classical interpreter that supports reversible computation on top of the non-reversible part.
 * `A quantum interpreter`: an interpreter that offers quantum data types and quantum gates that work on those types. It is built on top of the classical interpreter.
 
 This documentation covers all the different parts but individual interpreters
 that omits certain parts will be made available. At the moment though, only a single
-interpreter is available, the quantum interpreter since with it classical, reversible
-classical and quantum computing can be accomplished.
+interpreter is available, the quantum interpreter since with it classical
+and quantum computation can be accomplished.
 
 
 
