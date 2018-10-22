@@ -24,11 +24,12 @@ First, you need to download the ``Boost libraries`` from
 
 
 Extract the archive in a folder of your choice using::
+
     $ tar --bzip2 -xf /path/to/boost_1_68_0.tar.bz2
 
 2. Download Avalon
 
-Now, download ``Avalon source`` from `github.com
+Now, download the ``Avalon source`` from `github.com
 <https://github.com/avalon-lang/avalonic/archive/master.zip>`_.
 
 Extract the archive and copy Avalon in the directory of your choice.
@@ -42,11 +43,13 @@ and its header files in ``$AVALON/deps/boost`` by doing the following::
     $ ./bootstrap.sh --with-libraries=filesystem --libdir=/usr/local/lib --includedir=$AVALON/deps/boost
 
 Next we perform the compilation and library installation::
+
     $ sudo ./b2 install
 
 4. Compile ``Avalon``
 
 Compiling ``Avalon`` is very simple::
+
     $ make clean && make
 
 5. Install ``Avalon``
@@ -55,4 +58,5 @@ We perform a system-wide installation of ``Avalon`` so you can run the interpret
 from any directory.
 
 To perform the installation, run::
+
     $ sudo make install
