@@ -37,11 +37,12 @@ $(build_dir)/%.o: $(src_dir)/%.$(src_ext)
 .PHONY: setup
 setup:
 	@echo " Setting things up anew..."
+	@mkdir -p $(bin_dir)/libs
 	@mkdir -p $(build_dir)
 
 .PHONY: clean
 clean:
 	@echo " Cleaning up the mess you made..."
-	@find . -exec touch {} \;
+	@find . -path ./docs/venv -prune -o -exec touch {} \;
 	@rm -rf $(build_dir)
 	@rm -f $(bin_dir)/avalon
