@@ -34,7 +34,7 @@ Now, download the ``Avalon source`` from `github.com
 Extract the archive and copy Avalon in the directory of your choice.
 From now on, this directory will be refered to as ``$AVALON``.
 
-3. **Compile and install ``Boost`` into ``Avalon``**
+3. **Compile and install Boost into Avalon**
 
 To begin, configure ``Boost`` to install its compiled libraries in ``usr/local/lib``
 and its header files in ``$AVALON/deps/boost`` by doing the following::
@@ -45,13 +45,13 @@ Next we perform the compilation and library installation::
 
     $ sudo ./b2 install
 
-4. **Compile ``Avalon``**
+4. **Compile Avalon**
 
 Compiling ``Avalon`` is very simple::
 
     $ make clean && make
 
-5. **nstall ``Avalon``**
+5. **Install Avalon**
 
 We perform a system-wide installation of ``Avalon`` so you can run the interpreter
 from any directory. To perform the installation, run::
