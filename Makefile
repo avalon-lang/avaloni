@@ -28,13 +28,14 @@ all: setup $(target)
 
 $(target): $(objects)
 	@echo " Compiling and linking just for you..."
-	@$(cc) $^ -o $(target) $(ldpaths) $(ldflags) $(rdpaths)
+	$(cc) $^ -o $(target) $(ldpaths) $(ldflags) $(rdpaths)
 
 $(build_dir)/%.o: $(src_dir)/%.$(src_ext)
 	@mkdir -p $(dir $@)
-	@$(cc) $(cflags) $(sysinc) $(inc) -c -o $@ $<
+	$(cc) $(cflags) $(sysinc) $(inc) -c -o $@ $<
 
 install:
+	@echo " Installing..."
 	@cp $(target) /usr/bin
 
 .PHONY: setup
