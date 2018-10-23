@@ -22,12 +22,13 @@ src_ext     := cpp
 sources     := $(shell find $(src_dir) -type f -name *.$(src_ext))
 objects     := $(patsubst $(src_dir)/%,$(build_dir)/%,$(sources:.$(src_ext)=.o))
 
+sdk_path 	:= /usr/lib/avlq
+
 
 .PHONY: all
 all: setup $(target)
 
 $(target): $(objects)
-	@echo " Compiling and linking just for you..."
 	$(cc) $^ -o $(target) $(ldpaths) $(ldflags) $(rdpaths)
 
 $(build_dir)/%.o: $(src_dir)/%.$(src_ext)
@@ -36,16 +37,19 @@ $(build_dir)/%.o: $(src_dir)/%.$(src_ext)
 
 install:
 	@echo " Installing..."
+	@# Copy the binary for system-wide access into </usr/bin>
 	@cp $(target) /usr/bin
+	@# Copy the SDK into the default AVALON_HOME folder at </usr/lib/avlq>
+	@mkdir -p $(sdk_path)
+	@cp -r sdk/* $(sdk_path)
+	@echo " Installation finished."
 
 .PHONY: setup
 setup:
-	@echo " Setting things up anew..."
 	@mkdir -p $(bin_dir)
 	@mkdir -p $(build_dir)
 
 .PHONY: clean
 clean:
-	@echo " Cleaning up the mess you made..."
 	@find . -path ./docs/venv -prune -o -exec touch {} \;
 	@rm -rf $(build_dir) $(bin_dir)
