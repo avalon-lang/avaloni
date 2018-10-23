@@ -69,8 +69,8 @@ namespace avalon {
         IS_NOT,             // is not
         MINUS,              // -
         RETURN_TYPE,        // ->
-        NS_LEFT_PAREN,      // -(
-        NS_RIGHT_PAREN,     // )-
+        NS_OPEN,            // -/
+        NS_CLOSE,           // /-
         LOGICAL_OR,         // || (or)
         LOGICAL_AND,        // && (and)
         LEFT_SHIFT,         // << (lsh)

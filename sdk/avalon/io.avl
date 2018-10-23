@@ -6,7 +6,7 @@ IO module
 - license    MIT license
 ]-
 
-namespace io -(
+namespace io -/
 var package = (
     name    = "I/O package",
     version = "0.0.1"
@@ -15,4 +15,4 @@ var package = (
 def println = (val str : string) -> int:
     __println__(str)
     return 0
-)-
+/-

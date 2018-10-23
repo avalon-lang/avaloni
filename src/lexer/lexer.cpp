@@ -279,7 +279,24 @@ lexer::lexer(
                     add_token(MUL);
                 }
                 break;
-            case '/': add_token(DIV); break;
+            case '/':
+                if(match('-')) {
+                    if(m_is_new_logical_line) {
+                        m_is_new_logical_line = false;
+                        
+                        while(m_indentation_stack.top() > 0) {
+                            m_indentation_stack.pop();
+                            add_token(DEDENT);
+                        }
+                    }
+
+                    add_token(NS_CLOSE);
+                    m_in_new_logical_line = true;
+                }
+                else {
+                    add_token(DIV);
+                }
+                break;
             case '%': add_token(MOD); break;
             case '\'': add_token(QUOTE); break;
             case ',': add_token(COMMA); break;
@@ -336,8 +353,8 @@ lexer::lexer(
                 else if(match('>')) {
                     add_token(RETURN_TYPE);
                 }
-                else if(match('(')) {
-                    add_token(NS_LEFT_PAREN);
+                else if(match('/')) {
+                    add_token(NS_OPEN);
                 }
                 else {
                     if(m_is_new_logical_line) {
@@ -394,26 +411,11 @@ lexer::lexer(
                 m_parens_levels++;
                 break;
             case ')':
-                if(match('-')) {
-                    if(m_is_new_logical_line) {
-                        m_is_new_logical_line = false;
-                        
-                        while(m_indentation_stack.top() > 0) {
-                            m_indentation_stack.pop();
-                            add_token(DEDENT);
-                        }
-                    }
-
-                    add_token(NS_RIGHT_PAREN);
-                    m_in_new_logical_line = true;                    
-                }
-                else {
-                    if(m_parens_levels > 0)
-                        m_parens_levels--;
-                    else
-                        throw lexing_error(true, "Dangling closing parenthesis. No corresponing opening parenthesis was found for it.");
-                    add_token(RIGHT_PAREN);
-                }                
+                if(m_parens_levels > 0)
+                    m_parens_levels--;
+                else
+                    throw lexing_error(true, "Dangling closing parenthesis. No corresponing opening parenthesis was found for it.");
+                add_token(RIGHT_PAREN);
                 break;
             case '{':
                 add_token(LEFT_BRACE);

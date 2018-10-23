@@ -22,7 +22,7 @@ src_ext     := cpp
 sources     := $(shell find $(src_dir) -type f -name *.$(src_ext))
 objects     := $(patsubst $(src_dir)/%,$(build_dir)/%,$(sources:.$(src_ext)=.o))
 
-sdk_path 	:= /usr/lib/avlq
+sdk_path    := /usr/lib/avlq
 
 
 .PHONY: all

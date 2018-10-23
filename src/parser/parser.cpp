@@ -264,7 +264,7 @@ parser::parser(
         bool namespace_given = false;
         // we expect the namespace name or no name to signify the global namespace
         if(!check(IDENTIFIER)) {
-            if(!check(NS_LEFT_PAREN))
+            if(!check(NS_OPEN))
                 throw parsing_error(true, peek(), "Expected the namespace name as an identifer for a named namespace or no name for the global namespace name.");
         }
         else {
@@ -279,14 +279,14 @@ parser::parser(
         std::vector<std::shared_ptr<decl> > top_decls;
         bool indent_found = false;
 
-        // we expect an opening parenthesis and a newline after the namespace name
-        consume(NS_LEFT_PAREN, "Expected a namespace opening parenthesis after the namespace name");
-        consume(NEWLINE, "Expected a newline after the opening parenthesis in namespace declaration.");
+        // we expect an opening namespace and a newline after the namespace name
+        consume(NS_OPEN, "Expected a namespace opening token after the namespace name");
+        consume(NEWLINE, "Expected a newline after the opening token in namespace declaration.");
         if(match(INDENT))
             indent_found = true;
 
         // get the declarations defined in this scope
-        while(((indent_found & !check(DEDENT)) || (!indent_found & !check(NS_RIGHT_PAREN))) && !is_at_end()) {
+        while(((indent_found & !check(DEDENT)) || (!indent_found & !check(NS_CLOSE))) && !is_at_end()) {
             /// get the declarations
             if(match(PUBLIC)) {
                 top_decls = top_declaration(true, parent_scope);
@@ -307,8 +307,8 @@ parser::parser(
         if(indent_found)
             consume(DEDENT, "Expected a dedentation in namespace declaration");
 
-        // we expect a closing parenthesis and a newline to close a namespace declaration
-        consume(NS_RIGHT_PAREN, "Expected a namespace closing parenthesis to close a namespace declaration.");
+        // we expect a closing namespace and a newline to close a namespace declaration
+        consume(NS_CLOSE, "Expected a namespace closing token to close a namespace declaration.");
         consume(NEWLINE, "Expected a new line after a namespace declaration.");
 
         // add the namespace declaration to the program
