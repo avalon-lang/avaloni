@@ -1458,6 +1458,38 @@ namespace avalon {
                 throw invalid_expression(bin_lval -> expr_token(), "Expected a namespace name before variable in assignment lval.");
             }
         }
+        // we forbird the reassignment of reference expressions
+        else if(lval -> is_reference_expression()) {
+            throw invalid_expression(lval -> expr_token(), "A reference cannot be reassigned.");
+        }
+        // we forbid setting a derefenced expression if the referenced variable is an immutable variable
+        else if(lval -> is_dereference_expression()) {
+            // we make sure we have a valid dereference
+            check(lval, l_scope, ns_name);
+
+            // get to work...
+            std::shared_ptr<dereference_expression> const & dref = std::static_pointer_cast<dereference_expression>(lval);
+            std::shared_ptr<expr>& val = dref -> get_val();
+
+            // if we have a variable, we validate the variable
+            if(val -> is_identifier_expression()) {
+                std::shared_ptr<variable>& var_decl = dref -> get_variable();
+                std::shared_ptr<expr>& var_expr = var_decl -> get_value();
+                std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(var_expr);
+                std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+                if(ref_var -> is_mutable() == false)
+                    throw invalid_expression(dref -> get_token(), "Cannot reassign an immutable variable through a dereference.");
+            }
+            // if we have a namespaced variable
+            else if(val -> is_binary_expression()) {
+                std::shared_ptr<variable>& var_decl = dref -> get_variable();
+                std::shared_ptr<expr>& var_expr = var_decl -> get_value();
+                std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(var_expr);
+                std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+                if(ref_var -> is_mutable() == false)
+                    throw invalid_expression(dref -> get_token(), "Cannot reassign an immutable variable through a dereference.");
+            }
+        }
 
         // we check both the lval and the rval
         type_instance lval_instance = check(lval, l_scope, ns_name);
