@@ -72,6 +72,9 @@
 /* Inferer */
 #include "inferer/inferer.hpp"
 
+/* Lexer */
+#include "lexer/token.hpp"
+
 /* Exceptions */
 #include "representer/exceptions/symbol_can_collide.hpp"
 #include "representer/exceptions/symbol_not_found.hpp"
@@ -299,11 +302,23 @@ namespace avalon {
     type_instance expression_checker::check_literal(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
         std::shared_ptr<literal_expression> const & lit_expr = std::static_pointer_cast<literal_expression>(an_expression);
 
-        // we make sure that a bit expression is exclusively made of 1s and 0s
+        // we make sure that a bit expression is exclusively made of 1s and 0s and that it corresponds to acceptable data types
         if(lit_expr -> get_expression_type() == BIT_EXPR) {
             const std::string& value = lit_expr -> get_value();
+            
+            // check for content
             if(value.find_first_not_of("01") != std::string::npos) {
                 throw invalid_expression(lit_expr -> get_token(), "A bit string must only contain zeros and ones.");
+            }
+
+            // check for length
+            std::size_t bit_length = value.length();
+            if((bit_length & (bit_length - 1)) == 0) {
+                if(bit_length > 8)
+                    throw invalid_expression(lit_expr -> get_token(), "Only bit string of length 1, 2, 4 and 8 are currently supported.");
+            }
+            else {
+                throw invalid_expression(lit_expr -> get_token(), "Only bit string of length 1, 2, 4 and 8 are currently supported.");
             }
         }
 

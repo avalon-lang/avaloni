@@ -670,11 +670,6 @@ namespace avalon {
     friend std::ostream& operator<<(std::ostream& os, const type_instance& instance);
     };
 
-    /*
-     * a dummy type instance that can be used as the we use the star token
-     */
-    extern type_instance star_instance;
-
     /**
      * mangle_type_constructor
      * returns a string representation of a type instance

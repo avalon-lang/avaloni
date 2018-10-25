@@ -280,8 +280,6 @@ token type_param_a_tok(IDENTIFIER, "a", 0, 0, "__bit__");
  */
 token void_type_tok(TYPE, "void", 0, 0, "__bit__");
 token bool_type_tok(TYPE, "bool", 0, 0, "__bit__");
-token bit_type_tok(TYPE, "bit", 0, 0, "__bit__");
-token qubit_type_tok(TYPE, "qubit", 0, 0, "__bit__");
 token int_type_tok(TYPE, "int", 0, 0, "__bit__");
 token dec_type_tok(TYPE, "dec", 0, 0, "__bit__");
 token float_type_tok(TYPE, "float", 0, 0, "__bit__");
@@ -291,6 +289,11 @@ token list_type_tok(TYPE, "[", 0, 0, "__bit__");
 token map_type_tok(TYPE, "{", 0, 0, "__bit__");
 token maybe_type_tok(TYPE, "maybe", 0, 0, "__bit__");
 token ref_type_tok(REF, "*", 0, 0, "__bit__");
+token bit_type_tok(TYPE, "bit", 0, 0, "__bit__");
+token bit2_type_tok(TYPE, "bit2", 0, 0, "__bit__");
+token bit4_type_tok(TYPE, "bit4", 0, 0, "__bit__");
+token bit8_type_tok(TYPE, "bit8", 0, 0, "__bit__");
+token qubit_type_tok(TYPE, "qubit", 0, 0, "__bit__");
 
 /**
  * constructor tokens

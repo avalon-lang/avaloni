@@ -274,7 +274,9 @@ std::shared_ptr<function> find_function(const std::string& name, std::vector<typ
 }
 
 std::shared_ptr<function> find_function(const std::string& name, std::vector<type_instance>& param_instances, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::vector<token>& param_standins) {
-    return internal_find_function(name, param_instances, star_instance, l_scope, ns_name, param_standins);
+    token gen_tok(MUL, "*", 0, 0, "__bit__");
+    type_instance generic_instance(gen_tok, "*");
+    return internal_find_function(name, param_instances, generic_instance, l_scope, ns_name, param_standins);
 }
 
 /**

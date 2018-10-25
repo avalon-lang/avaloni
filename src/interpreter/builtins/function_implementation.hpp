@@ -35,10 +35,10 @@
 /* Implementations */
 #include "interpreter/builtins/lang/avalon_arithmetic.hpp"
 #include "interpreter/builtins/lang/avalon_comparison.hpp"
+#include "interpreter/builtins/lang/avalon_logic.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
 #include "interpreter/builtins/lang/avalon_cast.hpp"
 #include "interpreter/builtins/lang/avalon_hash.hpp"
-#include "interpreter/builtins/lang/avalon_bit.hpp"
 #include "interpreter/builtins/io/avalon_io.hpp"
 
 
@@ -241,7 +241,9 @@ namespace avalon {
      */
     struct cast_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return avl_cast(arguments, star_instance);
+            token gen_tok(MUL, "*", 0, 0, "__bit__");
+            type_instance gen_instance(gen_tok, "*");
+            return avl_cast(arguments, gen_instance);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
@@ -381,11 +383,11 @@ namespace avalon {
      */
     struct band_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return bit_and(arguments);
+            return avl_and(arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return bit_and(arguments);
+            return avl_and(arguments);
         }
     };
 
@@ -395,11 +397,11 @@ namespace avalon {
      */
     struct bor_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return bit_or(arguments);
+            return avl_or(arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return bit_or(arguments);
+            return avl_or(arguments);
         }
     };
 
@@ -409,11 +411,11 @@ namespace avalon {
      */
     struct xor_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return bit_xor(arguments);
+            return avl_xor(arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return bit_xor(arguments);
+            return avl_xor(arguments);
         }
     };
 
@@ -423,11 +425,11 @@ namespace avalon {
      */
     struct bnot_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return bit_not(arguments);
+            return avl_not(arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return bit_not(arguments);
+            return avl_not(arguments);
         }
     };
 }

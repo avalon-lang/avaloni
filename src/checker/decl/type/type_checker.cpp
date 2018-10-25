@@ -196,6 +196,7 @@ namespace avalon {
                 try {
                     res = type_instance_checker::simple_check(instance, l_scope, l_ns_name, standins);
                 } catch(invalid_type err) {
+                    //std::cout << "HERE" << instance.get_name() << std::endl;
                     throw err;
                 }
             }

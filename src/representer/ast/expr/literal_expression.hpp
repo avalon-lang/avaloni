@@ -28,8 +28,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
-
-#include <boost/dynamic_bitset.hpp>
+#include <bitset>
 
 #include "representer/ast/expr/expr.hpp"
 #include "representer/ast/decl/type.hpp"
@@ -135,10 +134,31 @@ namespace avalon {
 
         /**
          * get_bit_value
-         * returns the bitset representating of this literal
+         * returns the 1 bit bitset representating of this literal
          * throws a value_error exception if it contains a different literal type
          */
-        boost::dynamic_bitset<> get_bit_value();
+        std::bitset<1> get_bit_value();
+
+        /**
+         * get_bit2_value
+         * returns the 2 bits bitset representating of this literal
+         * throws a value_error exception if it contains a different literal type
+         */
+        std::bitset<2> get_bit2_value();
+
+        /**
+         * get_bit4_value
+         * returns the 4 bits bitset representating of this literal
+         * throws a value_error exception if it contains a different literal type
+         */
+        std::bitset<4> get_bit4_value();
+
+        /**
+         * get_bit8_value
+         * returns the 8 bits bitset representating of this literal
+         * throws a value_error exception if it contains a different literal type
+         */
+        std::bitset<8> get_bit8_value();
 
         /**
          * token

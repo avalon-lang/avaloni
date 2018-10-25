@@ -25,6 +25,7 @@
 
 #include <memory>
 #include <vector>
+#include <cmath>
 
 /* Lexer */
 #include "lexer/token_type.hpp"
@@ -423,7 +424,7 @@ namespace avalon {
         // multiply both arguments
         long long int arg_one_val = arg_one_lit -> get_int_value();
         long long int arg_two_val = arg_two_lit -> get_int_value();
-        long long int res_val = pow(arg_one_val, arg_two_val); // FIXME: add namespace and header for pow()
+        long long int res_val = (long long) std::pow(arg_one_val, arg_two_val); // FIXME: add namespace and header for pow()
         std::string res_str = std::to_string(res_val);
 
         // create new literal with the new integer

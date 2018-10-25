@@ -42,12 +42,18 @@
 #include "representer/builtins/lang/avalon_string.hpp"
 #include "representer/builtins/lang/avalon_float.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
+#include "representer/builtins/lang/avalon_bit2.hpp"
+#include "representer/builtins/lang/avalon_bit4.hpp"
+#include "representer/builtins/lang/avalon_bit8.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
 
 /* Builtin functions */
 #include "interpreter/builtins/lang/avalon_float.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
+#include "interpreter/builtins/lang/avalon_bit2.hpp"
+#include "interpreter/builtins/lang/avalon_bit4.hpp"
+#include "interpreter/builtins/lang/avalon_bit8.hpp"
 #include "interpreter/builtins/lang/avalon_int.hpp"
 #include "interpreter/builtins/lang/avalon_bit.hpp"
 
@@ -138,6 +144,18 @@ namespace avalon {
         avalon_bit avl_bit;
         type_instance bit_instance = avl_bit.get_type_instance();
 
+        // bit2 type
+        avalon_bit2 avl_bit2;
+        type_instance bit2_instance = avl_bit2.get_type_instance();
+
+        // bit4 type
+        avalon_bit4 avl_bit4;
+        type_instance bit4_instance = avl_bit4.get_type_instance();
+
+        // bit8 type
+        avalon_bit8 avl_bit8;
+        type_instance bit8_instance = avl_bit8.get_type_instance();
+
         // make sure we got only one argument
         if(arguments.size() != 1)
             throw invalid_call("[compiler error] the <string> function expects only one argument.");
@@ -167,6 +185,15 @@ namespace avalon {
             }
             if(type_instance_strong_compare(arg_instance, bit_instance)) {
                 return bit_string(arguments);
+            }
+            if(type_instance_strong_compare(arg_instance, bit2_instance)) {
+                return bit2_string(arguments);
+            }
+            if(type_instance_strong_compare(arg_instance, bit4_instance)) {
+                return bit4_string(arguments);
+            }
+            if(type_instance_strong_compare(arg_instance, bit8_instance)) {
+                return bit8_string(arguments);
             }
             else {
                 throw invalid_call("[compiler error] unexpected call to the <string> function using arguments of unsupported type instances");

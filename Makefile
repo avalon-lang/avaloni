@@ -22,7 +22,7 @@ src_ext     := cpp
 sources     := $(shell find $(src_dir) -type f -name *.$(src_ext))
 objects     := $(patsubst $(src_dir)/%,$(build_dir)/%,$(sources:.$(src_ext)=.o))
 
-sdk_path    := /usr/lib/avlq
+sdk_path    := /usr/lib/avalon-sdk
 
 
 .PHONY: all
@@ -39,7 +39,7 @@ install:
 	@echo " Installing..."
 	@# Copy the binary for system-wide access into </usr/bin>
 	@cp $(target) /usr/bin
-	@# Copy the SDK into the default AVALON_HOME folder at </usr/lib/avlq>
+	@# Copy the SDK into the default AVALON_HOME folder at </usr/lib/avalon-sdk>
 	@mkdir -p $(sdk_path)
 	@cp -r sdk/* $(sdk_path)
 	@echo " Installation finished."

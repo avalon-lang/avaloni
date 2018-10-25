@@ -56,10 +56,13 @@
 #include "representer/builtins/lang/avalon_tuple.hpp"
 #include "representer/builtins/lang/avalon_list.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
+#include "representer/builtins/lang/avalon_bit2.hpp"
+#include "representer/builtins/lang/avalon_bit4.hpp"
+#include "representer/builtins/lang/avalon_bit8.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 #include "representer/builtins/lang/avalon_map.hpp"
-#include "representer/builtins/lang/avalon_bit.hpp"
 #include "representer/builtins/lang/avalon_ref.hpp"
+#include "representer/builtins/lang/avalon_bit.hpp"
 
 /* Checker */
 #include "checker/decl/function/function_checker.hpp"
@@ -364,7 +367,7 @@ static type_instance build_function(function& new_fun, const token& error_tok, c
     } catch(symbol_can_collide err) {
         throw invalid_expression(error_tok, err.what());
     } catch(invalid_type err) {
-        throw invalid_expression(err.get_token(), "No function declaration that corresponds to this function call was found. Reason: " + std::string(err.what()));
+        throw invalid_expression(error_tok, "No function declaration that corresponds to this function call was found. Reason: " + std::string(err.what()));
     }
 
     // we generate a new function from the function we found
@@ -477,8 +480,10 @@ inferer::inferer() {
      */
     type_instance inferer::infer_underscore(std::shared_ptr<expr>& an_expression) {
         std::shared_ptr<underscore_expression> const & und_expr = std::static_pointer_cast<underscore_expression>(an_expression);
-        und_expr -> set_type_instance(star_instance);
-        return star_instance;
+        token gen_tok(MUL, "*", 0, 0, "__bit__");
+        type_instance gen_instance(gen_tok, "*");
+        und_expr -> set_type_instance(gen_instance);
+        return gen_instance;
     }
 
     /**
@@ -556,8 +561,26 @@ inferer::inferer() {
             inferred_type_instance =  avl_string.get_type_instance();
         }
         else if(lit_expr -> get_expression_type() == BIT_EXPR) {
-            avalon_bit avl_bit;
-            inferred_type_instance = avl_bit.get_type_instance();
+            const std::string& val = lit_expr -> get_value();
+            if(val.length() == 1) {
+                avalon_bit avl_bit;
+                inferred_type_instance = avl_bit.get_type_instance();
+            }
+            else if(val.length() == 2) {
+                avalon_bit2 avl_bit2;
+                inferred_type_instance = avl_bit2.get_type_instance();
+            }
+            else if(val.length() == 4) {
+                avalon_bit4 avl_bit4;
+                inferred_type_instance = avl_bit4.get_type_instance();
+            }
+            else if(val.length() == 8) {
+                avalon_bit8 avl_bit8;
+                inferred_type_instance = avl_bit8.get_type_instance();
+            }
+            else {
+                throw invalid_expression(lit_expr -> get_token(), "Only bitsets of length 1, 2, 4 and 8 are currently supported.");
+            }
         }
         else if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
             avalon_qubit avl_qubit;
@@ -1463,7 +1486,9 @@ inferer::inferer() {
         std::vector<type_instance> constraint_instances;
 
         // find the binary function that corresponds to the given parameters
-        return build_function(binary_fun, binary_expr -> get_token(), fun_name, args_instances, star_instance, constraint_instances, standins, l_scope, sub_ns_name);
+        token gen_tok(MUL, "*", 0, 0, "__bit__");
+        type_instance gen_instance(gen_tok, "*");
+        return build_function(binary_fun, binary_expr -> get_token(), fun_name, args_instances, gen_instance, constraint_instances, standins, l_scope, sub_ns_name);
     }
 
     /**

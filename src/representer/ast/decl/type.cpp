@@ -780,11 +780,6 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
             return false;
     }
 
-    /*
-     * a dummy type instance that can be used as the we use the star token
-     */
-    type_instance star_instance;
-
     /**
      * mangle_type_constructor
      * returns a string representation of a type instance

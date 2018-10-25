@@ -643,7 +643,7 @@ parser::parser(
 
             // perform serial initialization
             while(match(EQUAL)) {
-                if(check(IDENTIFIER) && check_next(EQUAL)) {                    
+                if(check(IDENTIFIER) && check_next(EQUAL)) {
                     std::shared_ptr<token>& new_var_tok = consume(IDENTIFIER, "Expected a variable name");
                     std::shared_ptr<variable> new_var_decl = std::make_shared<variable>(* new_var_tok, is_mutable);
                     new_var_decl -> is_public(is_public);

@@ -24,8 +24,7 @@
 
 #include <cstdlib>
 #include <memory>
-
-#include <boost/dynamic_bitset.hpp>
+#include <bitset>
 
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/exceptions/value_error.hpp"
@@ -176,12 +175,57 @@ namespace avalon {
 
     /**
      * get_bit_value
-     * returns the bitset representating of this literal
+     * returns the 1 bit bitset representating of this literal
      * throws a value_error exception if it contains a different literal type
      */
-    boost::dynamic_bitset<> literal_expression::get_bit_value() {
+    std::bitset<1> literal_expression::get_bit_value() {
         if(m_expr_type == BIT_EXPR) {
-            boost::dynamic_bitset<> bitstring(m_val);
+            std::bitset<1> bitstring(m_val);
+            return bitstring;
+        }
+        else {
+            throw value_error("This literal expression doesn't contain a bit string.");
+        }
+    }
+
+    /**
+     * get_bit2_value
+     * returns the 2 bits bitset representating of this literal
+     * throws a value_error exception if it contains a different literal type
+     */
+    std::bitset<2> literal_expression::get_bit2_value() {
+        if(m_expr_type == BIT_EXPR) {
+            std::bitset<2> bitstring(m_val);
+            return bitstring;
+        }
+        else {
+            throw value_error("This literal expression doesn't contain a bit string.");
+        }
+    }
+
+    /**
+     * get_bit4_value
+     * returns the 4 bits bitset representating of this literal
+     * throws a value_error exception if it contains a different literal type
+     */
+    std::bitset<4> literal_expression::get_bit4_value() {
+        if(m_expr_type == BIT_EXPR) {
+            std::bitset<4> bitstring(m_val);
+            return bitstring;
+        }
+        else {
+            throw value_error("This literal expression doesn't contain a bit string.");
+        }
+    }
+
+    /**
+     * get_bit8_value
+     * returns the 8 bits bitset representating of this literal
+     * throws a value_error exception if it contains a different literal type
+     */
+    std::bitset<8> literal_expression::get_bit8_value() {
+        if(m_expr_type == BIT_EXPR) {
+            std::bitset<8> bitstring(m_val);
             return bitstring;
         }
         else {

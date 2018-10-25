@@ -227,7 +227,9 @@ namespace avalon {
                 throw err;
             }
             
-            build_instance(var_instance, star_instance);
+            token gen_tok(MUL, "*", 0, 0, "__bit__");
+            type_instance gen_instance(gen_tok, "*");
+            build_instance(var_instance, gen_instance);
             var_decl -> set_type_instance(var_instance);
         }
 
@@ -429,7 +431,9 @@ namespace avalon {
                 instance.is_parametrized(true);
             }
             if(instance.depends_on(constraints)) {
-                build_instance(instance, star_instance);
+                token gen_tok(MUL, "*", 0, 0, "__bit__");
+                type_instance gen_instance(gen_tok, "*");
+                build_instance(instance, gen_instance);
             }
         }
 
@@ -452,7 +456,9 @@ namespace avalon {
                     instance.is_parametrized(true);
                 }
                 if(instance.depends_on(constraints)) {
-                    build_instance(instance, star_instance);
+                    token gen_tok(MUL, "*", 0, 0, "__bit__");
+                    type_instance gen_instance(gen_tok, "*");
+                    build_instance(instance, gen_instance);
                 }
             } catch(invalid_type err) {
                 throw err;
@@ -478,7 +484,9 @@ namespace avalon {
                     instance.is_parametrized(true);
                 }
                 if(instance.depends_on(constraints)) {
-                    build_instance(instance, star_instance);
+                    token gen_tok(MUL, "*", 0, 0, "__bit__");
+                    type_instance gen_instance(gen_tok, "*");
+                    build_instance(instance, gen_instance);
                 }
             } catch(invalid_type err) {
                 throw err;
@@ -504,7 +512,9 @@ namespace avalon {
                     instance.is_parametrized(true);
                 }
                 if(instance.depends_on(constraints)) {
-                    build_instance(instance, star_instance);
+                    token gen_tok(MUL, "*", 0, 0, "__bit__");
+                    type_instance gen_instance(gen_tok, "*");
+                    build_instance(instance, gen_instance);
                 }
             } catch(invalid_type err) {
                 throw err;
@@ -525,7 +535,9 @@ namespace avalon {
                     ret_instance.is_parametrized(true);
                 }
                 if(ret_instance.depends_on(constraints)) {
-                    build_instance(ret_instance, star_instance);
+                    token gen_tok(MUL, "*", 0, 0, "__bit__");
+                    type_instance gen_instance(gen_tok, "*");
+                    build_instance(ret_instance, gen_instance);
                 }
             } catch(invalid_type err) {
                 throw err;
@@ -546,7 +558,9 @@ namespace avalon {
                     instance.is_parametrized(true);
                 }
                 if(instance.depends_on(constraints)) {
-                    build_instance(instance, star_instance);
+                    token gen_tok(MUL, "*", 0, 0, "__bit__");
+                    type_instance gen_instance(gen_tok, "*");
+                    build_instance(instance, gen_instance);
                 }
             } catch(invalid_type err) {
                 throw err;
@@ -566,7 +580,9 @@ namespace avalon {
                 instance.is_parametrized(true);
             }
             if(instance.depends_on(constraints)) {
-                build_instance(instance, star_instance);
+                token gen_tok(MUL, "*", 0, 0, "__bit__");
+                type_instance gen_instance(gen_tok, "*");
+                build_instance(instance, gen_instance);
             }
         } catch(invalid_type err) {
             throw err;
