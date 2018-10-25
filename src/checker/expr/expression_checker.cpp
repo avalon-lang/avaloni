@@ -1474,6 +1474,9 @@ namespace avalon {
             // if we have a variable, we validate the variable
             if(val -> is_identifier_expression()) {
                 std::shared_ptr<variable>& var_decl = dref -> get_variable();
+                if(var_decl -> is_mutable() == false)
+                    throw invalid_expression(dref -> get_token(), "Cannot reassign a variable through an immutable reference.");
+
                 std::shared_ptr<expr>& var_expr = var_decl -> get_value();
                 std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(var_expr);
                 std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
@@ -1483,6 +1486,9 @@ namespace avalon {
             // if we have a namespaced variable
             else if(val -> is_binary_expression()) {
                 std::shared_ptr<variable>& var_decl = dref -> get_variable();
+                if(var_decl -> is_mutable() == false)
+                    throw invalid_expression(dref -> get_token(), "Cannot reassign a variable through an immutable reference.");
+
                 std::shared_ptr<expr>& var_expr = var_decl -> get_value();
                 std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(var_expr);
                 std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();

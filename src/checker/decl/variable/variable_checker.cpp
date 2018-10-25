@@ -27,13 +27,18 @@
 
 #include <iostream>
 
-#include "representer/ast/expr/call_expression.hpp"
 #include "checker/decl/variable/variable_checker.hpp"
 #include "checker/exceptions/invalid_expression.hpp"
 #include "checker/expr/expression_checker.hpp"
 #include "checker/exceptions/invalid_variable.hpp"
 #include "checker/decl/type/type_checker.hpp"
 #include "checker/exceptions/invalid_type.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
+#include "representer/ast/expr/literal_expression.hpp"
+#include "representer/ast/expr/tuple_expression.hpp"
+#include "representer/ast/expr/list_expression.hpp"
+#include "representer/ast/expr/call_expression.hpp"
+#include "representer/ast/expr/map_expression.hpp"
 #include "representer/ast/decl/variable.hpp"
 #include "representer/symtable/scope.hpp"
 #include "representer/ast/expr/expr.hpp"
@@ -142,6 +147,34 @@ namespace avalon {
             }            
         } catch(invalid_expression err) {
             throw invalid_variable(err.get_token(), err.what());
+        }
+
+        // string, tuples, lists and maps must always be immutable
+        if(variable_val -> is_literal_expression()) {
+            std::shared_ptr<literal_expression> const & lit_expr = std::static_pointer_cast<literal_expression>(variable_val);
+            if(lit_expr -> get_expression_type() == STRING_EXPR && variable_decl -> is_mutable() == true)
+                throw invalid_variable(variable_decl -> get_token(), "Variable declaration initialized with string literals must be immutable.");
+        }
+        else if(variable_val -> is_tuple_expression()) {
+            if(variable_decl -> is_mutable() == true)
+                throw invalid_variable(variable_decl -> get_token(), "Variable declaration initialized with tuple expressions must be immutable.");
+        }
+        else if(variable_val -> is_list_expression()) {
+            if(variable_decl -> is_mutable() == true)
+                throw invalid_variable(variable_decl -> get_token(), "Variable declaration initialized with list expressions must be immutable.");
+        }
+        else if(variable_val -> is_map_expression()) {
+            if(variable_decl -> is_mutable() == true)
+                throw invalid_variable(variable_decl -> get_token(), "Variable declaration initialized with map expressions must be immutable.");
+        }
+
+        // if we have a reference variable, make sure that if it points to an immutable variable, it is also immutable
+        type_instance var_instance = variable_decl -> get_type_instance();
+        if(var_instance.is_reference()) {
+            std::shared_ptr<reference_expression> const & var_expr = std::static_pointer_cast<reference_expression>(variable_val);
+            std::shared_ptr<variable>& ref_var = var_expr -> get_variable();
+            if(ref_var -> is_mutable() == false && variable_decl -> is_mutable() == true)
+                throw invalid_variable(variable_decl -> get_token(), "A mutable reference variable cannot reference an immutable variable.");
         }
 
         // if we are here, then the variable is valid

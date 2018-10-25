@@ -32,6 +32,9 @@
 #include "representer/symtable/scope.hpp"
 #include "representer/ast/decl/type.hpp"
 
+/* Builtins */
+#include "representer/builtins/lang/avalon_string.hpp"
+
 /* Lexer */
 #include "lexer/token.hpp"
 
@@ -83,6 +86,18 @@ namespace avalon {
                 }
             } catch(invalid_type err) {
                 throw invalid_function(err.get_token(), err.what());
+            }
+
+            // string, tuples, lists and maps must always be immutable
+            if(param_type_instance.get_category() == USER) {
+                avalon_string avl_string;
+                type_instance string_type_instance =  avl_string.get_type_instance();
+                type_instance_checker::complex_check(string_type_instance, l_scope, ns_name, constraints);
+                if(type_instance_strong_compare(string_type_instance, param_type_instance) == true && param.second -> is_mutable())
+                    throw invalid_function(param.second -> get_token(), "A function parameter with type <" + mangle_type_instance(param_type_instance) + "> cannot be mutable.");
+            }
+            else if((param_type_instance.get_category() == TUPLE || param_type_instance.get_category() == LIST || param_type_instance.get_category() == MAP) && param.second -> is_mutable() == true) {
+                throw invalid_function(param.second -> get_token(), "A function parameter with type <" + mangle_type_instance(param_type_instance) + "> cannot be mutable.");
             }
         }
 
