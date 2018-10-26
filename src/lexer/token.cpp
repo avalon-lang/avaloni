@@ -273,7 +273,7 @@ avl_string::avl_string(
  * General token
  */
 token star_tok(MUL, "*", 0, 0, "__bit__");
-token type_param_a_tok(IDENTIFIER, "a", 0, 0, "__bit__");
+token type_param_a_tok(IDENTIFIER, "__a__", 0, 0, "__bit__");
 
 /**
  * Type tokens
@@ -293,7 +293,16 @@ token bit_type_tok(TYPE, "bit", 0, 0, "__bit__");
 token bit2_type_tok(TYPE, "bit2", 0, 0, "__bit__");
 token bit4_type_tok(TYPE, "bit4", 0, 0, "__bit__");
 token bit8_type_tok(TYPE, "bit8", 0, 0, "__bit__");
+token gate_type_tok(TYPE, "qubit", 0, 0, "__bit__");
 token qubit_type_tok(TYPE, "qubit", 0, 0, "__bit__");
+token qubit2_type_tok(TYPE, "qubit2", 0, 0, "__bit__");
+token qubit4_type_tok(TYPE, "qubit4", 0, 0, "__bit__");
+token qubit8_type_tok(TYPE, "qubit8", 0, 0, "__bit__");
+
+/* *
+ * Type instance tokens
+ */
+token ref_type_instance_tok(REF, "ref", 0, 0, "__bit__");
 
 /**
  * constructor tokens
@@ -302,6 +311,7 @@ token true_cons_tok(IDENTIFIER, "True", 0, 0, "__bic__");
 token false_cons_tok(IDENTIFIER, "False", 0, 0, "__bic__");
 token none_cons_tok(IDENTIFIER, "None", 0, 0, "__bic__");
 token just_cons_tok(IDENTIFIER, "Just", 0, 0, "__bic__");
+token gate_cons_tok(IDENTIFIER, "Gate", 0, 0, "__bic__");
 
 /**
  * Function tokens

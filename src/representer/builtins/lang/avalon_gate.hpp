@@ -22,8 +22,8 @@
  *  SOFTWARE.
  */
 
-#ifndef AVALON_BUILTINS_LANG_QUBIT_HPP_
-#define AVALON_BUILTINS_LANG_QUBIT_HPP_
+#ifndef AVALON_BUILTINS_LANG_GATE_HPP_
+#define AVALON_BUILTINS_LANG_GATE_HPP_
 
 #include <memory>
 
@@ -36,46 +36,46 @@
 
 
 namespace avalon {
-    class avalon_qubit {
+    class avalon_gate {
     public:
         /**
          * the default constructor expects nothing
          */
-        avalon_qubit();
+        avalon_gate();
 
         /**
          * get_type
-         * returns the qubit type
+         * returns the gate type
          */
         std::shared_ptr<type>& get_type();
 
         /**
          * get_type_instance
-         * returns the qubit type instance
+         * returns the gate type instance
          */
-        type_instance& get_type_instance();
+        type_instance get_type_instance();
 
         /**
          * get_program
-         * returns a program that defines the qubit type and all functions that operate on qubits
+         * returns a program that defines the gate type and all functions that operate on gates
          */
         program& get_program();
 
     private:
         /*
-         * the qubit type
+         * the gate type
          */
-        std::shared_ptr<type> m_qubit_type;
+        std::shared_ptr<type> m_gate_type;
 
         /*
-         * the type instance built from the qubit type
+         * the type instance built from the gate type
          */
-        type_instance m_qubit_instance;
+        type_instance m_gate_instance;
 
         /*
-         * the program with quantum functions and type
+         * the program with quantum gate functions and type
          */
-        program m_qubit_prog;
+        program m_gate_prog;
     };
 }
 

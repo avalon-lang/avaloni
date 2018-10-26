@@ -328,7 +328,6 @@ namespace avalon {
      */
     extern token void_type_tok;
     extern token bool_type_tok;
-    extern token qubit_type_tok;
     extern token int_type_tok;
     extern token dec_type_tok;
     extern token float_type_tok;
@@ -342,6 +341,16 @@ namespace avalon {
     extern token bit2_type_tok;
     extern token bit4_type_tok;
     extern token bit8_type_tok;
+    extern token gate_type_tok;
+    extern token qubit_type_tok;
+    extern token qubit2_type_tok;
+    extern token qubit4_type_tok;
+    extern token qubit8_type_tok;
+
+    /**
+     * Type instance tokens
+     */
+    extern token ref_type_instance_tok;
 
     /**
      * constructor tokens
@@ -350,6 +359,7 @@ namespace avalon {
     extern token false_cons_tok;
     extern token none_cons_tok;
     extern token just_cons_tok;
+    extern token gate_cons_tok;
 
     /**
      * Function tokens

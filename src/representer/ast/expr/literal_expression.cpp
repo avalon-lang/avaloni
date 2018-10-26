@@ -22,6 +22,8 @@
  *  SOFTWARE.
  */
 
+#include <algorithm>
+#include <iterator>
 #include <cstdlib>
 #include <memory>
 #include <bitset>
@@ -230,6 +232,24 @@ namespace avalon {
         }
         else {
             throw value_error("This literal expression doesn't contain a bit string.");
+        }
+    }
+
+    /**
+     * get_qubit_value
+     * returns the 1 qubit bitset representating of this literal
+     * throws a value_error exception if it contains a different literal type
+     */
+    qpp::ket literal_expression::get_qubit_value() {
+        if(m_expr_type == QUBIT_EXPR) {
+            std::vector<char> expr_data(m_val.begin(), m_val.end());
+            std::vector<std::size_t> ket_data;
+            std::transform(expr_data.begin(), expr_data.end(), std::back_inserter(ket_data), [](const char bit) { return (std::size_t) bit - '0'; });
+            qpp::ket qubit = qpp::mket(ket_data);
+            return qubit;
+        }
+        else {
+            throw value_error("This literal expression doesn't contain a qubit string.");
         }
     }
 }

@@ -321,6 +321,25 @@ namespace avalon {
                 throw invalid_expression(lit_expr -> get_token(), "Only bit string of length 1, 2, 4 and 8 are currently supported.");
             }
         }
+        // we do the same for qubits
+        else if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
+            const std::string& value = lit_expr -> get_value();
+            
+            // check for content
+            if(value.find_first_not_of("01") != std::string::npos) {
+                throw invalid_expression(lit_expr -> get_token(), "A qubit string must only contain zeros and ones.");
+            }
+
+            // check for length
+            std::size_t qubit_length = value.length();
+            if((qubit_length & (qubit_length - 1)) == 0) {
+                if(qubit_length > 8)
+                    throw invalid_expression(lit_expr -> get_token(), "Only qubit string of length 1, 2, 4 and 8 are currently supported.");
+            }
+            else {
+                throw invalid_expression(lit_expr -> get_token(), "Only qubit string of length 1, 2, 4 and 8 are currently supported.");
+            }
+        }
 
         return m_inferrer.infer(an_expression, l_scope, ns_name);
     }

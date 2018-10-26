@@ -50,9 +50,12 @@
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_string.hpp"
+#include "representer/builtins/lang/avalon_qubit8.hpp"
+#include "representer/builtins/lang/avalon_qubit4.hpp"
+#include "representer/builtins/lang/avalon_qubit2.hpp"
+#include "representer/builtins/lang/avalon_qubit.hpp"
 #include "representer/builtins/lang/avalon_float.hpp"
 #include "representer/builtins/lang/avalon_maybe.hpp"
-#include "representer/builtins/lang/avalon_qubit.hpp"
 #include "representer/builtins/lang/avalon_tuple.hpp"
 #include "representer/builtins/lang/avalon_list.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
@@ -583,8 +586,26 @@ inferer::inferer() {
             }
         }
         else if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
-            avalon_qubit avl_qubit;
-            inferred_type_instance = avl_qubit.get_type_instance();
+            const std::string& val = lit_expr -> get_value();
+            if(val.length() == 1) {
+                avalon_qubit avl_qubit;
+                inferred_type_instance = avl_qubit.get_type_instance();
+            }
+            else if(val.length() == 2) {
+                avalon_qubit2 avl_qubit2;
+                inferred_type_instance = avl_qubit2.get_type_instance();
+            }
+            else if(val.length() == 4) {
+                avalon_qubit4 avl_qubit4;
+                inferred_type_instance = avl_qubit4.get_type_instance();
+            }
+            else if(val.length() == 8) {
+                avalon_qubit8 avl_qubit8;
+                inferred_type_instance = avl_qubit8.get_type_instance();
+            }
+            else {
+                throw invalid_expression(lit_expr -> get_token(), "Only qubits of length 1, 2, 4 and 8 are currently supported.");
+            }
         }
         else {
             throw std::runtime_error("[compiler error] unexpected literal expression in inference engine.");

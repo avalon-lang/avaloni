@@ -22,8 +22,8 @@
  *  SOFTWARE.
  */
 
-#ifndef AVALON_BUILTINS_LANG_QUBIT_HPP_
-#define AVALON_BUILTINS_LANG_QUBIT_HPP_
+#ifndef AVALON_BUILTINS_LANG_QUBIT8_HPP_
+#define AVALON_BUILTINS_LANG_QUBIT8_HPP_
 
 #include <memory>
 
@@ -36,12 +36,12 @@
 
 
 namespace avalon {
-    class avalon_qubit {
+    class avalon_qubit8 {
     public:
         /**
          * the default constructor expects nothing
          */
-        avalon_qubit();
+        avalon_qubit8();
 
         /**
          * get_type
@@ -65,17 +65,17 @@ namespace avalon {
         /*
          * the qubit type
          */
-        std::shared_ptr<type> m_qubit_type;
+        std::shared_ptr<type> m_qubit8_type;
 
         /*
          * the type instance built from the qubit type
          */
-        type_instance m_qubit_instance;
+        type_instance m_qubit8_instance;
 
         /*
          * the program with quantum functions and type
          */
-        program m_qubit_prog;
+        program m_qubit8_prog;
     };
 }
 

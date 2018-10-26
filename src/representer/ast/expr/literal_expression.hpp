@@ -30,6 +30,8 @@
 #include <string>
 #include <bitset>
 
+#include "qpp.h"
+
 #include "representer/ast/expr/expr.hpp"
 #include "representer/ast/decl/type.hpp"
 #include "lexer/token.hpp"
@@ -159,6 +161,13 @@ namespace avalon {
          * throws a value_error exception if it contains a different literal type
          */
         std::bitset<8> get_bit8_value();
+
+        /**
+         * get_qubit_value
+         * returns the 1 qubit bitset representating of this literal
+         * throws a value_error exception if it contains a different literal type
+         */
+        qpp::ket get_qubit_value();
 
         /**
          * token
