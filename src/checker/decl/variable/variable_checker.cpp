@@ -144,7 +144,14 @@ namespace avalon {
             }
             else {
                 variable_decl -> set_type_instance(expr_instance);
-            }            
+            }
+
+            // we make sure that only qubit literals are used as initializer expressions
+            if(expr_instance.is_complete()) {
+                std::shared_ptr<type>& expr_type = expr_instance.get_type();
+                if(expr_type -> is_quantum() && variable_val -> is_literal_expression() == false)
+                    throw invalid_expression(variable_val -> expr_token(), "Quantum data cannot be copied.");
+            }
         } catch(invalid_expression err) {
             throw invalid_variable(err.get_token(), err.what());
         }

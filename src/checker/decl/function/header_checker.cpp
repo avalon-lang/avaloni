@@ -118,6 +118,10 @@ namespace avalon {
                 throw invalid_function(function_decl.get_token(), "This function is public but its return type depends on a private type. The return type must be public as well or the function must be private.");
             }
 
+            // we make sure that qubits cannot be returned from functions
+            if(return_instance_type != nullptr && return_instance_type -> is_quantum())
+                throw invalid_function(return_type_instance.get_token(), "Quantum type instances cannot be used as return type instances from functions.");
+
             // if the type instance checked out, we replace the previous return type instance
             function_decl.set_return_type_instance(return_type_instance);
         } catch(invalid_type err) {

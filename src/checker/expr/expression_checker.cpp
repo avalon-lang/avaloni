@@ -1526,6 +1526,13 @@ namespace avalon {
         type_instance lval_instance = check(lval, l_scope, ns_name);
         type_instance rval_instance = check(rval, l_scope, ns_name);
 
+        // we make sure that rvals are never quantum types
+        if(rval_instance.is_complete()) {
+            std::shared_ptr<type>& rval_type = rval_instance.get_type();
+            if(rval_type -> is_quantum())
+                throw invalid_expression(rval -> expr_token(), "Quantum variables cannot be copied.");
+        }
+
         // we make sure both the rval and lval type instance are equal
         if(type_instance_strong_compare(lval_instance, rval_instance) == false) {
             throw invalid_expression(lval -> expr_token(), "This lval expression has type instance <" + mangle_type_instance(lval_instance) + "> while the rval expression expression has type instance <" + mangle_type_instance(rval_instance) + ">. Both type instances but be equal.");
