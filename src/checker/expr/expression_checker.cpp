@@ -291,7 +291,14 @@ namespace avalon {
             throw invalid_expression(val -> expr_token(), "The expression to dereference must be a variable expression.");
         }
 
-        return m_inferrer.infer(an_expression, l_scope, ns_name);
+        type_instance dref_instance = m_inferrer.infer(an_expression, l_scope, ns_name);
+        if(dref_instance.is_complete()) {
+            std::shared_ptr<type>& dref_type = dref_instance.get_type();
+            if(dref_type -> is_quantum())
+                throw invalid_expression(dref -> get_token(), "Cannot dereference a quantum variable.");
+        }
+
+        return dref_instance;
     }
 
     /**
