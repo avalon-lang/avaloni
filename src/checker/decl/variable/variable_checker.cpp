@@ -154,6 +154,9 @@ namespace avalon {
             std::shared_ptr<literal_expression> const & lit_expr = std::static_pointer_cast<literal_expression>(variable_val);
             if(lit_expr -> get_expression_type() == STRING_EXPR && variable_decl -> is_mutable() == true)
                 throw invalid_variable(variable_decl -> get_token(), "Variable declaration initialized with string literals must be immutable.");
+
+            if(lit_expr -> get_expression_type() == QUBIT_EXPR && variable_decl -> is_mutable() == true)
+                throw invalid_variable(variable_decl -> get_token(), "Variable declaration initialized with qubit literals must be immutable.");
         }
         else if(variable_val -> is_tuple_expression()) {
             if(variable_decl -> is_mutable() == true)
