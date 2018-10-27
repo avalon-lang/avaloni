@@ -58,7 +58,7 @@ namespace avalon {
     std::pair<bool,bool> type_instance_checker::simple_check(type_instance& instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::vector<token>& standins) {
         std::vector<type_instance>& instance_params = instance.get_params();
         std::shared_ptr<type> instance_type = nullptr;
-        std::pair<bool,bool> ret(false, false);
+        std::pair<bool,bool> ret(false, false); // the first element indicates whether this type instance is abstract and the second if it is not abstract but depends on an abstract type instance
         instance.is_parametrized(false);
 
         // if we have the star type instance, we don't bother looking for it in the symbol table
@@ -89,6 +89,8 @@ namespace avalon {
                         t_checker.check(instance_type, l_scope, ns_name);
                     } catch(invalid_type err) {
                         throw err;
+                    } catch(invalid_constructor err) {
+                        throw err;
                     }
                 }
                 else if(instance_type -> is_valid(INVALID)) {
@@ -107,6 +109,12 @@ namespace avalon {
                         if(res.first == true || res.second == true) {
                             instance.is_parametrized(true);
                             ret.second = true;
+                        }
+                        // if the parameter is complete, we make sure that it doesn't depend on quantum types
+                        else if(res.first == false) {
+                            std::shared_ptr<type>& ins_it_type = ins_it -> get_type();
+                            if(ins_it_type -> is_quantum())
+                                throw invalid_type(instance.get_token(), "Classical types cannot depend on quantum types.");
                         }
                         // we set the old token on the param
                         ins_it -> set_old_token(* type_it);
@@ -148,7 +156,7 @@ namespace avalon {
                 throw invalid_type(instance.get_token(), "The type instance <" + mangle_type_instance(instance) + " is a list but has more or less than 1 parameter.");
 
             if(instance.get_category() == MAP && instance_params.size() != 2)
-                throw invalid_type(instance.get_token(), "The type instance <" + mangle_type_instance(instance) + " is a list but has more or less than 2 parameter.");
+                throw invalid_type(instance.get_token(), "The type instance <" + mangle_type_instance(instance) + " is a map but has more or less than 2 parameter.");
 
             // we check dependent type instances, if any
             for(auto& instance_param : instance_params) {
@@ -196,9 +204,10 @@ namespace avalon {
                 try {
                     res = type_instance_checker::simple_check(instance, l_scope, l_ns_name, standins);
                 } catch(invalid_type err) {
-                    //std::cout << "HERE" << instance.get_name() << std::endl;
                     throw err;
                 }
+            } catch(invalid_constructor err) {
+                throw invalid_type(err.get_token(), err.what());
             }
         }
         else {
@@ -211,6 +220,8 @@ namespace avalon {
                 }
             } catch(invalid_type err) {
                 throw invalid_type(instance.get_token(), "The type instance <" + mangle_type_instance(instance) + "> has no type that builds it in the namespace <" + ns_name + ">.");
+            } catch(invalid_constructor err) {
+                throw invalid_type(err.get_token(), err.what());
             }
         }
 
@@ -241,8 +252,12 @@ namespace avalon {
             // validate the constructor parameter
             try {
                 std::pair<bool,bool> res = type_instance_checker::complex_check(cons_param, l_scope, ns_name, type_params);
-                if(res.first == false)
+                if(res.first == false) {
                     instance_type = cons_param.get_type();
+                    // we make sure that the instance type is not a quantum type as constructor cannot depend on quantum types
+                    if(instance_type -> is_quantum())
+                        throw invalid_constructor(def_constructor.get_token(), "This constructor depends on a quantum type instance. This is not allowed.");
+                }
             } catch(invalid_type err) {
                 // we check if the type instance in question is not the current type this constructor builds
                 if(cons_param.is_builtby(type_decl)) {
@@ -250,14 +265,14 @@ namespace avalon {
                     cons_param.set_type(type_decl);
                 }
                 else {
-                    throw invalid_constructor("This constructor depends on a type instance that does not exist either in the attached namespace or the local namespace or the global namespace.");
+                    throw invalid_constructor(def_constructor.get_token(), "This constructor depends on a type instance that does not exist either in the attached namespace or the local namespace or the global namespace.");
                 }
             }
 
             // if the type that builds the parameters this constructor depends on is private and the type this constructor is public
             // we issue an error as this constructor cannot be used
             if(instance_type != nullptr && (instance_type -> is_public() == false && type_decl -> is_public() == true)) {
-                throw invalid_constructor("This constructor depends on a type instance that's private while the type it builds is public. Both must be public or both must be private.");
+                throw invalid_constructor(def_constructor.get_token(), "This constructor depends on a type instance that's private while the type it builds is public. Both must be public or both must be private.");
             }
 
             // we have the type instance type builder, we check if it is the same as that which this constructor builds
@@ -268,7 +283,7 @@ namespace avalon {
             else {
                 // if the type instance type builder is invalid, so it is the constructor
                 if(instance_type != nullptr && instance_type -> is_valid(INVALID))
-                    throw invalid_constructor("Default constructor <" + def_constructor.get_name() + "> failed type checking because the type <" + instance_type -> get_name() + "> is not valid.");
+                    throw invalid_constructor(def_constructor.get_token(), "Default constructor <" + def_constructor.get_name() + "> failed type checking because the type <" + instance_type -> get_name() + "> is not valid.");
             }
         }
     }
@@ -285,8 +300,11 @@ namespace avalon {
             // validate the constructor parameter
             try {
                 std::pair<bool,bool> res = type_instance_checker::complex_check(cons_param.second, l_scope, ns_name, type_params);
-                if(res.first == false)
+                if(res.first == false) {
                     instance_type = cons_param.second.get_type();
+                    // we make sure that the instance type is not a quantum type as constructor cannot depend on quantum types
+                    if(instance_type -> is_quantum())
+                        throw invalid_constructor(rec_constructor.get_token(), "This constructor depends on a quantum type instance. This is not allowed.");                }
             } catch(invalid_type err) {
                 // we check if the type instance in question is not the current type this constructor builds
                 if(cons_param.second.is_builtby(type_decl)) {
@@ -294,14 +312,14 @@ namespace avalon {
                     cons_param.second.set_type(type_decl);
                 }
                 else {
-                    throw invalid_constructor("This constructor depends on a type instance that does not exist either in the attached namespace or the local namespace or the global namespace.");
+                    throw invalid_constructor(rec_constructor.get_token(), "This constructor depends on a type instance that does not exist either in the attached namespace or the local namespace or the global namespace.");
                 }
             }
 
             // if the type that builds the parameters this constructor depends on is private and the type this constructor is public
             // we issue an error as this constructor cannot be used
             if(instance_type != nullptr && (instance_type -> is_public() == false && type_decl -> is_public() == true)) {
-                throw invalid_constructor("This constructor depends on a type instance that's private while the type it builds is public. Both must be public or both must be private.");
+                throw invalid_constructor(rec_constructor.get_token(), "This constructor depends on a type instance that's private while the type it builds is public. Both must be public or both must be private.");
             }
 
             // we have the type instance type builder, we check if it is the same as that which this constructor builds
@@ -312,7 +330,7 @@ namespace avalon {
             else {
                 // if the type instance type builder is invalid, so it is the constructor
                 if(instance_type != nullptr && instance_type -> is_valid(INVALID))
-                    throw invalid_constructor("Record constructor <" + rec_constructor.get_name() + "> failed type checking because the type <" + instance_type -> get_name() + "> is not valid.");
+                    throw invalid_constructor(rec_constructor.get_token(), "Record constructor <" + rec_constructor.get_name() + "> failed type checking because the type <" + instance_type -> get_name() + "> is not valid.");
             }
         }
     }
@@ -354,7 +372,7 @@ type_checker::type_checker() {
                 constructor_checker::check(def_constructor, type_decl, l_scope, ns_name);
                 type_decl -> replace_constructor(def_constructor);
             } catch(invalid_constructor err) {
-                throw invalid_type(def_constructor.get_token(), err.what());
+                throw err;
             }
         }
 
@@ -365,7 +383,7 @@ type_checker::type_checker() {
                 constructor_checker::check(rec_constructor, type_decl, l_scope, ns_name);
                 type_decl -> replace_constructor(rec_constructor);
             } catch(invalid_constructor err) {
-                throw invalid_type(rec_constructor.get_token(), err.what());
+                throw err;
             }
         }
 

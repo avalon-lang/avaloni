@@ -281,8 +281,44 @@ static void set_grouped_instance(std::shared_ptr<grouped_expression> const & gro
 }
 
 static void set_grouped_instance(std::shared_ptr<expr>& an_expression, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
-    std::shared_ptr<grouped_expression> const & id_expr = std::static_pointer_cast<grouped_expression>(an_expression);
-    set_grouped_instance(id_expr, new_instance, l_scope, ns_name, sub_ns_name);
+    std::shared_ptr<grouped_expression> const & gr_expr = std::static_pointer_cast<grouped_expression>(an_expression);
+    set_grouped_instance(gr_expr, new_instance, l_scope, ns_name, sub_ns_name);
+}
+
+static void set_reference_instance(std::shared_ptr<reference_expression> const & ref_expr, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+    // we also make that new type instance is complete
+    if(new_instance.is_complete() == false)
+        throw invalid_type(new_instance.get_token(), "The given type instance cannot be on expressions unless it is complete.");
+
+    // since the inferred type instance is incomplete, we replace it with the new complete type instance
+    ref_expr -> set_type_instance(new_instance);
+
+    // work on the contained value
+    std::shared_ptr<expr>& value = ref_expr -> get_val();
+    set_type_instance(value, new_instance, l_scope, ns_name, sub_ns_name);
+}
+
+static void set_reference_instance(std::shared_ptr<expr>& an_expression, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+    std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+    set_reference_instance(ref_expr, new_instance, l_scope, ns_name, sub_ns_name);
+}
+
+static void set_dereference_instance(std::shared_ptr<dereference_expression> const & dref_expr, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+    // we also make that new type instance is complete
+    if(new_instance.is_complete() == false)
+        throw invalid_type(new_instance.get_token(), "The given type instance cannot be on expressions unless it is complete.");
+
+    // since the inferred type instance is incomplete, we replace it with the new complete type instance
+    dref_expr -> set_type_instance(new_instance);
+
+    // work on the contained value
+    std::shared_ptr<expr>& value = dref_expr -> get_val();
+    set_type_instance(value, new_instance, l_scope, ns_name, sub_ns_name);
+}
+
+static void set_dereference_instance(std::shared_ptr<expr>& an_expression, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+    std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(an_expression);
+    set_dereference_instance(dref_expr, new_instance, l_scope, ns_name, sub_ns_name);
 }
 
 void set_type_instance(std::shared_ptr<expr>& an_expression, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
@@ -311,6 +347,12 @@ void set_type_instance(std::shared_ptr<expr>& an_expression, type_instance& new_
     }
     else if(an_expression -> is_grouped_expression()) {
         set_grouped_instance(an_expression, new_instance, l_scope, ns_name, sub_ns_name);
+    }
+    else if(an_expression -> is_reference_expression()) {
+        set_reference_instance(an_expression, new_instance, l_scope, ns_name, sub_ns_name);
+    }
+    else if(an_expression -> is_dereference_expression()) {
+        set_dereference_instance(an_expression, new_instance, l_scope, ns_name, sub_ns_name);
     }
     else {
         throw std::runtime_error("[compiler error] unexpected expression type in inference engine.");
@@ -502,7 +544,8 @@ inferer::inferer() {
 
         // create a new type instance that refers to the type instance of the expression referenced
         avalon_ref avl_ref;
-        type_instance ref_instance =  avl_ref.get_type_instance(val_instance);
+        type_instance ref_instance = avl_ref.get_type_instance(val_instance);
+        ref_expr -> set_type_instance(ref_instance);
 
         return ref_instance;
     }
@@ -516,6 +559,7 @@ inferer::inferer() {
         std::shared_ptr<variable>& var = dref_expr -> get_variable();
         type_instance var_instance = var -> get_type_instance();
         type_instance dref_instance = var_instance.get_params()[0];
+        dref_expr -> set_type_instance(dref_instance);
         return dref_instance;
     }
 

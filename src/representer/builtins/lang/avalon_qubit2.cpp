@@ -52,6 +52,7 @@ namespace avalon {
      * the default constructor expects nothing
      */
     avalon_qubit2::avalon_qubit2() : m_qubit2_type(std::make_shared<type>(qubit2_type_tok, VALID)), m_qubit2_instance(qubit2_type_tok, m_qubit2_type, "*") {
+        m_qubit2_type -> is_quantum(true);
     }
 
     /**

@@ -27,12 +27,35 @@
 
 #include <stdexcept>
 
+#include "lexer/token.hpp"
+
 
 namespace avalon {
     class invalid_constructor : public std::runtime_error {
     public:
-        invalid_constructor(const std::string& message);
+        /**
+         * the constructor expects the token of the constructor that resulted in failure
+         * and the message about what exactly went wrong.
+         */
+        invalid_constructor(const token& tok, const std::string& message);
+
+        /**
+         * what
+         * override the what function defined by runtime_error
+         */
         virtual const char * what() const noexcept;
+
+        /**
+         * get_token
+         * returns the token corresponding to the constructor that failed checking
+         */
+        const token& get_token();
+
+    private:
+        /**
+         * token to the constructor name
+         */
+        token m_tok;
     };
 }
 

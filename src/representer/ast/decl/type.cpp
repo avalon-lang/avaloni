@@ -47,7 +47,7 @@ namespace avalon {
  * - the token with type information
  * - the validation state
  */
-type::type(token& tok, validation_state is_valid) : m_name(tok.get_lexeme()), m_tok(tok), m_is_valid(is_valid), m_is_public(true), m_is_used(false), m_builder_instance(nullptr) {
+type::type(token& tok, validation_state is_valid) : m_name(tok.get_lexeme()), m_tok(tok), m_is_valid(is_valid), m_is_public(true), m_is_used(false), m_is_quantum(false), m_builder_instance(nullptr) {
 }
     /**
      * set_name
@@ -275,6 +275,18 @@ type::type(token& tok, validation_state is_valid) : m_name(tok.get_lexeme()), m_
 
     bool type::is_used() const {
         return m_is_used;
+    }
+
+    /**
+     * is_quantum
+     * sets and returns a boolean indicating whether this declaration is a classical or a quantum type
+     */
+    void type::is_quantum(bool quantum) {
+        m_is_quantum = quantum;
+    }
+
+    bool type::is_quantum() const {
+        return m_is_quantum;
     }
 
     /**

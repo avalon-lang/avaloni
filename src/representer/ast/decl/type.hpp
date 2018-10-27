@@ -231,6 +231,13 @@ namespace avalon {
         bool is_used() const;
 
         /**
+         * is_quantum
+         * sets and returns a boolean indicating whether this declaration is a classical or a quantum type
+         */
+        void is_quantum(bool quantum);
+        bool is_quantum() const;
+
+        /**
          * add_specialization
          * add a type that was generated from a complete type instance
          */
@@ -340,6 +347,11 @@ namespace avalon {
          * whether this type has been used for any expression
          */
         bool m_is_used;
+
+        /*
+         * whether this type is a quantum or classical type
+         */
+        bool m_is_quantum;
 
         /*
          * map of types generated from this one

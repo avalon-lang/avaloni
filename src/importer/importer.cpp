@@ -38,9 +38,13 @@
 
 /* Built-in types */
 #include "representer/builtins/lang/avalon_string.hpp"
+#include "representer/builtins/lang/avalon_qubit8.hpp"
+#include "representer/builtins/lang/avalon_qubit4.hpp"
+#include "representer/builtins/lang/avalon_qubit2.hpp"
+#include "representer/builtins/lang/avalon_qubit.hpp"
 #include "representer/builtins/lang/avalon_maybe.hpp"
 #include "representer/builtins/lang/avalon_float.hpp"
-#include "representer/builtins/lang/avalon_qubit.hpp"
+#include "representer/builtins/lang/avalon_gate.hpp"
 #include "representer/builtins/lang/avalon_void.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_bit2.hpp"
@@ -212,6 +216,18 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
      * adds builtin programs to the dependency queue
      */
     void importer::add_builtin_programs() {
+        // string declarations
+        avalon_string avl_string;
+        program& string_prog = avl_string.get_program();
+        m_sorted_deps.push(string_prog.get_fqn().get_name());
+        m_gtable.add_program(string_prog);
+
+        // maybe declarations
+        avalon_maybe avl_maybe;
+        program& maybe_prog = avl_maybe.get_program();
+        m_sorted_deps.push(maybe_prog.get_fqn().get_name());
+        m_gtable.add_program(maybe_prog);
+
         // void declarations
         avalon_void avl_void;
         program& void_prog = avl_void.get_program();
@@ -223,6 +239,18 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         program& bool_prog = avl_bool.get_program();
         m_sorted_deps.push(bool_prog.get_fqn().get_name());
         m_gtable.add_program(bool_prog);
+
+        // floating point declarations
+        avalon_float avl_float;
+        program& float_prog = avl_float.get_program();
+        m_sorted_deps.push(float_prog.get_fqn().get_name());
+        m_gtable.add_program(float_prog);
+
+        // gate declarations
+        avalon_gate avl_gate;
+        program& gate_prog = avl_gate.get_program();
+        m_sorted_deps.push(gate_prog.get_fqn().get_name());
+        m_gtable.add_program(gate_prog);
 
         // bit declarations
         avalon_bit avl_bit;
@@ -254,29 +282,29 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         m_sorted_deps.push(qubit_prog.get_fqn().get_name());
         m_gtable.add_program(qubit_prog);
 
-        // floating point declarations
-        avalon_float avl_float;
-        program& float_prog = avl_float.get_program();
-        m_sorted_deps.push(float_prog.get_fqn().get_name());
-        m_gtable.add_program(float_prog);
+        // qubit2 declarations
+        avalon_qubit2 avl_qubit2;
+        program& qubit2_prog = avl_qubit2.get_program();
+        m_sorted_deps.push(qubit2_prog.get_fqn().get_name());
+        m_gtable.add_program(qubit2_prog);
+
+        // qubit4 declarations
+        avalon_qubit4 avl_qubit4;
+        program& qubit4_prog = avl_qubit4.get_program();
+        m_sorted_deps.push(qubit4_prog.get_fqn().get_name());
+        m_gtable.add_program(qubit4_prog);
+
+        // qubit8 declarations
+        avalon_qubit8 avl_qubit8;
+        program& qubit8_prog = avl_qubit8.get_program();
+        m_sorted_deps.push(qubit8_prog.get_fqn().get_name());
+        m_gtable.add_program(qubit8_prog);
 
         // integer declarations
         avalon_int avl_int;
         program& int_prog = avl_int.get_program();
         m_sorted_deps.push(int_prog.get_fqn().get_name());
         m_gtable.add_program(int_prog);
-
-        // string declarations
-        avalon_string avl_string;
-        program& string_prog = avl_string.get_program();
-        m_sorted_deps.push(string_prog.get_fqn().get_name());
-        m_gtable.add_program(string_prog);
-
-        // maybe declarations
-        avalon_maybe avl_maybe;
-        program& maybe_prog = avl_maybe.get_program();
-        m_sorted_deps.push(maybe_prog.get_fqn().get_name());
-        m_gtable.add_program(maybe_prog);
 
         // IO declarations
         avalon_io avl_io;
@@ -358,19 +386,54 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
     void importer::run_builtin_imports(program& to) {
         token import_tok(IDENTIFIER, "import", 0, 0, "__bid__");
 
+        // maybe declarations
+        avalon_maybe avl_maybe;
+        program& maybe_prog = avl_maybe.get_program();
+        std::shared_ptr<import> maybe_import = std::make_shared<import>(import_tok, maybe_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_maybe_import = maybe_import;
+        to.add_declaration(final_maybe_import);
+
+        // qubit declarations
+        avalon_qubit avl_qubit;
+        program& qubit_prog = avl_qubit.get_program();
+        std::shared_ptr<import> qubit_import = std::make_shared<import>(import_tok, qubit_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_qubit_import = qubit_import;
+        to.add_declaration(final_qubit_import);
+
+        // qubit2 declarations
+        avalon_qubit2 avl_qubit2;
+        program& qubit2_prog = avl_qubit2.get_program();
+        std::shared_ptr<import> qubit2_import = std::make_shared<import>(import_tok, qubit2_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_qubit2_import = qubit2_import;
+        to.add_declaration(final_qubit2_import);
+
+        // qubit4 declarations
+        avalon_qubit4 avl_qubit4;
+        program& qubit4_prog = avl_qubit4.get_program();
+        std::shared_ptr<import> qubit4_import = std::make_shared<import>(import_tok, qubit4_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_qubit4_import = qubit4_import;
+        to.add_declaration(final_qubit4_import);
+
+        // qubit8 declarations
+        avalon_qubit8 avl_qubit8;
+        program& qubit8_prog = avl_qubit8.get_program();
+        std::shared_ptr<import> qubit8_import = std::make_shared<import>(import_tok, qubit8_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_qubit8_import = qubit8_import;
+        to.add_declaration(final_qubit8_import);
+
+        // gate declarations
+        avalon_gate avl_gate;
+        program& gate_prog = avl_gate.get_program();
+        std::shared_ptr<import> gate_import = std::make_shared<import>(import_tok, gate_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_gate_import = gate_import;
+        to.add_declaration(final_gate_import);
+
         // void declarations
         avalon_void avl_void;
         program& void_prog = avl_void.get_program();
         std::shared_ptr<import> void_import = std::make_shared<import>(import_tok,void_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_void_import = void_import;
         to.add_declaration(final_void_import);
-
-        // bool declarations
-        avalon_bool avl_bool;
-        program& bool_prog = avl_bool.get_program();
-        std::shared_ptr<import> bool_import = std::make_shared<import>(import_tok, bool_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_bool_import = bool_import;
-        to.add_declaration(final_bool_import);
 
         // bit declarations
         avalon_bit avl_bit;
@@ -400,12 +463,12 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<decl> final_bit8_import = bit8_import;
         to.add_declaration(final_bit8_import);
 
-        // qubit declarations
-        avalon_qubit avl_qubit;
-        program& qubit_prog = avl_qubit.get_program();
-        std::shared_ptr<import> qubit_import = std::make_shared<import>(import_tok, qubit_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_qubit_import = qubit_import;
-        to.add_declaration(final_qubit_import);
+        // bool declarations
+        avalon_bool avl_bool;
+        program& bool_prog = avl_bool.get_program();
+        std::shared_ptr<import> bool_import = std::make_shared<import>(import_tok, bool_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_bool_import = bool_import;
+        to.add_declaration(final_bool_import);
 
         // floating point declarations
         avalon_float avl_float;
@@ -413,6 +476,13 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<import> float_import = std::make_shared<import>(import_tok, float_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_float_import = float_import;
         to.add_declaration(final_float_import);
+
+        // IO declarations
+        avalon_io avl_io;
+        program& io_prog = avl_io.get_program();
+        std::shared_ptr<import> io_import = std::make_shared<import>(import_tok, io_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_io_import = io_import;
+        to.add_declaration(final_io_import);
 
         // integer declarations
         avalon_int avl_int;
@@ -427,20 +497,6 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<import> string_import = std::make_shared<import>(import_tok, string_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_string_import = string_import;
         to.add_declaration(final_string_import);
-
-        // maybe declarations
-        avalon_maybe avl_maybe;
-        program& maybe_prog = avl_maybe.get_program();
-        std::shared_ptr<import> maybe_import = std::make_shared<import>(import_tok, maybe_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_maybe_import = maybe_import;
-        to.add_declaration(final_maybe_import);
-
-        // IO declarations
-        avalon_io avl_io;
-        program& io_prog = avl_io.get_program();
-        std::shared_ptr<import> io_import = std::make_shared<import>(import_tok, io_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_io_import = io_import;
-        to.add_declaration(final_io_import);
     }
 
     /**
