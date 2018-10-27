@@ -73,6 +73,10 @@ namespace avalon {
                     throw invalid_function(function_decl.get_token(), "This function is public but has parameters that depend on private types. All parameters of a public function must be public as well.");
                 }
 
+                // we make sure that the parameter type instance is not a quantum type
+                if(param_instance_type != nullptr && param_instance_type -> is_quantum())
+                    throw invalid_function(param_type_instance.get_token(), "Quantum types cannot be used a type instances to function parameters.");
+
                 // if the type instance checked out, we replace the one on the parameter with the updated on
                 param.second -> set_type_instance(param_type_instance);
 
