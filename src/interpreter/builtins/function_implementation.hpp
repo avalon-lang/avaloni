@@ -35,6 +35,7 @@
 /* Implementations */
 #include "interpreter/builtins/lang/avalon_arithmetic.hpp"
 #include "interpreter/builtins/lang/avalon_comparison.hpp"
+#include "interpreter/builtins/lang/avalon_qubit.hpp"
 #include "interpreter/builtins/lang/avalon_logic.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
 #include "interpreter/builtins/lang/avalon_cast.hpp"
@@ -430,6 +431,34 @@ namespace avalon {
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
             return avl_not(arguments);
+        }
+    };
+
+    /**
+     * apply_implementation
+     * implements the builtin apply function
+     */
+    struct apply_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return avl_apply(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return avl_apply(arguments);
+        }
+    };
+
+    /**
+     * measure_implementation
+     * implements the builtin measure function
+     */
+    struct measure_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return avl_measure(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return avl_measure(arguments);
         }
     };
 }

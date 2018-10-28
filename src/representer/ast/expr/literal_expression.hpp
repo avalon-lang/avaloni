@@ -170,6 +170,20 @@ namespace avalon {
         qpp::ket get_qubit_value();
 
         /**
+         * set_qubit_value
+         * sets the ket value if we have a qubit expression.
+         * throws a value_error exception if this literal doesn't contain qubits
+         */
+        void set_qubit_value(qpp::ket l_ket);
+
+        /**
+         * ket_evolved
+         * returns true if we have a qubit has had a quantum gate applied
+         * throws a value_error exception if this lteral doesn't contain qubits
+         */
+        bool ket_evolved();
+
+        /**
          * token
          * returns this expression token
          * this is useful because it prevents us from casting each expression just to display error messages
@@ -228,6 +242,18 @@ namespace avalon {
          * the string representation of the literal
          */
         std::string m_val;
+
+        /*
+         * Qubits special case:
+         * while evolving qubits by the application of quantum gates, we keep a copy of the ket here.
+         * This allows us to avoid casting from strings to kets before applying futher gates.
+         */
+        qpp::ket m_ket;
+
+        /*
+         * this flag lets us know if a qubit has been evolved from its initial value.
+         */
+        bool m_ket_evolved;
     };
 }
 

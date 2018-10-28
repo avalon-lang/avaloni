@@ -28,6 +28,8 @@
 #include <memory>
 #include <bitset>
 
+#include "qpp.h"
+
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/exceptions/value_error.hpp"
 #include "representer/ast/expr/expr.hpp"
@@ -39,13 +41,17 @@ namespace avalon {
     /**
      * the constructor expects the operand of the literal operator
      */
-    literal_expression::literal_expression(token& tok, literal_expression_type expr_type, const std::string& val) : m_tok(tok), m_type_instance_from_parser(false), m_expr_type(expr_type), m_val(val) {
+    literal_expression::literal_expression(token& tok, literal_expression_type expr_type, const std::string& val) : m_tok(tok), m_type_instance_from_parser(false), m_expr_type(expr_type), m_val(val), m_ket_evolved(false) {
     }
 
     /**
      * copy constructor
      */
     literal_expression::literal_expression(const std::shared_ptr<literal_expression>& lit_expr) : m_tok(lit_expr -> get_token()), m_instance(lit_expr -> get_type_instance()), m_type_instance_from_parser(lit_expr -> type_instance_from_parser()), m_expr_type(lit_expr -> get_expression_type()), m_val(lit_expr -> get_value()) {
+        if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
+            m_ket_evolved = lit_expr -> ket_evolved();
+            m_ket = lit_expr -> get_qubit_value();
+        }
     }
 
     /**
@@ -57,6 +63,10 @@ namespace avalon {
         m_type_instance_from_parser = lit_expr -> type_instance_from_parser();
         m_expr_type = lit_expr -> get_expression_type();
         m_val = lit_expr -> get_value();
+        if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
+            m_ket_evolved = lit_expr -> ket_evolved();
+            m_ket = lit_expr -> get_qubit_value();
+        }
         return * this;
     }
 
@@ -242,11 +252,45 @@ namespace avalon {
      */
     qpp::ket literal_expression::get_qubit_value() {
         if(m_expr_type == QUBIT_EXPR) {
-            std::vector<char> expr_data(m_val.begin(), m_val.end());
-            std::vector<std::size_t> ket_data;
-            std::transform(expr_data.begin(), expr_data.end(), std::back_inserter(ket_data), [](const char bit) { return (std::size_t) bit - '0'; });
-            qpp::ket qubit = qpp::mket(ket_data);
-            return qubit;
+            if(m_ket_evolved) {
+                return m_ket;
+            }
+            else {
+                std::vector<char> expr_data(m_val.begin(), m_val.end());
+                std::vector<std::size_t> ket_data;
+                std::transform(expr_data.begin(), expr_data.end(), std::back_inserter(ket_data), [](const char bit) { return (std::size_t) bit - '0'; });
+                m_ket = qpp::mket(ket_data);
+                return m_ket;
+            }
+        }
+        else {
+            throw value_error("This literal expression doesn't contain a qubit string.");
+        }
+    }
+
+    /**
+     * set_qubit_value
+     * sets the ket value if we have a qubit expression.
+     * throws a value_error exception if this literal doesn't contain qubits
+     */
+    void literal_expression::set_qubit_value(qpp::ket l_ket) {
+        if(m_expr_type == QUBIT_EXPR) {
+            m_ket = l_ket;
+            m_ket_evolved = true;
+        }
+        else {
+            throw value_error("This literal expression doesn't contain a qubit string.");
+        }
+    }
+
+    /**
+     * ket_evolved
+     * returns true if we have a qubit has had a quantum gate applied
+     * throws a value_error exception if this lteral doesn't contain qubits
+     */
+    bool literal_expression::ket_evolved() {
+        if(m_expr_type == QUBIT_EXPR) {
+            return m_ket_evolved;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");

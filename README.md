@@ -10,6 +10,34 @@ This is an interpreter of the quantum version of the language.
 
 **The interpreter in progress**  
 
+As of this writing, 1-Qubit quantum gates can be tested.  
+Below is an example of a superposition with the Hadamard gate.
+
+```
+import avalon.io
+
+def had = (val q : ref'qubit) -> void:
+    val g = Gate(__PI__ / 2.0, 0.0, __PI__)
+    apply(g, q)
+    return
+
+def __main__ = (val args : [string]) -> void:
+    -- initialize <q> to |0>
+    val q = 0q0
+
+    -- apply the hadamard gate to <q> to create a superposition
+    had(ref q)
+
+    -- measure <q> and place the result in <b>
+    var b = measure(ref q)
+
+    -- print the bit placed in <b>
+    -[ keep executing this program and you will notice that the result keeps changing ]-
+    io.println(string(b))
+
+    return
+```
+
 After compiling the program, please run:
 ```shell
 $ ./avalon tests/main.avl

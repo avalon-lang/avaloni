@@ -667,15 +667,20 @@ namespace avalon {
         // 1. we start by check the function call arguments
         for(auto& arg : args) {
             type_instance arg_instance = check(arg.second, l_scope, ns_name);
-            
-            // we make sire that the argument type instance is complete
-            if(arg_instance.is_complete() == false)
-                throw invalid_expression(arg.second -> expr_token(), "All expressions passed as arguments to a function call must have complete type instances.");
-            
-            // we make sure that this the argument type is not a quantum type
-            std::shared_ptr<type>& arg_type = arg_instance.get_type();
-            if(arg_type -> is_quantum())
-                throw invalid_expression(arg.second -> expr_token(), "Quantum types cannot be passed by value to functions.");
+
+            try {
+                type_instance_checker::complex_check(arg_instance, l_scope, ns_name);
+                // we make sire that the argument type instance is complete
+                if(arg_instance.is_complete() == false)
+                    throw invalid_expression(arg.second -> expr_token(), "All expressions passed as arguments to a function call must have complete type instances.");
+                
+                // we make sure that this the argument type is not a quantum type
+                std::shared_ptr<type>& arg_type = arg_instance.get_type();
+                if(arg_type != nullptr && arg_type -> is_quantum())
+                    throw invalid_expression(arg.second -> expr_token(), "Quantum types cannot be passed by value to functions.");
+            } catch(invalid_type err) {
+                throw invalid_expression(err.get_token(), err.what());
+            }
         }
 
         // 2. we get the function from the inferer as it carries the expression type as well

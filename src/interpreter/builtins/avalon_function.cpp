@@ -88,6 +88,10 @@ namespace avalon {
         xor_implementation avl_xor_implementation;
         bnot_implementation avl_bnot_implementation;
 
+        /* quantum functions */
+        apply_implementation avl_apply_implementation;
+        measure_implementation avl_measure_implementation;
+
         m_implementations = {
             /* boolean functions */
             {"__and__", std::make_shared<and_implementation>(avl_and_implementation)},
@@ -129,6 +133,10 @@ namespace avalon {
             {"__bor__", std::make_shared<bor_implementation>(avl_bor_implementation)},
             {"__xor__", std::make_shared<xor_implementation>(avl_xor_implementation)},
             {"__bnot__", std::make_shared<bnot_implementation>(avl_bnot_implementation)},
+
+            /* quantum functions */
+            {"apply", std::make_shared<apply_implementation>(avl_apply_implementation)},
+            {"measure", std::make_shared<measure_implementation>(avl_measure_implementation)},
         };
     }
 
