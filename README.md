@@ -38,14 +38,6 @@ def __main__ = (val args : [string]) -> void:
     return
 ```
 
-After compiling the program, please run:
-```shell
-$ ./avalon tests/main.avl
-```
-
-It contains a test programs that performs a linear search from an array.  
-Feel free to play with it as well.
-
 ## Documentation
 
 Documentation is currently being written as the language along with the language.  
