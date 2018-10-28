@@ -4,7 +4,7 @@ This is an interpreter of the quantum version of the language.
 
 ## What it looks like
 
-![Avalon sample program in my editor](images/main.avl.png "Avalon program in Sublime Text")
+![Avalon sample program in my editor](images/superposition.avl.png "Avalon program in Sublime Text")
 
 ## State of the project
 
