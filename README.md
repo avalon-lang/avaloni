@@ -40,7 +40,7 @@ def __main__ = (val args : [string]) -> void:
 
 ## Documentation
 
-Documentation is currently being written as the language along with the language.  
+Documentation is currently being written as the language evolves.  
 You can find the documentation at [Read The Docs](https://avalon-lang.readthedocs.io/en/latest).
 
 ## Contributing
