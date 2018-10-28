@@ -1730,10 +1730,9 @@ parser::parser(
         std::string namespace_name("*");
 
         // if we have a the <ref> keyword followed by a quote, we know this is a reference type
-        if(check(REF) && check_next(QUOTE)) {
+        if(check(REF)) {
             // get the reference as the main type instance
             std::shared_ptr<token>& instance_tok = consume(REF, "Expected the <ref> keyword in anticipation of a reference type instance.");
-            consume(QUOTE, "Expected a single quote <'> after the <ref> keyword.");
             type_instance instance(* instance_tok, namespace_name);
             instance.set_category(USER);
             instance.is_reference(true);

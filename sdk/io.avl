@@ -1,15 +1,16 @@
 -[
-IO module
+IO package
 
 - author     ntwali bashige
 - copyright  2018 (c) ntwali bashige
 - license    MIT license
 ]-
 
-namespace io -/
+namespace Io -/
 var package = (
-    name    = "I/O package",
-    version = "0.0.1"
+    name        = "I/O package",
+    version     = "0.0.1",
+    description = "This package contains functions that read from and print to the standard input/ourput"
 )
 
 def println = (val str : string) -> int:

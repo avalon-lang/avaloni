@@ -1,0 +1,97 @@
+-[
+Quantum package
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import math
+
+namespace Quant -/
+var package = (
+    name        = "Quantum package",
+    version     = "0.0.1",
+    description = "This package contains the definition of quantum gates."
+)
+
+-[
+pi
+    Applies the identity gate to its argument
+
+:params
+- qubit    : ref qubit
+    A reference to a single qubit to apply the identity gate to
+
+:returns
+- index     : void
+]-
+def pi = (val q : ref qubit) -> void:
+    val g = Gate(0.0, 0.0, 0.0)
+    apply(g, q)
+    return
+
+-[
+px
+    Applies the Pauli X gate to its argument
+
+:params
+- qubit    : ref qubit
+    A reference to a single qubit to apply the Pauli X gate to
+
+:returns
+- index     : void
+]-
+def px = (val q : ref qubit) -> void:
+    val g = Gate(Math.PI, 0.0, Math.PI)
+    apply(g, q)
+    return
+
+-[
+py
+    Applies the Pauli Y gate to its argument
+
+:params
+- qubit    : ref qubit
+    A reference to a single qubit to apply the Pauli Y gate to
+
+:returns
+- index     : void
+]-
+def py = (val q : ref qubit) -> void:
+    val g = Gate(Math.PI, Math.PI / 2.0, Math.PI / 2.0)
+    apply(g, q)
+    return
+
+-[
+pz
+    Applies the Pauli Z gate to its argument
+
+:params
+- qubit    : ref qubit
+    A reference to a single qubit to apply the Pauli Z gate to
+
+:returns
+- index     : void
+]-
+def pz = (val q : ref qubit) -> void:
+    val g = Gate(0.0, 0.0, Math.PI)
+    apply(g, q)
+    return
+
+-[
+had
+    Applies the Hadamard gate to its argument
+
+:params
+- qubit    : ref qubit
+    A reference to a single qubit to apply the Hadamard gate to
+
+:returns
+- index     : void
+]-
+def had = (val q : ref qubit) -> void:
+    val g = Gate(Math.PI / 2.0, 0.0, Math.PI)
+    apply(g, q)
+    return
+/-

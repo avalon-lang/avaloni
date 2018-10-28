@@ -10,7 +10,7 @@ cc          := g++
 cflags      := -std=c++11 -g -Wall -pedantic -fopenmp
 ldpaths     := -L/usr/local/lib
 rdpaths     := -Wl,-rpath=/usr/local/lib
-ldflags     := -lboost_filesystem -lboost_system
+ldflags     := -lboost_filesystem -lboost_system -fopenmp
 src_dir     := src
 inc         := -Isrc -Ideps/qpp
 sysinc      := -isystem deps/boost -isystem deps/eigen
