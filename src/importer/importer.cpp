@@ -56,6 +56,9 @@
 /* Builtin OS interface programs */
 #include "representer/builtins/io/avalon_io.hpp"
 
+/* Builtin mathematical functions */
+#include "representer/builtins/math/avalon_trig.hpp"
+
 /* Symbol table */
 #include "representer/symtable/gtable.hpp"
 #include "representer/symtable/scope.hpp"
@@ -252,6 +255,12 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         m_sorted_deps.push(gate_prog.get_fqn().get_name());
         m_gtable.add_program(gate_prog);
 
+        // trigonometry declarations
+        avalon_trig avl_trig;
+        program& trig_prog = avl_trig.get_program();
+        m_sorted_deps.push(trig_prog.get_fqn().get_name());
+        m_gtable.add_program(trig_prog);
+
         // bit declarations
         avalon_bit avl_bit;
         program& bit_prog = avl_bit.get_program();
@@ -427,6 +436,13 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<import> gate_import = std::make_shared<import>(import_tok, gate_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_gate_import = gate_import;
         to.add_declaration(final_gate_import);
+
+        // trigonometry declarations
+        avalon_trig avl_trig;
+        program& trig_prog = avl_trig.get_program();
+        std::shared_ptr<import> trig_import = std::make_shared<import>(import_tok, trig_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_trig_import = trig_import;
+        to.add_declaration(final_trig_import);
 
         // void declarations
         avalon_void avl_void;

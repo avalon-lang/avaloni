@@ -110,6 +110,7 @@ namespace avalon {
         double arg_val = arg_lit -> get_float_value();
         double res_val = -arg_val;
         std::ostringstream sstr;
+        sstr.precision(20);
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -161,6 +162,7 @@ namespace avalon {
         double arg_two_val = arg_two_lit -> get_float_value();
         double res_val = arg_one_val + arg_two_val;
         std::ostringstream sstr;
+        sstr.precision(20);
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -212,6 +214,7 @@ namespace avalon {
         double arg_two_val = arg_two_lit -> get_float_value();
         double res_val = arg_one_val - arg_two_val;
         std::ostringstream sstr;
+        sstr.precision(20);
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -263,6 +266,7 @@ namespace avalon {
         double arg_two_val = arg_two_lit -> get_float_value();
         double res_val = arg_one_val * arg_two_val;
         std::ostringstream sstr;
+        sstr.precision(20);
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -312,8 +316,14 @@ namespace avalon {
         // divide both arguments
         double arg_one_val = arg_one_lit -> get_float_value();
         double arg_two_val = arg_two_lit -> get_float_value();
+
+        // normally, division should return a maybe type so we don't have to deal with undefined cases like these
+        if(arg_two_val == 0)
+            throw invalid_call("[compiler error] division by zero detected and not handled by the language.");
+
         double res_val = arg_one_val / arg_two_val;
         std::ostringstream sstr;
+        sstr.precision(20);
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -375,11 +385,11 @@ namespace avalon {
         // create new literal with the new floating point number
         double arg_val = arg_lit -> get_float_value();
         std::ostringstream sstr;
+        sstr.precision(20);
         sstr << arg_val;
         std::string float_str = sstr.str();
         if(float_str.find('.') == std::string::npos)
             float_str += ".0";
-        float_str += "f";
         token lit_tok(FLOATING_POINT, float_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> float_lit = std::make_shared<literal_expression>(lit_tok, STRING_EXPR, float_str);
         float_lit -> set_type_instance(string_instance);
