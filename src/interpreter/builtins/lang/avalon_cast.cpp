@@ -35,11 +35,13 @@
 #include "representer/ast/decl/type.hpp"
 /* Expressions */
 #include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/expr.hpp"
 
 /* Builtin programs */
 #include "representer/builtins/lang/avalon_string.hpp"
+#include "representer/builtins/lang/avalon_qubit.hpp"
 #include "representer/builtins/lang/avalon_float.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_bit2.hpp"
@@ -49,6 +51,7 @@
 #include "representer/builtins/lang/avalon_bit.hpp"
 
 /* Builtin functions */
+#include "interpreter/builtins/lang/avalon_qubit.hpp"
 #include "interpreter/builtins/lang/avalon_float.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
 #include "interpreter/builtins/lang/avalon_bit2.hpp"
@@ -83,6 +86,10 @@ namespace avalon {
         avalon_bit avl_bit;
         type_instance bit_instance = avl_bit.get_type_instance();
 
+        // qubit type
+        avalon_qubit avl_qubit;
+        type_instance qubit_instance = avl_qubit.get_type_instance();
+
         // make sure we got only one argument
         if(arguments.size() != 1)
             throw invalid_call("[compiler error] the builtin __cast__ function expects only one argument.");
@@ -108,11 +115,23 @@ namespace avalon {
             if(type_instance_strong_compare(arg_instance, int_instance)) {
                 return int_cast(arguments, ret_instance);
             }
-            if(type_instance_strong_compare(arg_instance, float_instance)) {
+            else if(type_instance_strong_compare(arg_instance, float_instance)) {
                 return float_cast(arguments, ret_instance);
             }
-            if(type_instance_strong_compare(arg_instance, bit_instance)) {
+            else if(type_instance_strong_compare(arg_instance, bit_instance)) {
                 return bit_cast(arguments, ret_instance);
+            }
+            else {
+                throw invalid_call("[compiler error] unexpected call to builtin function __cast__ using arguments of unsupported type instances");
+            }
+        }
+        else if(arg -> is_reference_expression()) {
+            std::shared_ptr<reference_expression> const & arg_lit = std::static_pointer_cast<reference_expression>(arg);
+            type_instance& arg_instance = arg_lit -> get_type_instance();
+
+            type_instance ref_instance = arg_instance.get_params()[0];
+            if(type_instance_strong_compare(ref_instance, qubit_instance)) {
+                return qubit_cast(arguments, ret_instance);
             }
             else {
                 throw invalid_call("[compiler error] unexpected call to builtin function __cast__ using arguments of unsupported type instances");

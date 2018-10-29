@@ -89,10 +89,10 @@ namespace avalon {
     }
 
     /**
-     * avl_apply
+     * qubit_apply
      * applies a quantum gate to the qubits stored at the given reference
      */
-    std::shared_ptr<expr> avl_apply(std::vector<std::shared_ptr<expr> >& arguments) {
+    std::shared_ptr<expr> qubit_apply(std::vector<std::shared_ptr<expr> >& arguments) {
         // qubit type
         avalon_qubit avl_qubit;
         type_instance qubit_instance = avl_qubit.get_type_instance();
@@ -168,10 +168,10 @@ namespace avalon {
     }
 
     /**
-     * avl_measure
+     * qubit_measure
      * performs a measure on the qubits stored at the given reference in the Z basis
      */
-    std::shared_ptr<expr> avl_measure(std::vector<std::shared_ptr<expr> >& arguments) {
+    std::shared_ptr<expr> qubit_measure(std::vector<std::shared_ptr<expr> >& arguments) {
         // qubit type
         avalon_qubit avl_qubit;
         type_instance qubit_instance = avl_qubit.get_type_instance();
@@ -215,5 +215,22 @@ namespace avalon {
         res_lit -> set_type_instance(bit_instance);
 
         return res_lit;
+    }
+
+    /**
+     * qubit_cast
+     * Performs a measurement of the qubits stored at the given reference in the Z basis
+     */
+    std::shared_ptr<expr> qubit_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+        // bit type
+        avalon_bit avl_bit;
+        type_instance bit_instance = avl_bit.get_type_instance();
+
+        if(type_instance_strong_compare(ret_instance, bit_instance)) {
+            return qubit_measure(arguments);
+        }
+        else {
+            throw invalid_call("[compiler error] the qubit __cast__ function cannot cast to <" + mangle_type_instance(ret_instance) + ">.");
+        }
     }
 }

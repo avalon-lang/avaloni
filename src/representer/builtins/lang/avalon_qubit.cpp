@@ -155,7 +155,8 @@ namespace avalon {
         std::shared_ptr<decl> apply_function_decl = qubit_apply_function;
         l_namespace -> add_declaration(apply_function_decl);
 
-        // measure
+        // measurement
+        // function version
         token qubit_measure_tok(IDENTIFIER, "measure", 0, 0, "__bif__");
         std::shared_ptr<function> qubit_measure_function = std::make_shared<function>(qubit_measure_tok);
         qubit_measure_function -> set_fqn(l_fqn);
@@ -169,6 +170,20 @@ namespace avalon {
         qubit_measure_function -> set_return_type_instance(bit_instance);
         std::shared_ptr<decl> measure_function_decl = qubit_measure_function;
         l_namespace -> add_declaration(measure_function_decl);
+        // operator version
+        token bit_cast_tok(IDENTIFIER, "__cast__", 0, 0, "__bif__");
+        std::shared_ptr<function> qubit_cast_function = std::make_shared<function>(bit_cast_tok);
+        qubit_cast_function -> set_fqn(l_fqn);
+        qubit_cast_function -> is_public(true);
+        qubit_cast_function -> is_builtin(true);
+        qubit_cast_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> qubit_cast_scope = std::make_shared<scope>();
+        qubit_cast_scope -> set_parent(l_scope);
+        qubit_cast_function -> set_scope(qubit_cast_scope);
+        qubit_cast_function -> add_param(param_two);
+        qubit_cast_function -> set_return_type_instance(bit_instance);
+        std::shared_ptr<decl> cast_function_decl = qubit_cast_function;
+        l_namespace -> add_declaration(cast_function_decl);
 
         /* add the namespace to the program */
         std::shared_ptr<decl> namespace_decl = l_namespace;

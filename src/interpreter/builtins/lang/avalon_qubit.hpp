@@ -35,16 +35,22 @@
 
 namespace avalon {
     /**
-     * avl_apply
+     * qubit_apply
      * applies a quantum gate to the qubits stored at the given reference
      */
-    std::shared_ptr<expr> avl_apply(std::vector<std::shared_ptr<expr> >& arguments);
+    std::shared_ptr<expr> qubit_apply(std::vector<std::shared_ptr<expr> >& arguments);
 
     /**
-     * avl_measure
+     * qubit_measure
      * performs a measure on the qubits stored at the given reference in the Z basis
      */
-    std::shared_ptr<expr> avl_measure(std::vector<std::shared_ptr<expr> >& arguments);
+    std::shared_ptr<expr> qubit_measure(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
+     * qubit_cast
+     * Performs a measurement of the qubits stored at the given reference in the Z basis
+     */
+    std::shared_ptr<expr> qubit_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance);
 }
 
 #endif

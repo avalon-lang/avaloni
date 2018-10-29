@@ -440,11 +440,11 @@ namespace avalon {
      */
     struct apply_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return avl_apply(arguments);
+            return qubit_apply(arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return avl_apply(arguments);
+            return qubit_apply(arguments);
         }
     };
 
@@ -454,11 +454,11 @@ namespace avalon {
      */
     struct measure_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return avl_measure(arguments);
+            return qubit_measure(arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return avl_measure(arguments);
+            return qubit_measure(arguments);
         }
     };
 }
