@@ -2,6 +2,7 @@ bin/
 build/
 data/
 temp/
+experiments/
 docs/venv/
 docs/build/
 /*.avl
