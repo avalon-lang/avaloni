@@ -163,7 +163,7 @@ namespace avalon {
 
         // 2. get the ket it variable references and apply the gate to it
         std::pair<qpp::ket, std::size_t> qubit = qubit_expr -> get_qubit_value();
-        qpp::ket result = qpp::apply(qubit.first, qpp::gt.H, {qubit.second});
+        qpp::ket result = qpp::apply(qubit.first, unitary, {qubit.second});
 
         // 3. set the new evolved qubit on the literal
         qubit_expr -> set_qubit_value(result, qubit.second);
@@ -278,7 +278,7 @@ namespace avalon {
         qpp::ket qubit = qpp::kron(qubit_two.first, qubit_three.first);
 
         // 3. apply the controlled unitary on the qubit
-        qpp::ket result = qpp::applyCTRL(qubit, qpp::gt.X, {0}, {1});
+        qpp::ket result = qpp::applyCTRL(qubit, unitary, {0}, {1});
 
         // 4. set the new evolved qubit on the literal
         qubit_expr_two -> set_qubit_value(result, 0);
