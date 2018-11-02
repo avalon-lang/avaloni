@@ -180,7 +180,7 @@ cy
 :returns
 - index     : void
 ]-
-def cx = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+def cy = (val q1 : ref qubit, val q2 : ref qubit) -> void:
     val cg = CGate(Gate(Math.PI, Math.PI / 2.0, Math.PI / 2.0))
     apply(cg, q1, q2)
     return
