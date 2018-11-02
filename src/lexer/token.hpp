@@ -342,6 +342,7 @@ namespace avalon {
     extern token bit4_type_tok;
     extern token bit8_type_tok;
     extern token gate_type_tok;
+    extern token cgate_type_tok;
     extern token qubit_type_tok;
     extern token qubit2_type_tok;
     extern token qubit4_type_tok;
@@ -360,6 +361,7 @@ namespace avalon {
     extern token none_cons_tok;
     extern token just_cons_tok;
     extern token gate_cons_tok;
+    extern token cgate_cons_tok;
 
     /**
      * Function tokens
@@ -386,6 +388,8 @@ namespace avalon {
      */
     extern token var_one_tok;
     extern token var_two_tok;
+    extern token var_three_tok;
+    extern token var_four_tok;
 
     /**
      * constraint parameters tokens

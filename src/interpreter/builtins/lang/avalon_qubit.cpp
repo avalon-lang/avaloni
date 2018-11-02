@@ -24,6 +24,7 @@
 
 
 #include <complex>
+#include <utility>
 #include <memory>
 #include <vector>
 #include <bitset>
@@ -49,6 +50,7 @@
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_qubit.hpp"
+#include "representer/builtins/lang/avalon_cgate.hpp"
 #include "representer/builtins/lang/avalon_gate.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
 
@@ -155,13 +157,136 @@ namespace avalon {
         std::shared_ptr<variable>& ref_var = arg_two_ref -> get_variable();
         std::shared_ptr<expr>& var_expr = ref_var -> get_value();
         std::shared_ptr<literal_expression> const & qubit_expr = std::static_pointer_cast<literal_expression>(var_expr);
+        // we make sure that the qubit was not measured already
+        if(qubit_expr -> was_measured())
+            throw invalid_call("[compiler error] the quantum <apply> function second argument has already been measured and further gates cannot be applied to it.");
 
         // 2. get the ket it variable references and apply the gate to it
-        qpp::ket qubit = qubit_expr -> get_qubit_value();
-        qpp::ket result = unitary * qubit;
+        std::pair<qpp::ket, std::size_t> qubit = qubit_expr -> get_qubit_value();
+        qpp::ket result = qpp::apply(qubit.first, qpp::gt.H, {qubit.second});
 
         // 3. set the new evolved qubit on the literal
-        qubit_expr -> set_qubit_value(result);
+        qubit_expr -> set_qubit_value(result, qubit.second);
+
+        // DONE.
+        return nullptr;
+    }
+
+    /**
+     * qubit_capply
+     * applies a controlled quantum gate to the qubit given as third argument using the qubit given in second argument as control
+     */
+    std::shared_ptr<expr> qubit_capply(std::vector<std::shared_ptr<expr> >& arguments) {
+        // qubit type
+        avalon_qubit avl_qubit;
+        type_instance qubit_instance = avl_qubit.get_type_instance();
+
+        // gate type
+        avalon_gate avl_gate;
+        type_instance gate_instance = avl_gate.get_type_instance();
+
+        // cgate type
+        avalon_cgate avl_cgate;
+        type_instance cgate_instance = avl_cgate.get_type_instance();
+
+        // make sure we got only three arguments
+        if(arguments.size() != 3)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects only three arguments.");
+
+        // make sure the first argument is a call expression and the second a reference expression
+        std::shared_ptr<expr>& arg_one = arguments[0];
+        std::shared_ptr<expr>& arg_two = arguments[1];
+        std::shared_ptr<expr>& arg_three = arguments[2];
+        if(arg_one -> is_call_expression() == false)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects the first argument to be a gate definition.");
+        if(arg_two -> is_reference_expression() == false)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects the second argument to be a reference to a quantum variable.");
+        if(arg_two -> is_reference_expression() == false)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects the second argument to be a reference to a quantum variable.");
+
+        // we cast the arguments
+        std::shared_ptr<call_expression> const & arg_one_cons = std::static_pointer_cast<call_expression>(arg_one);
+        std::shared_ptr<reference_expression> const & arg_two_ref = std::static_pointer_cast<reference_expression>(arg_two);
+        std::shared_ptr<reference_expression> const & arg_three_ref = std::static_pointer_cast<reference_expression>(arg_three);
+
+        // we double check the type instances
+        type_instance arg_one_instance = arg_one_cons -> get_type_instance();
+        if(type_instance_strong_compare(arg_one_instance, cgate_instance) == false)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects the first argument to be a gate definition of type <cgate>.");
+
+        type_instance arg_two_instance = arg_two_ref -> get_type_instance();
+        if(arg_two_instance.is_reference() == false)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects the second argument to be a reference to a single <qubit>.");
+        type_instance arg_two_instance_dref = arg_two_instance.get_params()[0];
+        if(type_instance_strong_compare(arg_two_instance_dref, qubit_instance) == false)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects the second argument to be a reference to a single <qubit> variable. Instead we got <" + mangle_type_instance(arg_two_instance_dref) + ">.");
+
+        type_instance arg_three_instance = arg_three_ref -> get_type_instance();
+        if(arg_three_instance.is_reference() == false)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects the third argument to be a reference to a single <qubit>.");
+        type_instance arg_three_instance_dref = arg_three_instance.get_params()[0];
+        if(type_instance_strong_compare(arg_three_instance_dref, qubit_instance) == false)
+            throw invalid_call("[compiler error] the quantum <apply> function for controlled gates expects the third argument to be a reference to a single <qubit> variable. Instead we got <" + mangle_type_instance(arg_three_instance_dref) + ">.");
+
+        // transform the gate definition into an Eigen matrix
+        // 0. We get the gate that parametrizes this controlled gate
+        std::vector<std::pair<token, std::shared_ptr<expr> > >& cgate_args = arg_one_cons -> get_arguments();
+        std::shared_ptr<call_expression> const & cgate_arg = std::static_pointer_cast<call_expression>(cgate_args[0].second);
+        // 1. first, we get the gate parameters and transform them into double values
+
+        std::vector<std::pair<token, std::shared_ptr<expr> > >& gate_args = cgate_arg -> get_arguments();
+        // work on theta
+        std::shared_ptr<expr> theta_expr = gate_args[0].second;
+        std::shared_ptr<literal_expression> const & theta_lit = std::static_pointer_cast<literal_expression>(theta_expr);
+        double theta = theta_lit -> get_float_value();
+        // work on phi
+        std::shared_ptr<expr> phi_expr = gate_args[1].second;
+        std::shared_ptr<literal_expression> const & phi_lit = std::static_pointer_cast<literal_expression>(phi_expr);
+        double phi = phi_lit -> get_float_value();
+        // work on lambda
+        std::shared_ptr<expr> lambda_expr = gate_args[2].second;
+        std::shared_ptr<literal_expression> const & lambda_lit = std::static_pointer_cast<literal_expression>(lambda_expr);
+        double lambda = lambda_lit -> get_float_value();
+
+        // 2. we built the 2x2 Eigen matrix to be used as control gate
+        Eigen::MatrixXcd unitary(2, 2);
+        unitary(0, 0) = get_00(theta, phi, lambda);
+        unitary(1, 0) = get_10(theta, phi, lambda);
+        unitary(0, 1) = get_01(theta, phi, lambda);
+        unitary(1, 1) = get_11(theta, phi, lambda);
+
+        // we now apply the gate to the ket contained in the second argument
+        // 1. get the content of the first referenced variable (argument two)
+        std::shared_ptr<variable>& ref_var_two = arg_two_ref -> get_variable();
+        std::shared_ptr<expr>& var_expr_two = ref_var_two -> get_value();
+        std::shared_ptr<literal_expression> const & qubit_expr_two = std::static_pointer_cast<literal_expression>(var_expr_two);
+        // we make sure that the qubit was not measured already
+        if(qubit_expr_two -> was_measured())
+            throw invalid_call("[compiler error] the quantum <apply> function second argument has already been measured and further gates cannot be applied to it.");
+
+        // 1. get the content of the second referenced variable (argument three)
+        std::shared_ptr<variable>& ref_var_three = arg_three_ref -> get_variable();
+        std::shared_ptr<expr>& var_expr_three = ref_var_three -> get_value();
+        std::shared_ptr<literal_expression> const & qubit_expr_three = std::static_pointer_cast<literal_expression>(var_expr_three);
+        // we make sure that the qubit was not measured already
+        if(qubit_expr_three -> was_measured())
+            throw invalid_call("[compiler error] the quantum <apply> function third argument has already been measured and further gates cannot be applied to it.");
+
+        // 2. build the tensor product of the qubits and set them on the original expressions
+        std::pair<qpp::ket, std::size_t> qubit_two = qubit_expr_two -> get_qubit_value();
+        std::pair<qpp::ket, std::size_t> qubit_three = qubit_expr_three -> get_qubit_value();
+        qpp::ket qubit = qpp::kron(qubit_two.first, qubit_three.first);
+
+        // 3. apply the controlled unitary on the qubit
+        qpp::ket result = qpp::applyCTRL(qubit, qpp::gt.X, {0}, {1});
+
+        // 4. set the new evolved qubit on the literal
+        qubit_expr_two -> set_qubit_value(result, 0);
+        qubit_expr_two -> from_tensor(true);
+        qubit_expr_two -> set_bound_qubit(qubit_expr_three);
+        qubit_expr_three -> set_qubit_value(result, 1);
+        qubit_expr_three -> from_tensor(true);
+        qubit_expr_three -> set_bound_qubit(qubit_expr_two);
 
         // DONE.
         return nullptr;
@@ -205,11 +330,41 @@ namespace avalon {
         std::shared_ptr<literal_expression> const & qubit_expr = std::static_pointer_cast<literal_expression>(var_expr);
 
         // 2. get the ket it variable references and perform a Pauli Z measurement - equivalent to measurement in the computational basis
-        qpp::ket qubit = qubit_expr -> get_qubit_value();
-        std::tuple<qpp::idx, std::vector<double>, std::vector<qpp::cmat>> result = qpp::measure(qubit, qpp::gt.Z, {0});
+        std::pair<qpp::ket, std::size_t> qubit = qubit_expr -> get_qubit_value();
+        std::size_t result = 0;
+        std::shared_ptr<literal_expression>& bound_qubit_expr = qubit_expr -> get_bound_qubit();
+        if(qubit_expr -> from_tensor() == false) {
+            auto measurement = qpp::measure(qubit.first, qpp::gt.Z, {0});
+            result = std::get<0>(measurement);
+        }
+        else {
+            std::pair<qpp::ket, std::size_t> bound_qubit = bound_qubit_expr -> get_qubit_value();
+            auto measurement = qpp::measure_seq(qubit.first, {qubit.second, bound_qubit.second});
+
+            // set the result
+            result = std::get<0>(measurement)[0];
+            qubit_expr -> from_tensor(false);
+
+            // collapse the bound qubit with the measurement result: this is fine since we are emulating anyways
+            qpp::ket bound_qubit_ket{qpp::ket::Zero(2)};
+            std::size_t bound_result = std::get<0>(measurement)[1];
+            if(bound_result == 0)
+                bound_qubit_ket << 1, 0;
+            else
+                bound_qubit_ket << 0, 1;
+            bound_qubit_expr -> set_qubit_value(bound_qubit_ket, 0);
+            bound_qubit_expr -> from_tensor(false);
+
+            // update bound qubits
+            //qubit_expr -> from_tensor(false);
+            bound_qubit_expr -> from_tensor(false);
+        }
+
+        // we update the qubit as having been measured
+        qubit_expr -> was_measured(true);
 
         // 3. Create a bit expression with the measurement result
-        std::string res_str = std::to_string(std::get<0>(result));
+        std::string res_str = std::to_string(result);
         token lit_tok(BITS, res_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> res_lit = std::make_shared<literal_expression>(lit_tok, BIT_EXPR, res_str);
         res_lit -> set_type_instance(bit_instance);

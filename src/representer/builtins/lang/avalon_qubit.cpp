@@ -42,6 +42,7 @@
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_qubit.hpp"
+#include "representer/builtins/lang/avalon_cgate.hpp"
 #include "representer/builtins/lang/avalon_gate.hpp"
 #include "representer/builtins/lang/avalon_void.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
@@ -81,6 +82,11 @@ namespace avalon {
         program& gate_prog = avl_gate.get_program();
         type_instance gate_instance = avl_gate.get_type_instance();
 
+        // gate program
+        avalon_cgate avl_cgate;
+        program& cgate_prog = avl_cgate.get_program();
+        type_instance cgate_instance = avl_cgate.get_type_instance();
+
         // void program
         avalon_void avl_void;
         program& void_prog = avl_void.get_program();
@@ -113,6 +119,10 @@ namespace avalon {
         std::shared_ptr<import> gate_import = std::make_shared<import>(import_tok, gate_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_gate_import = gate_import;
         m_qubit_prog.add_declaration(final_gate_import);
+        // import cgate program
+        std::shared_ptr<import> cgate_import = std::make_shared<import>(import_tok, cgate_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_cgate_import = cgate_import;
+        m_qubit_prog.add_declaration(final_cgate_import);
         // import void program
         std::shared_ptr<import> void_import = std::make_shared<import>(import_tok, void_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_void_import = void_import;
@@ -136,10 +146,15 @@ namespace avalon {
         variable param_one(var_one_tok, false);
         param_one.set_type_instance(gate_instance);
         variable param_two(var_two_tok, false);
-        param_two.set_type_instance(ref_qubit_instance);
+        param_two.set_type_instance(cgate_instance);
+        variable param_three(var_three_tok, false);
+        param_three.set_type_instance(ref_qubit_instance);        
+        variable param_four(var_four_tok, false);
+        param_four.set_type_instance(ref_qubit_instance);
 
         // functions
         // apply
+        // 1-Qubit version
         token qubit_apply_tok(IDENTIFIER, "apply", 0, 0, "__bif__");
         std::shared_ptr<function> qubit_apply_function = std::make_shared<function>(qubit_apply_tok);
         qubit_apply_function -> set_fqn(l_fqn);
@@ -150,10 +165,25 @@ namespace avalon {
         qubit_apply_scope -> set_parent(l_scope);
         qubit_apply_function -> set_scope(qubit_apply_scope);
         qubit_apply_function -> add_param(param_one);
-        qubit_apply_function -> add_param(param_two);
+        qubit_apply_function -> add_param(param_three);
         qubit_apply_function -> set_return_type_instance(void_instance);
         std::shared_ptr<decl> apply_function_decl = qubit_apply_function;
         l_namespace -> add_declaration(apply_function_decl);
+        // controlled 1-Qubit version
+        std::shared_ptr<function> qubit_capply_function = std::make_shared<function>(qubit_apply_tok);
+        qubit_capply_function -> set_fqn(l_fqn);
+        qubit_capply_function -> is_public(true);
+        qubit_capply_function -> is_builtin(true);
+        qubit_capply_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> qubit_capply_scope = std::make_shared<scope>();
+        qubit_capply_scope -> set_parent(l_scope);
+        qubit_capply_function -> set_scope(qubit_capply_scope);
+        qubit_capply_function -> add_param(param_two);
+        qubit_capply_function -> add_param(param_three);
+        qubit_capply_function -> add_param(param_four);
+        qubit_capply_function -> set_return_type_instance(void_instance);
+        std::shared_ptr<decl> capply_function_decl = qubit_capply_function;
+        l_namespace -> add_declaration(capply_function_decl);
 
         // measurement
         // function version
@@ -166,7 +196,7 @@ namespace avalon {
         std::shared_ptr<scope> qubit_measure_scope = std::make_shared<scope>();
         qubit_measure_scope -> set_parent(l_scope);
         qubit_measure_function -> set_scope(qubit_measure_scope);
-        qubit_measure_function -> add_param(param_two);
+        qubit_measure_function -> add_param(param_three);
         qubit_measure_function -> set_return_type_instance(bit_instance);
         std::shared_ptr<decl> measure_function_decl = qubit_measure_function;
         l_namespace -> add_declaration(measure_function_decl);
@@ -180,7 +210,7 @@ namespace avalon {
         std::shared_ptr<scope> qubit_cast_scope = std::make_shared<scope>();
         qubit_cast_scope -> set_parent(l_scope);
         qubit_cast_function -> set_scope(qubit_cast_scope);
-        qubit_cast_function -> add_param(param_two);
+        qubit_cast_function -> add_param(param_three);
         qubit_cast_function -> set_return_type_instance(bit_instance);
         std::shared_ptr<decl> cast_function_decl = qubit_cast_function;
         l_namespace -> add_declaration(cast_function_decl);

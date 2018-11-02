@@ -22,41 +22,28 @@
  *  SOFTWARE.
  */
 
-#ifndef AVALON_INTERPRETER_BUILTINS_LANG_QUBIT_HPP_
-#define AVALON_INTERPRETER_BUILTINS_LANG_QUBIT_HPP_
+#ifndef AVALON_INTERPRETER_BUILTINS_LANG_QUANTUM_HPP_
+#define AVALON_INTERPRETER_BUILTINS_LANG_QUANTUM_HPP_
 
 #include <memory>
 #include <vector>
 
 /* AST */
-#include "representer/ast/decl/type.hpp"
 #include "representer/ast/expr/expr.hpp"
 
 
 namespace avalon {
     /**
-     * qubit_apply
-     * applies a quantum gate to the qubits stored at the given reference
+     * avl_apply
+     * applies a quantum gate to qubits
      */
-    std::shared_ptr<expr> qubit_apply(std::vector<std::shared_ptr<expr> >& arguments);
+    std::shared_ptr<expr> avl_apply(std::vector<std::shared_ptr<expr> >& arguments);
 
     /**
-     * qubit_capply
-     * applies a controlled quantum gate to the qubit given as third argument using the qubit given in second argument as control
+     * avl_measure
+     * measures qubit(s) returning bits
      */
-    std::shared_ptr<expr> qubit_capply(std::vector<std::shared_ptr<expr> >& arguments);
-
-    /**
-     * qubit_measure
-     * performs a measure on the qubits stored at the given reference in the Z basis
-     */
-    std::shared_ptr<expr> qubit_measure(std::vector<std::shared_ptr<expr> >& arguments);
-
-    /**
-     * qubit_cast
-     * Performs a measurement of the qubits stored at the given reference in the Z basis
-     */
-    std::shared_ptr<expr> qubit_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance);
+    std::shared_ptr<expr> avl_measure(std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif

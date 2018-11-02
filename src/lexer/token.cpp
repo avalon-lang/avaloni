@@ -294,6 +294,7 @@ token bit2_type_tok(TYPE, "bit2", 0, 0, "__bit__");
 token bit4_type_tok(TYPE, "bit4", 0, 0, "__bit__");
 token bit8_type_tok(TYPE, "bit8", 0, 0, "__bit__");
 token gate_type_tok(TYPE, "gate", 0, 0, "__bit__");
+token cgate_type_tok(TYPE, "cgate", 0, 0, "__bit__");
 token qubit_type_tok(TYPE, "qubit", 0, 0, "__bit__");
 token qubit2_type_tok(TYPE, "qubit2", 0, 0, "__bit__");
 token qubit4_type_tok(TYPE, "qubit4", 0, 0, "__bit__");
@@ -312,6 +313,7 @@ token false_cons_tok(IDENTIFIER, "False", 0, 0, "__bic__");
 token none_cons_tok(IDENTIFIER, "None", 0, 0, "__bic__");
 token just_cons_tok(IDENTIFIER, "Just", 0, 0, "__bic__");
 token gate_cons_tok(IDENTIFIER, "Gate", 0, 0, "__bic__");
+token cgate_cons_tok(IDENTIFIER, "CGate", 0, 0, "__bic__");
 
 /**
  * Function tokens
@@ -338,6 +340,8 @@ token hash_function_tok(FUNCTION, "__hash__", 0, 0, "__bif__");
  */
 token var_one_tok(IDENTIFIER, "__var_one__", 0, 0, "__biv__");
 token var_two_tok(IDENTIFIER, "__var_two__", 0, 0, "__biv__");
+token var_three_tok(IDENTIFIER, "__var_three__", 0, 0, "__biv__");
+token var_four_tok(IDENTIFIER, "__var_four__", 0, 0, "__biv__");
 
 /**
  * constraint parameters tokens

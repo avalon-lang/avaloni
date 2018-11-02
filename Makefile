@@ -51,5 +51,5 @@ setup:
 
 .PHONY: clean
 clean:
-	@find . -path ./docs/venv -prune -o -exec touch {} \;
+	@find . -path ./docs/venv -path -prune -o -exec touch {} \;
 	@rm -rf $(build_dir) $(bin_dir)

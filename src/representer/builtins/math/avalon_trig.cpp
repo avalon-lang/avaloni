@@ -99,7 +99,7 @@ namespace avalon {
         pi_variable -> set_scope(l_scope);
         pi_variable -> set_type_instance(float_instance);
         // set initializer value
-        double PI = 3.14159265358979323846;
+        double PI = 3.141592653589793238462643383279502884;
         std::ostringstream sstr;
         sstr.precision(20);
         sstr << PI;

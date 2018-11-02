@@ -44,6 +44,7 @@
 #include "representer/builtins/lang/avalon_qubit.hpp"
 #include "representer/builtins/lang/avalon_maybe.hpp"
 #include "representer/builtins/lang/avalon_float.hpp"
+#include "representer/builtins/lang/avalon_cgate.hpp"
 #include "representer/builtins/lang/avalon_gate.hpp"
 #include "representer/builtins/lang/avalon_void.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
@@ -255,6 +256,12 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         m_sorted_deps.push(gate_prog.get_fqn().get_name());
         m_gtable.add_program(gate_prog);
 
+        // cgate declarations
+        avalon_cgate avl_cgate;
+        program& cgate_prog = avl_cgate.get_program();
+        m_sorted_deps.push(cgate_prog.get_fqn().get_name());
+        m_gtable.add_program(cgate_prog);
+
         // trigonometry declarations
         avalon_trig avl_trig;
         program& trig_prog = avl_trig.get_program();
@@ -436,6 +443,13 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<import> gate_import = std::make_shared<import>(import_tok, gate_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_gate_import = gate_import;
         to.add_declaration(final_gate_import);
+
+        // cgate declarations
+        avalon_cgate avl_cgate;
+        program& cgate_prog = avl_cgate.get_program();
+        std::shared_ptr<import> cgate_import = std::make_shared<import>(import_tok, cgate_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_cgate_import = cgate_import;
+        to.add_declaration(final_cgate_import);
 
         // trigonometry declarations
         avalon_trig avl_trig;

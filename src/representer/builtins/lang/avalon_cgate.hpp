@@ -22,41 +22,61 @@
  *  SOFTWARE.
  */
 
-#ifndef AVALON_INTERPRETER_BUILTINS_LANG_QUBIT_HPP_
-#define AVALON_INTERPRETER_BUILTINS_LANG_QUBIT_HPP_
+#ifndef AVALON_BUILTINS_LANG_CGATE_HPP_
+#define AVALON_BUILTINS_LANG_CGATE_HPP_
 
 #include <memory>
-#include <vector>
+
+/* Lexer */
+#include "lexer/token.hpp"
 
 /* AST */
 #include "representer/ast/decl/type.hpp"
-#include "representer/ast/expr/expr.hpp"
+#include "representer/ast/program.hpp"
 
 
 namespace avalon {
-    /**
-     * qubit_apply
-     * applies a quantum gate to the qubits stored at the given reference
-     */
-    std::shared_ptr<expr> qubit_apply(std::vector<std::shared_ptr<expr> >& arguments);
+    class avalon_cgate {
+    public:
+        /**
+         * the default constructor expects nothing
+         */
+        avalon_cgate();
 
-    /**
-     * qubit_capply
-     * applies a controlled quantum gate to the qubit given as third argument using the qubit given in second argument as control
-     */
-    std::shared_ptr<expr> qubit_capply(std::vector<std::shared_ptr<expr> >& arguments);
+        /**
+         * get_type
+         * returns the cgate type
+         */
+        std::shared_ptr<type>& get_type();
 
-    /**
-     * qubit_measure
-     * performs a measure on the qubits stored at the given reference in the Z basis
-     */
-    std::shared_ptr<expr> qubit_measure(std::vector<std::shared_ptr<expr> >& arguments);
+        /**
+         * get_type_instance
+         * returns the cgate type instance
+         */
+        type_instance get_type_instance();
 
-    /**
-     * qubit_cast
-     * Performs a measurement of the qubits stored at the given reference in the Z basis
-     */
-    std::shared_ptr<expr> qubit_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance);
+        /**
+         * get_program
+         * returns a program that defines the cgate type and all functions that operate on cgates
+         */
+        program& get_program();
+
+    private:
+        /*
+         * the cgate type
+         */
+        std::shared_ptr<type> m_cgate_type;
+
+        /*
+         * the type instance built from the cgate type
+         */
+        type_instance m_cgate_instance;
+
+        /*
+         * the program with quantum cgate functions and type
+         */
+        program m_cgate_prog;
+    };
 }
 
 #endif
