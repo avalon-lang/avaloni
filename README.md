@@ -4,13 +4,28 @@ This is an interpreter of the quantum version of the language.
 
 ## What it looks like
 
-![Avalon sample program in my editor](images/superposition.avl.png "Avalon program in Sublime Text")
+![Avalon sample program in my editor](images/entanglement.avl.png "Avalon program in Sublime Text")
 
 ## State of the project
 
 **The interpreter in progress**  
 
 As of this writing, 1-Qubit quantum gates can be tested.  
+Precisely, the following gates are available in the SDK:
+
+- Identity
+- Pauli X
+- Pauli Y
+- Pauli Z
+- Rotation about X
+- Rotation about Y
+- Rotation about Z
+- Controlled X
+- Controlled Y
+- Controlled Z
+- Hadamard
+
+It is possible to create your own 1-Qubit gates and their controlled counter parts. Please see the SDK folder for examples.  
 Below is an example of a superposition with the Hadamard gate.
 
 ```
@@ -25,6 +40,7 @@ def __main__ = (val args : [string]) -> void:
     Quant.had(ref q)
 
     -- measure <q> and place the result in <b>
+    -- you can use cast operators to perform measurements
     var b = measure(ref q)
 
     -- print the bit placed in <b>
