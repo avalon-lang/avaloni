@@ -1,0 +1,30 @@
+-[
+Program testing quantum entanglement with Bell pairs.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+import quant
+
+def __main__ = (val args : [string]) -> void:
+    -- initialize <q> to |0>
+    val q1 = 0q0, q2 = 0q1
+
+    -- apply the hadamard gate to <q1> to create a superposition
+    Quant.had(ref q1)
+
+    -- apply controlled X with <q1> as control and <q2> as target
+    Quant.cx(ref q1, ref q2)
+
+    -- measure <qn> and place the result in <bn>
+    var b1 = cast(ref q1) -> bit,
+        b2 = cast(ref q2) -> bit
+
+    -- print the bit placed in <bn>
+    Io.println(string(b1))
+    Io.println(string(b2))
+
+    return
