@@ -10,7 +10,7 @@ namespace Io -/
 var package = (
     name        = "I/O package",
     version     = "0.0.1",
-    description = "This package contains functions that read from and print to the standard input/ourput"
+    description = "This package contains functions that read from and print to the standard input/output"
 )
 
 def println = (val str : string) -> int:
