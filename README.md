@@ -8,7 +8,7 @@ This is an interpreter of the quantum version of the language.
 
 ## State of the project
 
-**The interpreter is in progress : THERE IS A SEVERE BUG IN THE QUANTUM INTERPRET, GETTING FIXED.**  
+**The interpreter is in progress : THERE IS A SEVERE BUG IN THE QUANTUM INTERPRETER, GETTING FIXED.**  
 
 As of this writing, 1-Qubit quantum gates can be tested.  
 Precisely, the following gates are available in the SDK:
