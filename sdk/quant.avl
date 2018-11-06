@@ -24,7 +24,7 @@ id
     A reference to a single qubit to apply the identity gate to.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def id = (val q : ref qubit) -> void:
     val g = Gate(0.0, 0.0, 0.0)
@@ -40,7 +40,7 @@ px
     A reference to a single qubit to apply the Pauli X gate to.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def px = (val q : ref qubit) -> void:
     val g = Gate(Math.PI, 0.0, Math.PI)
@@ -56,7 +56,7 @@ py
     A reference to a single qubit to apply the Pauli Y gate to.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def py = (val q : ref qubit) -> void:
     val g = Gate(Math.PI, Math.PI / 2.0, Math.PI / 2.0)
@@ -72,7 +72,7 @@ pz
     A reference to a single qubit to apply the Pauli Z gate to.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def pz = (val q : ref qubit) -> void:
     val g = Gate(0.0, 0.0, Math.PI)
@@ -88,7 +88,7 @@ had
     A reference to a single qubit to apply the Hadamard gate to.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def had = (val q : ref qubit) -> void:
     val g = Gate(Math.PI / 2.0, 0.0, Math.PI)
@@ -106,7 +106,7 @@ rx
     The angle by which to rotate the qubit about the X axis.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def rx = (val q : ref qubit, val theta : float) -> void:
     val g = Gate(theta, - Math.PI / 2.0, Math.PI / 2.0)
@@ -124,7 +124,7 @@ ry
     The angle by which to rotate the qubit about the Y axis.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def ry = (val q : ref qubit, val theta : float) -> void:
     val g = Gate(theta, 0.0, 0.0)
@@ -142,7 +142,7 @@ rz
     The angle by which to rotate the qubit about the Z axis.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def rz = (val q : ref qubit, val phi : float) -> void:
     val g = Gate(0.0, 0.0, phi)
@@ -160,7 +160,7 @@ cx
     A reference to the target qubit.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def cx = (val q1 : ref qubit, val q2 : ref qubit) -> void:
     val cg = CGate(Gate(Math.PI, 0.0, Math.PI))
@@ -178,7 +178,7 @@ cy
     A reference to the target qubit.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def cy = (val q1 : ref qubit, val q2 : ref qubit) -> void:
     val cg = CGate(Gate(Math.PI, Math.PI / 2.0, Math.PI / 2.0))
@@ -196,7 +196,7 @@ cz
     A reference to the target qubit.
 
 :returns
-- index     : void
+- nothing   : void
 ]-
 def cz = (val q1 : ref qubit, val q2 : ref qubit) -> void:
     val cg = CGate(Gate(0.0, 0.0, Math.PI))
