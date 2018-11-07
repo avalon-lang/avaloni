@@ -27,9 +27,7 @@ Precisely, the following gates are available in the SDK:
 
 It is possible to create your own 1-Qubit gates and their controlled counter parts. Please see the SDK folder for examples.  
 
-The most important thing to note is how easy it is to understand what the program is actually doing.  
-Please compare the code to perform a teleportation below in Avalon with the same in QUIL at [https://github.com/rigetticomputing/pyquil/blob/master/examples/teleportation.py](https://github.com/rigetticomputing/pyquil/blob/master/examples/teleportation.py).
-Since QUIL is an instruction set architecture and the code at the given URL is pretty much assembly, it becomes hard to follow.
+Please find code below to perform teleportation. Note how easy it is to follow the logic.
 
 ```
 import io
