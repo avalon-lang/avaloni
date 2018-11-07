@@ -8,7 +8,7 @@ This is an interpreter of the quantum version of the language.
 
 ## State of the project
 
-**The interpreter is in progress : THERE IS A SEVERE BUG IN THE QUANTUM INTERPRETER, GETTING FIXED.**  
+**The interpreter is in progress: since 1-Qubit gates and data can be tested successfully, development is halted to document what's available.**
 
 As of this writing, 1-Qubit quantum gates can be tested.  
 Precisely, the following gates are available in the SDK:
@@ -26,26 +26,42 @@ Precisely, the following gates are available in the SDK:
 - Hadamard
 
 It is possible to create your own 1-Qubit gates and their controlled counter parts. Please see the SDK folder for examples.  
-Below is an example of a superposition with the Hadamard gate.
+
+The most important thing to note is how easy it is to understand what the program is actually doing.  
+Please compare the code to perform a teleportation below in Avalon with the same in QUIL at [https://github.com/rigetticomputing/pyquil/blob/master/examples/teleportation.py](https://github.com/rigetticomputing/pyquil/blob/master/examples/teleportation.py).
+Since QUIL is an instruction set architecture and the code at the given URL is pretty much assembly, it becomes hard to follow.
 
 ```
 import io
 import quant
 
 def __main__ = (val args : [string]) -> void:
-    -- initialize <q> to |0>
-    val q = 0q0
+    -- initialize quantum variables
+    val source = 0q1,
+        destination = 0q0,
+        ancilla = 0q0
 
-    -- apply the hadamard gate to <q> to create a superposition
-    Quant.had(ref q)
+    -- create an entanglement between the destination and the ancilla
+    Quant.had(ref destination)
+    Quant.cx(ref destination, ref ancilla)
 
-    -- measure <q> and place the result in <b>
-    -- you can use cast operators to perform measurements
-    var b = measure(ref q)
+    -- perform the teleportation
+    Quant.cx(ref source, ref ancilla)
+    Quant.had(ref source)
 
-    -- print the bit placed in <b>
-    -- keep executing this program and you will notice that the result keeps changing
-    Io.println(string(b))
+    -- measure the source and the ancilla
+    var source_bit = cast(ref source) -> bit,
+        ancilla_bit = cast(ref ancilla) -> bit
+
+    -- perform error correction on the destination
+    if source_bit == 0b1:
+        Quant.pz(ref destination)
+    if ancilla_bit == 0b1:
+        Quant.px(ref destination)
+
+    -- measure and print the destination which should contain <0q1>
+    var destination_bit = cast(ref destination) -> bit
+    Io.println(string(destination_bit))
 
     return
 ```
