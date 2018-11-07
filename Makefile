@@ -7,7 +7,7 @@
 #
 
 cc          := g++
-cflags      := -std=c++11 -g -Wall -pedantic -fopenmp
+cflags      := -std=c++11 -g -Wall -pedantic -DDEBUG -fopenmp
 ldpaths     := -L/usr/local/lib
 rdpaths     := -Wl,-rpath=/usr/local/lib
 ldflags     := -lboost_filesystem -lboost_system -fopenmp
