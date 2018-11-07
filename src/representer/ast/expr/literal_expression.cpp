@@ -24,10 +24,10 @@
 
 #include <algorithm>
 #include <iterator>
-#include <utility>
 #include <cstdlib>
 #include <memory>
 #include <bitset>
+#include <vector>
 
 #include "qpp.h"
 
@@ -42,7 +42,7 @@ namespace avalon {
     /**
      * the constructor expects the operand of the literal operator
      */
-    literal_expression::literal_expression(token& tok, literal_expression_type expr_type, const std::string& val) : m_tok(tok), m_type_instance_from_parser(false), m_expr_type(expr_type), m_val(val), m_index(0), m_ket_evolved(false), m_from_tensor(false), m_was_measured(false), m_bound_qubit(nullptr) {
+    literal_expression::literal_expression(token& tok, literal_expression_type expr_type, const std::string& val) : m_tok(tok), m_type_instance_from_parser(false), m_expr_type(expr_type), m_val(val), m_index(0), m_ket_evolved(false), m_was_measured(false) {
     }
 
     /**
@@ -50,12 +50,11 @@ namespace avalon {
      */
     literal_expression::literal_expression(const std::shared_ptr<literal_expression>& lit_expr) : m_tok(lit_expr -> get_token()), m_instance(lit_expr -> get_type_instance()), m_type_instance_from_parser(lit_expr -> type_instance_from_parser()), m_expr_type(lit_expr -> get_expression_type()), m_val(lit_expr -> get_value()) {
         if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
-            m_ket = lit_expr -> get_qubit_value().first;
-            m_index = lit_expr -> get_qubit_value().second;
+            m_ket = lit_expr -> get_qubit_value();
+            m_index = lit_expr -> get_index();
             m_ket_evolved = lit_expr -> ket_evolved();
-            m_from_tensor = lit_expr -> from_tensor();
             m_was_measured = lit_expr -> was_measured();
-            m_bound_qubit = lit_expr -> get_bound_qubit();
+            m_bound_qubits = lit_expr -> get_bound_qubits();
         }
     }
 
@@ -69,12 +68,11 @@ namespace avalon {
         m_expr_type = lit_expr -> get_expression_type();
         m_val = lit_expr -> get_value();
         if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
-            m_ket = lit_expr -> get_qubit_value().first;
-            m_index = lit_expr -> get_qubit_value().second;
+            m_ket = lit_expr -> get_qubit_value();
+            m_index = lit_expr -> get_index();
             m_ket_evolved = lit_expr -> ket_evolved();
-            m_from_tensor = lit_expr -> from_tensor();
             m_was_measured = lit_expr -> was_measured();
-            m_bound_qubit = lit_expr -> get_bound_qubit();
+            m_bound_qubits = lit_expr -> get_bound_qubits();
         }
         return * this;
     }
@@ -259,17 +257,17 @@ namespace avalon {
      * returns the 1 qubit bitset representating of this literal
      * throws a value_error exception if it contains a different literal type
      */
-    std::pair<qpp::ket, std::size_t> literal_expression::get_qubit_value() {
+    qpp::ket literal_expression::get_qubit_value() {
         if(m_expr_type == QUBIT_EXPR) {
             if(m_ket_evolved) {
-                return std::make_pair(m_ket, m_index);
+                return m_ket;
             }
             else {
                 std::vector<char> expr_data(m_val.begin(), m_val.end());
                 std::vector<std::size_t> ket_data;
                 std::transform(expr_data.begin(), expr_data.end(), std::back_inserter(ket_data), [](const char bit) { return (std::size_t) bit - '0'; });
                 m_ket = qpp::mket(ket_data);
-                return std::make_pair(m_ket, m_index);
+                return m_ket;
             }
         }
         else {
@@ -282,11 +280,49 @@ namespace avalon {
      * sets the ket value if we have a qubit expression.
      * throws a value_error exception if this literal doesn't contain qubits
      */
-    void literal_expression::set_qubit_value(qpp::ket l_ket, std::size_t index) {
+    void literal_expression::set_qubit_value(qpp::ket new_ket, qpp::ket propagation_ket, qubit_propagation_direction direction, bool was_measured) {
         if(m_expr_type == QUBIT_EXPR) {
-            m_ket = l_ket;
-            m_index = index;
+            std::size_t m_size = m_ket.size();
+            std::size_t p_size = propagation_ket.size();
+
+            // we update information that's independent of the qubit state
+            m_ket = new_ket;
             m_ket_evolved = true;
+            m_was_measured = was_measured;
+
+            // if m_size < p_size then m_ket got tensored with propagation_ket
+            // if m_size > p_size then m_ket may have been measured or one of the ket it is bound to
+            if(m_size != p_size) {
+                // if the ket was the second argument of the tensor product, we increase the index by 1
+                if(direction == RIGHT_PROPAGATION)
+                    m_index += 1;
+                // if a measurement was perform on the current ket, we decrease the index by 1
+                else if(direction == LEFT_PROPAGATION)
+                    m_index -= 1;
+
+                // we go over qubits bound to the current qubit and ask them to update their kets
+                for(auto& bound_qubit : m_bound_qubits) {
+                    // we do nothing if the qubit of interest has already been measured
+                    if(bound_qubit -> was_measured())
+                        continue;
+
+                    // if the bound qubit index is greater than this qubit index, we update indices depending on whether a measurement was performed
+                    if(bound_qubit -> get_index() > m_index) {
+                        if(was_measured)
+                            bound_qubit -> set_qubit_value(propagation_ket, propagation_ket, LEFT_PROPAGATION, false);
+                        else
+                            bound_qubit -> set_qubit_value(propagation_ket, propagation_ket, RIGHT_PROPAGATION, false);
+                    }
+                    // if the bound qubit index is less than this qubit index, we don't update indices
+                    else if(bound_qubit -> get_index() < m_index) {
+                        bound_qubit -> set_qubit_value(propagation_ket, propagation_ket, NO_PROPAGATION, false);
+                    }
+                }
+            }
+
+            // if this qubit was measured, we update the index
+            if(was_measured)
+                m_index = 0;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
@@ -308,22 +344,27 @@ namespace avalon {
     }
 
     /**
-     * from_tensor
-     * sets and returns true if the qubit stored int his literal expression is the result of a tensor product.
-     * throws a value_error exception is this literal doesn't contain qubits
+     * set_index
+     * sets the index of this qubit inside a ket
+     * throws a value_error exception if this lteral doesn't contain qubits
      */
-    void literal_expression::from_tensor(bool _from_tensor) {
+    void literal_expression::set_index(std::size_t index) {
         if(m_expr_type == QUBIT_EXPR) {
-            m_from_tensor = _from_tensor;
+            m_index = index;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
         }
     }
 
-    bool literal_expression::from_tensor() {
+    /**
+     * get_index
+     * returns the index of this qubit inside a ket
+     * throws a value_error exception if this lteral doesn't contain qubits
+     */
+    std::size_t literal_expression::get_index() {
         if(m_expr_type == QUBIT_EXPR) {
-            return m_from_tensor;
+            return m_index;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
@@ -332,18 +373,23 @@ namespace avalon {
 
     /**
      * was_measured
-     * sets and returns true if the qubit stored in this literal expression was measured.
-     * throws a value_error exception if this literal doesn't contain qubits
+     * sets the measument status of this ket
+     * throws a value_error exception if this lteral doesn't contain qubits
      */
-    void literal_expression::was_measured(bool measured) {
+    void literal_expression::was_measured(bool was_measured) {
         if(m_expr_type == QUBIT_EXPR) {
-            m_was_measured = measured;
+            m_was_measured = was_measured;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
         }
     }
 
+    /**
+     * was_measured
+     * and returns true if the qubit stored in this literal expression was measured.
+     * throws a value_error exception if this literal doesn't contain qubits
+     */
     bool literal_expression::was_measured() {
         if(m_expr_type == QUBIT_EXPR) {
             return m_was_measured;
@@ -354,13 +400,13 @@ namespace avalon {
     }
 
     /**
-     * set_bound_qubit
-     * set the ket bound to this ket if any
+     * add_bound_qubit
+     * add a qubit bound to this ket if any
      * throws a value_error exception if this literal doesn't contain qubits
      */
-    void literal_expression::set_bound_qubit(std::shared_ptr<literal_expression> const & boud_ket) {
+    void literal_expression::add_bound_qubit(std::shared_ptr<literal_expression> const & bound_qubit) {
         if(m_expr_type == QUBIT_EXPR) {
-            m_bound_qubit = boud_ket;
+            m_bound_qubits.push_back(bound_qubit);
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
@@ -368,13 +414,13 @@ namespace avalon {
     }
 
     /**
-     * get_bound_qubit
-     * returns the ket bound to this ket if any
+     * get_bound_qubits
+     * returns a vector of qubits bound to this one
      * throws a value_error exception if this literal doesn't contain qubits
      */
-    std::shared_ptr<literal_expression>& literal_expression::get_bound_qubit() {
+    std::vector<std::shared_ptr<literal_expression> >& literal_expression::get_bound_qubits() {
         if(m_expr_type == QUBIT_EXPR) {
-            return m_bound_qubit;
+            return m_bound_qubits;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");

@@ -25,11 +25,11 @@
 #ifndef AVALON_AST_EXPR_LITERAL_EXPRESSION_HPP_
 #define AVALON_AST_EXPR_LITERAL_EXPRESSION_HPP_
 
-#include <utility>
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <bitset>
+#include <vector>
 
 #include "qpp.h"
 
@@ -45,6 +45,12 @@ namespace avalon {
         STRING_EXPR,
         BIT_EXPR,
         QUBIT_EXPR,
+    };
+
+    enum qubit_propagation_direction {
+        LEFT_PROPAGATION,
+        RIGHT_PROPAGATION,
+        NO_PROPAGATION,
     };
 
     class literal_expression : public expr {
@@ -168,14 +174,14 @@ namespace avalon {
          * returns the 1 qubit bitset representating of this literal
          * throws a value_error exception if it contains a different literal type
          */
-        std::pair<qpp::ket, std::size_t> get_qubit_value();
+        qpp::ket get_qubit_value();
 
         /**
          * set_qubit_value
          * sets the ket value if we have a qubit expression.
          * throws a value_error exception if this literal doesn't contain qubits
          */
-        void set_qubit_value(qpp::ket l_ket, std::size_t index);
+        void set_qubit_value(qpp::ket new_ket, qpp::ket propagation_ket, qubit_propagation_direction direction, bool was_measured);
 
         /**
          * ket_evolved
@@ -185,34 +191,46 @@ namespace avalon {
         bool ket_evolved();
 
         /**
-         * from_tensor
-         * sets and returns true if the qubit stored in this literal expression is the result of a tensor product.
-         * throws a value_error exception if this literal doesn't contain qubits
+         * set_index
+         * sets the index of this qubit inside a ket
+         * throws a value_error exception if this lteral doesn't contain qubits
          */
-        void from_tensor(bool _from_tensor);
-        bool from_tensor();
+        void set_index(std::size_t index);
+
+        /**
+         * get_index
+         * returns the index of this qubit inside a ket
+         * throws a value_error exception if this lteral doesn't contain qubits
+         */
+        std::size_t get_index();
 
         /**
          * was_measured
-         * sets and returns true if the qubit stored in this literal expression was measured.
+         * sets the measument status of this ket
+         * throws a value_error exception if this lteral doesn't contain qubits
+         */
+        void was_measured(bool was_measured);
+
+        /**
+         * was_measured
+         * returns true if the qubit stored in this literal expression was measured.
          * throws a value_error exception if this literal doesn't contain qubits
          */
-        void was_measured(bool measured);
         bool was_measured();
 
         /**
-         * set_bound_qubit
-         * set the ket bound to this ket if any
+         * add_bound_qubit
+         * add a qubit bound to this ket if any
          * throws a value_error exception if this literal doesn't contain qubits
          */
-        void set_bound_qubit(std::shared_ptr<literal_expression> const & boud_ket);
+        void add_bound_qubit(std::shared_ptr<literal_expression> const & bound_qubit);
 
         /**
-         * get_bound_qubit
-         * returns the ket bound to this ket if any
+         * get_bound_qubits
+         * returns a vector of qubits bound to this one
          * throws a value_error exception if this literal doesn't contain qubits
          */
-        std::shared_ptr<literal_expression>& get_bound_qubit();
+        std::vector<std::shared_ptr<literal_expression> >& get_bound_qubits();
 
         /**
          * token
@@ -293,19 +311,14 @@ namespace avalon {
         bool m_ket_evolved;
 
         /*
-         * this flag returns true if the qubit stored in this expression is the result of a tensor product
-         */
-        bool m_from_tensor;
-
-        /*
          * this flag lets us know if the qubit in this literal has been measured.
          */
         bool m_was_measured;
 
         /*
-         * if this literal expression contains a qubit that's tensor with another qubit, that qubit comes here
+         * if this literal expression contains a vector of qubits that got tensored with this qubit
          */
-        std::shared_ptr<literal_expression> m_bound_qubit;
+        std::vector<std::shared_ptr<literal_expression> > m_bound_qubits;
     };
 }
 

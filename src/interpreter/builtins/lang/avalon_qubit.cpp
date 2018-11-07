@@ -162,11 +162,11 @@ namespace avalon {
             throw invalid_call("[compiler error] the quantum <apply> function second argument has already been measured and further gates cannot be applied to it.");
 
         // 2. get the ket it variable references and apply the gate to it
-        std::pair<qpp::ket, std::size_t> qubit = qubit_expr -> get_qubit_value();
-        qpp::ket result = qpp::apply(qubit.first, unitary, {qubit.second});
+        qpp::ket qubit = qubit_expr -> get_qubit_value();
+        qpp::ket result = qpp::apply(qubit, unitary, {qubit_expr -> get_index()});
 
         // 3. set the new evolved qubit on the literal
-        qubit_expr -> set_qubit_value(result, qubit.second);
+        qubit_expr -> set_qubit_value(result, result, NO_PROPAGATION, false);
 
         // DONE.
         return nullptr;
@@ -273,20 +273,20 @@ namespace avalon {
             throw invalid_call("[compiler error] the quantum <apply> function third argument has already been measured and further gates cannot be applied to it.");
 
         // 2. build the tensor product of the qubits and set them on the original expressions
-        std::pair<qpp::ket, std::size_t> qubit_two = qubit_expr_two -> get_qubit_value();
-        std::pair<qpp::ket, std::size_t> qubit_three = qubit_expr_three -> get_qubit_value();
-        qpp::ket qubit = qpp::kron(qubit_two.first, qubit_three.first);
+        qpp::ket qubit_two = qubit_expr_two -> get_qubit_value();
+        qpp::ket qubit_three = qubit_expr_three -> get_qubit_value();
+        qpp::ket qubit = qpp::kron(qubit_two, qubit_three);
 
         // 3. apply the controlled unitary on the qubit
-        qpp::ket result = qpp::applyCTRL(qubit, unitary, {0}, {1});
+        qpp::ket result = qpp::applyCTRL(qubit, unitary, {qubit_expr_two -> get_index()}, {qubit_expr_three -> get_index() + 1});
 
         // 4. set the new evolved qubit on the literal
-        qubit_expr_two -> set_qubit_value(result, 0);
-        qubit_expr_two -> from_tensor(true);
-        qubit_expr_two -> set_bound_qubit(qubit_expr_three);
-        qubit_expr_three -> set_qubit_value(result, 1);
-        qubit_expr_three -> from_tensor(true);
-        qubit_expr_three -> set_bound_qubit(qubit_expr_two);
+        qubit_expr_two -> set_qubit_value(result, result, NO_PROPAGATION, false);
+        qubit_expr_three -> set_qubit_value(result, result, RIGHT_PROPAGATION, false);
+
+        // 5. let the new evolved qubits know that they are bound to each other due the tensor product
+        qubit_expr_two -> add_bound_qubit(qubit_expr_three);
+        qubit_expr_three -> add_bound_qubit(qubit_expr_two);
 
         // DONE.
         return nullptr;
@@ -330,40 +330,23 @@ namespace avalon {
         std::shared_ptr<literal_expression> const & qubit_expr = std::static_pointer_cast<literal_expression>(var_expr);
 
         // 2. get the ket it variable references and perform a Pauli Z measurement - equivalent to measurement in the computational basis
-        std::pair<qpp::ket, std::size_t> qubit = qubit_expr -> get_qubit_value();
-        std::size_t result = 0;
-        std::shared_ptr<literal_expression>& bound_qubit_expr = qubit_expr -> get_bound_qubit();
-        if(qubit_expr -> from_tensor() == false) {
-            auto measurement = qpp::measure(qubit.first, qpp::gt.Z, {0});
-            result = std::get<0>(measurement);
-        }
-        else {
-            std::pair<qpp::ket, std::size_t> bound_qubit = bound_qubit_expr -> get_qubit_value();
-            auto measurement = qpp::measure_seq(qubit.first, {qubit.second, bound_qubit.second});
+        qpp::ket qubit = qubit_expr -> get_qubit_value();
+        
+        // 3. perform the measurement and set the new qubit
+        auto measurement = qpp::measure_seq(qubit, {qubit_expr -> get_index()});
+        std::size_t result = std::get<0>(measurement)[0];
+        qpp::ket bound_ket = std::get<2>(measurement);
+        qpp::ket new_ket{qpp::ket::Zero(2)};
+        if(result == 0)
+            new_ket << 1, 0;
+        else
+            new_ket << 0, 1;
+        qubit_expr -> set_qubit_value(new_ket, bound_ket, NO_PROPAGATION, true);
 
-            // set the result
-            result = std::get<0>(measurement)[0];
-            qubit_expr -> from_tensor(false);
-
-            // collapse the bound qubit with the measurement result: this is fine since we are emulating anyways
-            qpp::ket bound_qubit_ket{qpp::ket::Zero(2)};
-            std::size_t bound_result = std::get<0>(measurement)[1];
-            if(bound_result == 0)
-                bound_qubit_ket << 1, 0;
-            else
-                bound_qubit_ket << 0, 1;
-            bound_qubit_expr -> set_qubit_value(bound_qubit_ket, 0);
-            bound_qubit_expr -> from_tensor(false);
-
-            // update bound qubits
-            //qubit_expr -> from_tensor(false);
-            bound_qubit_expr -> from_tensor(false);
-        }
-
-        // we update the qubit as having been measured
+        // 4. we set the qubit measurement result
         qubit_expr -> was_measured(true);
 
-        // 3. Create a bit expression with the measurement result
+        // 5. Create a bit expression with the measurement result
         std::string res_str = std::to_string(result);
         token lit_tok(BITS, res_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> res_lit = std::make_shared<literal_expression>(lit_tok, BIT_EXPR, res_str);
