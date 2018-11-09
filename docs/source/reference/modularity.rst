@@ -77,3 +77,26 @@ One might ask what happens when we don't declare a namespace. If no namespace is
     The ``__main__`` function must always occur in the global namespace.
 
 
+.. attention::
+    As a convection, namespace names are in PascalCase. This is not enforced by the compiler
+    but makes for very readable code.
+
+
+Using declarations inside a namespace
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A declaration inside a namespace is used by preprending it with the namespace name.
+Imagine the ``Io`` namespace that contain the ``println`` function. To use this function, one does the following:
+
+.. code::
+    import io
+    import math
+    
+    -[ <namespace>.<declaration> is how a namespaced declaration is used ]-
+    
+    -- using a namespaced function
+    Io.println("Hello World!")
+
+    -- using a namespaced variable
+    Math.PI
+
