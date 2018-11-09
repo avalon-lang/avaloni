@@ -72,7 +72,9 @@ For instance, to construct a controlled Hadamard gate, only simple does the foll
 Appling gate to qubits
 ----------------------
 
-Applying gates to qubits is extremely simple. One simple calls the ``apply`` function, passing it the gate and the qubit(s) to apply the gate to.
+Applying gates to qubits is extremely simple. One simply calls the ``apply`` function, passing it the gate and the qubit(s) to apply the gate to.
+For 1-Qubit gates, ``apply`` has the signature :code:`apply(g : gate, q : ref qubit) -> void` and for controlled gates it has the signature
+:code:`apply(cg : cgate, control : ref qubit, target : ref qubit)`.
 
 Let us demonstrate with an example, reusing our previous code:
 
