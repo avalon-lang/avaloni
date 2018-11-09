@@ -63,7 +63,8 @@ Topics
    tutorial/index
    reference/syntax
    reference/types
-   reference/functions
+   reference/expressions
    reference/variables
+   reference/functions
    reference/control
    reference/modularity
