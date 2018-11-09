@@ -107,7 +107,7 @@ The language allows newlines when declaring multiple variables in one line for b
 
 .. code::
 
-    var name = "Jane Doe", -- a new line is allowed here for better code
+    var name = "Jane Doe", -- a new line is allowed here for code with better readability
         age  = 32,
         sex  = Female
 
@@ -130,7 +130,7 @@ Two characters can be used for identation: whitespace and tabulations.
 But Avalon imposes two extra rules on what form valid identation:
 
 * Whitespace and tabs cannot be mixed. It is either one or the other.
-* All identation must be multiples of the very identation. This means that if the first identation is 4 whitespaces long, a 6 whitespaces identation will not be allowed.
+* All identation must be multiples of the very first identation. This means that if the first identation is 4 whitespaces long, a 6 whitespaces identation will not be allowed anywhere else in the entire source file.
 
 Here is an example of valid identation.
 
@@ -162,6 +162,34 @@ The following tokens are allowed to do so::
 
 Therefore, if you were to begin a line with say a multiplication sign(*), the compiler will emit an error.
 
+There are 3 places where identation is ignored by the language: inside parentheses, square brackets and curly braces.
+This means that you can write function arguments and parameters on multiple lines for better readability.
+
+.. code::
+    
+    -- identation inside parentheses is ignored so you can do as you please identation-wise
+    val package = (
+        name    = "Input/Output",
+        author  = "John Doe",
+        version = "0.0.1"
+    )
+
+    -- identation inside square brackets is ignored as well
+    var physicists = [
+        "Isaac Newton",
+        "Albert Einstein",
+        "Marie Curie",
+        "Edward Witten",
+        "Donna Strickland"
+    ]
+
+    -- identation is ignored inside curly braces as well
+    var user = {
+        "name": "Jane Doe",
+        "street": "4683  South Street",
+    }
+
+
 Precedence and associativity
 ----------------------------
 
@@ -182,7 +210,7 @@ have the same precedence but associativity is used to decide which is used befor
     6, "cast", "Cast", "Left"
     7, "dref", "Dereference", "Left"
     8, "ref", "Reference", "Left"
-    9, "**, /, %, ***", "Multiplication, division, modulo, power", "Left"
+    9, "*, /, %, **", "Multiplication, division, modulo, power", "Left"
     10, "+, -", "Binary addition and substraction", "Left"
     11, "<<, >>", "Left and right bit shifting", "Left"
     12, "&", "Bitwise and", "Left"
