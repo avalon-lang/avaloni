@@ -71,7 +71,7 @@ You can set ``AVALON_HOME`` directly for one session with the following::
     $ export AVALON_HOME=/usr/lib/avalon-sdk
 
 
-You can also edit ``~/bashrc`` and add the same line in it and have the SDK always accessible
+You can also edit ``~/.bashrc`` and add the same line in it and have the SDK always accessible
 between sessions.
 
 7. **Run your programs**
