@@ -158,6 +158,7 @@ lexer::lexer(
     m_keywords["bor"]          = BITWISE_OR;
     m_keywords["xor"]          = BITWISE_XOR;
     m_keywords["not"]          = LOGICAL_NOT;
+    m_keywords["bnot"]         = BITWISE_NOT;
     m_keywords["in"]           = IN;
     m_keywords["not in"]       = NOT_IN;
     m_keywords["is"]           = IS;
