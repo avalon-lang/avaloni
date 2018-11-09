@@ -1,6 +1,6 @@
 # Avalon - Classical/Quantum programming language
 
-Quantum computing is progress slowly but surely. Though as it progresses, tools are going to be needed to program those computers.
+Quantum computing is progressing slowly but surely. And as it progresses, tools are going to be needed to program quantum computers.
 
 Avalon is a programming language aimed at a specific class of quantum computers called classical-quantum hybrid quantum computers.
 A hybrid classical-quantum computer has the property of having a classical computer driving (telling) the quantum computer what to do.
