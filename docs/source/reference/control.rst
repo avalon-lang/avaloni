@@ -159,7 +159,7 @@ The function itself is not complicated but combines different elements of what f
         `Just(i)` where `i` is the index where the needle was found,
         `None` if no element was found.
     ]-
-    def search : a = (list : [0], needle : a) -> maybe(int):
+    def search : a = (val list : [a], val needle : a) -> maybe(int):
         -- the current index and the element at that index
         var index   = 0,
             current = list[index]
@@ -190,7 +190,7 @@ The function itself is not complicated but combines different elements of what f
     ]-
     def __main__ = (val args : [string]) -> void:
         -- search data
-        var list   = [1, 2, 3, 4],
+        val list   = [1, 2, 3, 4],
             needle = 2
 
         -- we perform the search
@@ -198,7 +198,10 @@ The function itself is not complicated but combines different elements of what f
 
         -- we use pattern matching to see if we found the value and print the index where is was found
         if result === Just(index:int):
-            io.println("Found element <" + string(needle) + "> at index <" + string(index) + ">.")
+            Io.println("Found element <" + string(needle) + "> at index <" + string(index) + ">.")
         else:
-            io.println("Element <" + string(needle) + "> not found.")
+            Io.println("Element <" + string(needle) + "> not found.")
+
+        -- we are done
+        return
 
