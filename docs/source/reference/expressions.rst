@@ -99,6 +99,11 @@ the same reasons elaborated on above.
     var tuple = ("Margaret Doe", None):(string, maybe(int))
 
 
+.. warning::
+    If you have a tuple of only one element, *always* add a comma after that one element
+    else you will be created a grouped expression instead of a tuple. This works as follows:
+    ``(True,)``. Note the comma after the only element that makes the tuple.
+
 List expressions
 ----------------
 
