@@ -141,7 +141,7 @@ All standard gates live in the ``quant`` package and are bound to the ``Quant`` 
     "Pauli Z", "pz(q : ref qubit) -> void", "Quant.pz(ref q)"
     "Rotation about X", "rx(q : ref qubit, theta : float) -> void", "Quant.rx(ref q, Math.PI)"
     "Rotation about Y", "ry(q : ref qubit, theta : float) -> void", "Quant.ry(ref q, Math.PI / 2.0)"
-    "Rotation about Z", "rz(q : ref qubit, phi : float) -> void", "Quant.rz(ref q, 0)"
+    "Rotation about Z", "rz(q : ref qubit, phi : float) -> void", "Quant.rz(ref q, 0.0)"
     "Controlled X", "cx(control : ref qubit, target : ref qubit) -> void", "Quant.cx(ref q1, ref q2)"
     "Controlled X", "cy(control : ref qubit, target : ref qubit) -> void", "Quant.cy(ref q1, ref q2)"
     "Controlled X", "cz(control : ref qubit, target : ref qubit) -> void", "Quant.cz(ref q1, ref q2)"
