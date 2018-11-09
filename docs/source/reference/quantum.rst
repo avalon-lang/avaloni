@@ -20,7 +20,7 @@ Any 1-Qubit unitary gate is of the form:
 
 This is the form that Avalon implements directly as :math:`$Gate\left(\theta,\phi,\lambda\right)$`.
 
-Indeed, ``Gate(float, float, float)`` is a value constructor that constructors values of type isntance ``gate``
+Indeed, ``Gate(float, float, float)`` is a value constructor that constructors values of type instance ``gate``
 which can be applied to qubits.
 
 As an example, let us show how one creates the Hadamard gate:
@@ -120,7 +120,7 @@ This also is very easy, just use the ``measure`` function. On single qubit varia
 
 .. note::
     You can use the ``cast`` operator to perform measurement as this is implemented internally for you.
-    It is done as follows: :code:`val b = cast(ref q)`.
+    It is done as follows: :code:`val b = cast(ref q) -> bit`.
 
 
 List of standard gates
