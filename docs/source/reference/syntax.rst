@@ -98,7 +98,7 @@ they figure after a statement introduction and after type and function declarati
 
 .. code::
 
-    var name = "John Doe" -- a newline must be at the end of an expression statement
+    var name = "John Doe" -- a new line must be at the end of an expression statement
     Io.println(name)
 
 
@@ -129,9 +129,8 @@ Identation is how you form blocks in Avalon. And Avalon is very strict on identa
 Two characters can be used for identation: whitespace and tabulations.
 
 But Avalon imposes two extra rules on what form valid identation:
-
 * Whitespace and tabs cannot be mixed. It is either one or the other.
-* All identation must of the same length.
+* All identation must be multiples of the very identation. This means that if the first identation is 4 whitespaces long, a 6 whitespaces identation will not be allowed.
 
 Here is an example of valid identation.
 
