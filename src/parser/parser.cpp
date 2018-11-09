@@ -554,7 +554,7 @@ parser::parser(
         if(check(IDENTIFIER) || check(VAR) || check(VAL)) {
             do {
                 // get the mutability specifier of the parameter
-                bool is_mutable = true;
+                bool is_mutable = false;
                 if(match(VAR))
                     is_mutable = true;
                 else if(match(VAL))
