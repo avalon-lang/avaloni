@@ -69,3 +69,4 @@ Topics
    reference/control
    reference/modularity
    reference/encapsulation
+   reference/quantum
