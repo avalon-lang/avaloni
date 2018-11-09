@@ -89,6 +89,8 @@ A declaration inside a namespace is used by preprending it with the namespace na
 Imagine the ``Io`` namespace that contain the ``println`` function. To use this function, one does the following:
 
 .. code::
+
+
     import io
     import math
     
