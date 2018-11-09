@@ -18,7 +18,7 @@ Any 1-Qubit unitary gate is of the form:
     e^{i(\phi-\lambda)}\sin\left(\frac{\theta}{2}\right) & e^{i(\phi+\lambda)}\cos\left(\frac{\theta}{2}\right)
     \end{array}\right)
 
-This is the form that Avalon implements directly as :math:`$Gate\left(\theta,\phi,\lambda\right)$`.
+This is the form that Avalon implements directly as :math:`Gate\left(\theta,\phi,\lambda\right)`.
 
 Indeed, ``Gate(float, float, float)`` is a value constructor that constructors values of type instance ``gate``
 which can be applied to qubits.
