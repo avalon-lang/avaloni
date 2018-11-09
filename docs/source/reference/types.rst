@@ -474,6 +474,14 @@ Maps are dictionaries with keys of same type instance and values of same type in
     }
 
 
+The following operations are available on maps: indexing.
+
+.. code::
+
+    -- get the value associated with the year key
+    map["year"]
+
+
 Maps have the following restrictions:
 
 * A variable containing a map cannot be mutable.
