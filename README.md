@@ -72,9 +72,7 @@ You can find the documentation at [Read The Docs](https://avalon-lang.readthedoc
 
 ## Contributing
 
-Thank you for considering it.  
-Send me a pull request in case you want to help.  
-But do shoot me an email first so I get to know you.
+Thank you for considering it. Please see the [contribution guidelines](https://github.com/avalon-lang/avaloniq/blob/master/CONTRIBUTING.md) for help on contributing.
 
 ## Contact
 
