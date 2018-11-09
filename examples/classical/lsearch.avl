@@ -1,0 +1,70 @@
+-[
+Program testing linear search.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+
+-[
+search
+    Performs a linear search of the needle inside the given list.
+
+:params
+- list      : [a*]
+    A generic list of elements to search.
+- needle    : a*
+    A generic element to search.
+
+:returns
+- index     : maybe(a*)
+    `Just(i)` where `i` is the index where the needle was found,
+    `None` if no element was found.
+]-
+def search : a = (val list : [a], val needle : a) -> maybe(int):
+    -- the current index and the element at that index
+    var index   = 0,
+        current = list[index]
+
+    -- perform the search
+    -- notice how we are using pattern matching in the while loop itself
+    while current === Just(value:a):
+        if needle == value:
+            return Just(index)
+        else:
+            index = index + 1
+            current = list[index]
+
+    -- if we reach here, the needle wasn't found
+    return None:maybe(int)
+
+
+-[
+main
+    The main entry point.
+
+:params
+- args      : [string]
+    A list of strings that were passed to the program as commandline arguments.
+
+:returns
+- nothing   : void
+]-
+def __main__ = (val args : [string]) -> void:
+    -- search data
+    val list   = [1, 2, 3, 4],
+        needle = 2
+
+    -- we perform the search
+    var result = search(list, needle)
+
+    -- we use pattern matching to see if we found the value and print the index where is was found
+    if result === Just(index:int):
+        Io.println("Found element <" + string(needle) + "> at index <" + string(index) + ">.")
+    else:
+        Io.println("Element <" + string(needle) + "> not found.")
+
+    -- we are done
+    return
