@@ -1,12 +1,12 @@
 # Avalon - Classical/Quantum programming language
 
-Quantum computing is progress slowly but surely. Though as it progresses, tools are going to be needed to program those computers.  
-Avalon is a programming language aimed at a specific class of quantum computers called classical-quantum hybrid quantum computers.  
+Quantum computing is progress slowly but surely. Though as it progresses, tools are going to be needed to program those computers.
+
+Avalon is a programming language aimed at a specific class of quantum computers called classical-quantum hybrid quantum computers.
 A hybrid classical-quantum computer has the property of having a classical computer driving (telling) the quantum computer what to do.
 These computers are being built by IBM and Rigetti and Avalon seeks to target both, starting with Rigetti.
 
 Currently, all you will get is an interpreter to start prototyping on your own system while I'm working on generating QUIL (Rigetti) code.
-
 The documentation can be found at [Read The Docs](https://avalon-lang.readthedocs.io/en/latest) and please do look in the `examples` folder for sample code to run.
 
 ## What it looks like
