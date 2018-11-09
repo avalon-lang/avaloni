@@ -1,6 +1,13 @@
-# Avalon - Quantum interpreter
+# Avalon - Classical/Quantum programming language
 
-This is an interpreter of the quantum version of the language. 
+Quantum computing is progress slowly but surely. Though as it progresses, tools are going to be needed to program those computers.  
+Avalon is a programming language aimed at a specific class of quantum computers called classical-quantum hybrid quantum computers.  
+A hybrid classical-quantum computer has the property of having a classical computer driving (telling) the quantum computer what to do.
+These computers are being built by IBM and Rigetti and Avalon seeks to target both, starting with Rigetti.
+
+Currently, all you will get is an interpreter to start prototyping on your own system while I'm working on generating QUIL (Rigetti) code.
+
+The documentation can be found at [Read The Docs](https://avalon-lang.readthedocs.io/en/latest) and please do look in the `examples` folder for sample code to run.
 
 ## What it looks like
 
@@ -8,26 +15,15 @@ This is an interpreter of the quantum version of the language.
 
 ## State of the project
 
-**The interpreter is in progress: since 1-Qubit gates and data can be tested successfully, development is halted to document what's available.**
+Currently, the classical part is close to 90% finished (exclusing known bugs). The missing feature is pointer types.
+Getters and setters are being reworked into a better form. Otherwise the rest works as intended.
 
-As of this writing, 1-Qubit quantum gates can be tested.  
-Precisely, the following gates are available in the SDK:
+The quantum part, 1-Qubit data types and gates that act on them are implemented and can be tested.
+The 2-Qubits, 4-Qubits and 8-Qubits data types are implemented but gates that operate on them are still missing but upcoming.
 
-- Identity
-- Pauli X
-- Pauli Y
-- Pauli Z
-- Rotation about X
-- Rotation about Y
-- Rotation about Z
-- Controlled X
-- Controlled Y
-- Controlled Z
-- Hadamard
+## Show me the code
 
-It is possible to create your own 1-Qubit gates and their controlled counter parts. Please see the SDK folder for examples.  
-
-Please find code below to perform teleportation. Note how easy it is to follow the logic.
+Please find below the teleportation code found in examples reproduced for your copy-and-run pleasure.
 
 ```
 import io
@@ -63,6 +59,11 @@ def __main__ = (val args : [string]) -> void:
 
     return
 ```
+
+## Installation
+
+Currently, installation can only happen from source and the code has only been tested on a Linux system.  
+Installation directions can be found at [installing Avalon](https://avalon-lang.readthedocs.io/en/latest/installation.html).
 
 ## Documentation
 
