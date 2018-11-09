@@ -31,7 +31,7 @@ Here a skeleton of a function that searches a list of integers for a given needl
 
 
 Please note that we provide the mutability specifier (``var`` and ``val``) to each parameter though it is not mandatory.
-If a mutability specifier is not provided, it is assumed by default to be immutable. So the declaration above is the exactly the same as below.
+If a mutability specifier is not provided, the parameter is assumed by default to be immutable. So the declaration above is the exactly the same as below.
 
 .. code::
     
@@ -52,7 +52,7 @@ Above is the best random number generation function that returns an integer but 
 
 .. note::
     At the risk of being pedantic, type instances are not inferred for function parameters and must
-    always be provided. There for a signature of ``def search = (list, needle) -> maybe(int)`` is not allowed.
+    always be provided. Therefore a signature of ``def search = (list, needle) -> maybe(int)`` is not allowed.
     Obviously, the return type must also be provided for each and every function.
 
 
@@ -80,7 +80,7 @@ Termination analysis
 
 Unless your function returns ``void``, you must always make sure that it returns. The compiler
 assists mildy in this by perform a reachability and termination analysis but since such analysis
-cannot be done fully, it is conservative. This means that there will be cases where your functions
+cannot be done fully, it is conservative. This means that there will be cases where your function
 doesn't terminate and the compiler won't breathe a word of it.
 
 Calling functions
@@ -94,7 +94,7 @@ If we are to call our search function above, we could so as shown below:
     var index = search([1, 2, 3, 4, 5], 5)
 
 
-Avalon provides another handly syntax if you have long functions so as to help future maintainers or anyone reading your code.
+Avalon provides another handy syntax if you have long functions so as to help future maintainers or anyone reading your code.
 You can prepend arguments with parameter names as shown below:
 
 .. code::
@@ -112,11 +112,11 @@ Extended overloading
 --------------------
 
 Sometimes one needs two functions with the same name and same parameters but to return values of different types.
-This is static version of multiple dynamic dispatch is what we call *extended overloading* since it acts not only
+This static version of multiple dynamic dispatch is what we call *extended overloading* since it acts not only
 on the function's parameters but also on the function return type.
 
 This feature is used for the cast operator for instance. Imagine the following for instance:
-we wish to cast a ``int`` to both ``string`` and ``float`` (this comes out of the box but what of your own types?).
+we wish to cast a ``int`` to both ``string`` and ``float`` (this comes out of the box for ``int`` but the same strategy is applicable for your own types).
 
 Most Avalon operators can be overloaded in the case of the ``cast`` operator, the corresponding magic function is called ``__cast__``.
 Here is how the signature of the cast function would look:
@@ -153,11 +153,11 @@ The table below show the list of operators, expected function names, arity and w
     :header: "Operator", "Operator name", "Function name", "Arity"
     :widths: auto
 
-    "+", "Unary positive", "__pos__", 1
-    "-", "Negation", "__neg__", 1
+    "\+", "Unary positive", "__pos__", 1
+    "\-", "Negation", "__neg__", 1
     "~", "Bitwise not", "__bnot__", 1
-    "+", "Plus", "__add__", 2
-    "-", "Minus", "__sub__", 2
+    "\+", "Plus", "__add__", 2
+    "\-", "Minus", "__sub__", 2
     "\*", "Times", "__mul__", 2
     "/", "Divide", "__div__", 2
     "%", "Modulus", "__mod__", 2
