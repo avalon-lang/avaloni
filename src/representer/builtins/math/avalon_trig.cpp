@@ -107,6 +107,7 @@ namespace avalon {
         token lit_tok(FLOATING_POINT, pi_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> pi_val = std::make_shared<literal_expression>(lit_tok, FLOATING_POINT_EXPR, pi_str);
         pi_val -> set_type_instance(float_instance);
+        pi_val -> is_global(true);
         std::shared_ptr<expr> pi_expr = pi_val;
         pi_variable -> set_value(pi_expr);
         // add the variable declaration to the namespace
