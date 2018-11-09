@@ -74,7 +74,7 @@ Appling gate to qubits
 
 Applying gates to qubits is extremely simple. One simply calls the ``apply`` function, passing it the gate and the qubit(s) to apply the gate to.
 For 1-Qubit gates, ``apply`` has the signature :code:`apply(g : gate, q : ref qubit) -> void` and for controlled gates it has the signature
-:code:`apply(cg : cgate, control : ref qubit, target : ref qubit)`.
+:code:`apply(cg : cgate, control : ref qubit, target : ref qubit) -> void`.
 
 Let us demonstrate with an example, reusing our previous code:
 
