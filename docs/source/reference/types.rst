@@ -342,7 +342,7 @@ correspond to the type instance. Hence there cannot be a bitstring with 6 zeros 
     0b1         -- type instance <bit>
     0b10        -- type instance <bit2>
     0b1001      -- type instance <bit4>
-    0b1001'0012 -- type instance <bit8>
+    0b1001'0011 -- type instance <bit8>
                 -- note we placed a single quote to help with readability
 
 
@@ -490,7 +490,7 @@ References are created with the ``ref`` keyword both for type instances and for 
     var name = "John Doe"
     var alias = ref name    -- alias has type instance <ref string>
 
-    -- we get the original name by perform a dereference
+    -- we get the original name by perform a dereference with type instance <string>
     var original_name = dref alias
 
 
