@@ -33,8 +33,6 @@ giving you the freedom to evolve the language and contribute back if you so desi
 We hope you will find the language useful and more important, we hope it will make
 quantum computing accessible to you and everyone interested.
 
-**NOTE:** The quantum interpreter is not documented yet as its implementation is underway.
-
 Structure
 ---------
 
