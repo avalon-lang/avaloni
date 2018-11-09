@@ -135,6 +135,14 @@ Here is how the signature of the cast function would look:
 Our simplistic example is already very useful because without extended overloading it would be impossible
 to have user defined cast operators. This is not a problem in dynamically typed languages but a problem in statically type programming languages.
 
+To call a function that been overload in this manner, the return type instance must be provided. Observe:
+
+.. code::
+    
+    -- cast an integer to a string
+    var str = cast(12) -> string -- we must provide the return type instance else the compiler won't know which of the many functions to choose from
+
+
 Magic functions
 ---------------
 
