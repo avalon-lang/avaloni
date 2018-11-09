@@ -92,3 +92,8 @@ When the expression that initializes a variable has a complete type instance, it
 
 
 The type instance set the on the variable must be complete and it must match the type instance deduced for the initializer expression.
+
+Restrictions on variables
+-------------------------
+
+A variable cannot share the same name with a namespace, a type or function if they appear in the same namespace.
