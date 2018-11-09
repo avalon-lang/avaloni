@@ -97,6 +97,7 @@ namespace avalon {
         pi_variable -> set_fqn(l_fqn);
         pi_variable -> set_namespace(l_namespace -> get_name());
         pi_variable -> set_scope(l_scope);
+        pi_variable -> is_global(true);
         pi_variable -> set_type_instance(float_instance);
         // set initializer value
         double PI = 3.141592653589793238462643383279502884;
@@ -107,7 +108,6 @@ namespace avalon {
         token lit_tok(FLOATING_POINT, pi_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> pi_val = std::make_shared<literal_expression>(lit_tok, FLOATING_POINT_EXPR, pi_str);
         pi_val -> set_type_instance(float_instance);
-        pi_val -> is_global(true);
         std::shared_ptr<expr> pi_expr = pi_val;
         pi_variable -> set_value(pi_expr);
         // add the variable declaration to the namespace
