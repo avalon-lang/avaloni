@@ -190,6 +190,11 @@ It takes the type of interest as its only parameter and returns an integer.
     of them are short-circuit operators.
 
 
+.. note::
+    The ``__main__`` magic function serves the special purpose of being the entry point of the entire application.
+    It is associated with any operators and as best practive, it best never to name your own functions after it.
+
+
 Restrictions on functions
 -------------------------
 
