@@ -68,3 +68,4 @@ Topics
    reference/functions
    reference/control
    reference/modularity
+   reference/encapsulation
