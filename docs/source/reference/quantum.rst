@@ -20,7 +20,7 @@ Any 1-Qubit unitary gate is of the form:
 
 This is the form that Avalon implements directly as :math:`Gate\left(\theta,\phi,\lambda\right)`.
 
-Indeed, ``Gate(float, float, float)`` is a value constructor that constructors values of type instance ``gate``
+Indeed, ``Gate(float, float, float)`` is a value constructor that constructs values of type instance ``gate``
 which can be applied to qubits.
 
 As an example, let us show how one creates the Hadamard gate:
@@ -38,7 +38,7 @@ And all other 1-Qubits gates are created the same way.
 
 
 Controlled gates
-----------------
+~~~~~~~~~~~~~~~~
 
 Controlled gates are parametrized by 1-Qubit gates. All controlled gates are of the form:
 
@@ -69,8 +69,8 @@ For instance, to construct a controlled Hadamard gate, only simple does the foll
     val had_cgate:cgate = CGate(had_gate)
 
 
-Appling gate to qubits
-----------------------
+Appling gate to single qubits
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Applying gates to qubits is extremely simple. One simply calls the ``apply`` function, passing it the gate and the qubit(s) to apply the gate to.
 For 1-Qubit gates, ``apply`` has the signature :code:`apply(g : gate, q : ref qubit) -> void` and for controlled gates it has the signature
@@ -105,8 +105,8 @@ Let us demonstrate with an example, reusing our previous code:
     So you do not need to create them. Please see the table at the end of this section to see the list of those gates.
 
 
-Measuring qubits
-----------------
+Measuring single qubits
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Once you have applied unitary transformations on your qubit(s), it often desirable to measure them.
 This also is very easy, just use the ``measure`` function. On single qubit variables, the measure function returns a value of type instance ``bit``.
@@ -125,8 +125,8 @@ This also is very easy, just use the ``measure`` function. On single qubit varia
     It is done as follows: :code:`val b = cast(ref q) -> bit`.
 
 
-List of standard gates
-----------------------
+List of standard 1-Qubit gates
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Please find below a table of gates that come with the SDK, their names, signatures and example usage.
 All standard gates live in the ``quant`` package and are bound to the ``Quant`` namespaces
@@ -145,5 +145,5 @@ All standard gates live in the ``quant`` package and are bound to the ``Quant`` 
     "Controlled X", "cx(control : ref qubit, target : ref qubit) -> void", "Quant.cx(ref q1, ref q2)"
     "Controlled X", "cy(control : ref qubit, target : ref qubit) -> void", "Quant.cy(ref q1, ref q2)"
     "Controlled X", "cz(control : ref qubit, target : ref qubit) -> void", "Quant.cz(ref q1, ref q2)"
-    "Hadamard", "had(q : ref qubit)", "Quant.had(ref q)"
+    "Hadamard", "had(q : ref qubit) -> void", "Quant.had(ref q)"
 
