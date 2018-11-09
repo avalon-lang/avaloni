@@ -44,6 +44,25 @@ Let's note as well that if two or more variables share the same declarator, they
 
 The identation is not necessary in the second example but it helps with readability.
 
+Meaning of the declarator on reference variables
+------------------------------------------------
+
+Once a reference is set on a variable, it cannot be changed later. Which gives declarators
+a different meaning: a variable holding a reference declared with ``var`` indicates that
+trough it, the variable it points to can be modified (if it was declared mutable).
+
+.. code::
+    
+    -- A immutable variable
+    val name = "John Doe"
+    -- The following will fail since the variable <name> is immutable
+    var alias = ref name
+
+
+.. danger::
+    The restriction above is not yet implemented for function parameters and will be implemented soon.
+
+
 Restrictions on variable declarations
 -------------------------------------
 
