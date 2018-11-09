@@ -170,9 +170,9 @@ The table below show the list of operators, expected function names, arity and w
     "==", "Equal", "__eq__", 2
     "!=", "Not equal", "__ne__", 2
     ">", "Greater than", "__gt__", 2
-    ">", "Greater or equal to", "__ge__", 2
-    ">", "Less than", "__lt__", 2
-    ">", "Less or equal to", "__le__", 2
+    ">=", "Greater or equal to", "__ge__", 2
+    "<", "Less than", "__lt__", 2
+    "<=", "Less or equal to", "__le__", 2
     "cast", "Cast", "__cast__", 1
 
 
