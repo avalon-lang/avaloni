@@ -167,7 +167,7 @@ Precedence and associativity
 
 While we will go over the meaning of expressions later on and how to use them, you can
 find in the table below how operators used to form expressions interact.  
-The operator at the top binds tigher than the one at the bottom. Those on the same line
+The operator at the top binds tighter than the one at the bottom. Those on the same line
 have the same precedence but associativity is used to decide which is used before which.
 
 .. csv-table:: Operator precedence and associativity table
@@ -182,7 +182,7 @@ have the same precedence but associativity is used to decide which is used befor
     6, "cast", "Cast", "Left"
     7, "dref", "Dereference", "Left"
     8, "ref", "Reference", "Left"
-    9, "*, /, %, **", "Multiplication, division, modulo, power", "Left"
+    9, "**, /, %, ***", "Multiplication, division, modulo, power", "Left"
     10, "+, -", "Binary addition and substraction", "Left"
     11, "<<, >>", "Left and right bit shifting", "Left"
     12, "&", "Bitwise and", "Left"
