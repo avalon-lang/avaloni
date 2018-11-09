@@ -49,7 +49,7 @@ Meaning of the declarator on reference variables
 
 Once a reference is set on a variable, it cannot be changed later. Which gives declarators
 a different meaning: a variable holding a reference declared with ``var`` indicates that
-trough it, the variable it points to can be modified (if it was declared mutable).
+through it, the variable it points to can be modified (if it was declared mutable).
 
 .. code::
     
@@ -61,6 +61,7 @@ trough it, the variable it points to can be modified (if it was declared mutable
 
 .. danger::
     The restriction above is not yet implemented for function parameters and will be implemented soon.
+    So for the time being, you are on your own in passing correct references to functions.
 
 
 Restrictions on variable declarations
