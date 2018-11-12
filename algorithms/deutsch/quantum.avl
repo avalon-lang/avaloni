@@ -1,5 +1,5 @@
 -[
-Quantum solution to the Deutsch's problem.
+Quantum solution to Deutsch's problem.
 
 - author     ntwali bashige
 - copyright  2018 (c) ntwali bashige
@@ -52,7 +52,7 @@ def __main__ = (val args : [string]) -> void:
     -- step 4 : measure the input
     val answer = cast(ref input) -> bit
 
-    -- Print the result
+    -- print the result
     if answer == 0b0:
         Io.println("The oracle contains a constant function.")
     else:
