@@ -47,13 +47,13 @@ But at the moment, here is a list of reserved words::
     default, if, elif, else, for, empty, while, continue, break, pass, return
 
 
-Identifiers
+Indentifiers
 -----------
 
 Type, function and variable declaration naming rules are similar to that of many languages.
 Unfortunately, for the moment, only ASCII names are supported but in the future Unicode is
 expected to be supported.  
-Identifiers can start with a letter or underscore followed by more letters, digits and undercores.
+Indentifiers can start with a letter or underscore followed by more letters, digits and undercores.
 
 .. danger::
     A single underscore cannot be used as a variable name.
@@ -65,7 +65,7 @@ Identifiers can start with a letter or underscore followed by more letters, digi
     for builtin functions and variables.
 
 
-Here are examples of valid identifiers.
+Here are examples of valid indentifiers.
 
 .. code::
 
@@ -83,7 +83,7 @@ And the following must be avoid and used under no circumstances.
     _ -- the compiler will reject the presence of this token outside of a pattern matching expression.
     
     -[
-    while these are valid identifiers, there is always the possibility they will collide with an internal identifier now or in the future.
+    while these are valid indentifiers, there is always the possibility they will collide with an internal indentifier now or in the future.
     ]-
     __hello__
     __world
@@ -122,17 +122,17 @@ This is facilitated with the use of a backslash ``\``.
         Io.println("Adult female.")
 
 
-Identation
+Indentation
 ----------
 
-Identation is how you form blocks in Avalon. And Avalon is very strict on identation.  
-Two characters can be used for identation: whitespace and tabulations.
-But Avalon imposes two extra rules on what form valid identation:
+Indentation is how you form blocks in Avalon. And Avalon is very strict on indentation.  
+Two characters can be used for indentation: whitespace and tabulations.
+But Avalon imposes two extra rules on what form valid indentation:
 
 * Whitespace and tabs cannot be mixed. It is either one or the other.
-* All identation must be multiples of the very first identation. This means that if the first identation is 4 whitespaces long, a 6 whitespaces identation will not be allowed anywhere else in the entire source file.
+* All indentation must be multiples of the very first indentation. This means that if the first indentation is 4 whitespaces long, a 6 whitespaces indentation will not be allowed anywhere else in the entire source file.
 
-Here is an example of valid identation.
+Here is an example of valid indentation.
 
 .. code::
 
@@ -142,39 +142,39 @@ Here is an example of valid identation.
         | Other
 
 
-The same code with invalid identation.
+The same code with invalid indentation.
 
 .. code::
 
     type sex = ():
         Male
-      | Female -- This identation has two spaces while the previous one has four spaces
+      | Female -- This indentation has two spaces while the previous one has four spaces
       | Other
 
 
-Few tokens are allowed to appear at the beginning of a line that's been idented.
+Few tokens are allowed to appear at the beginning of a line that's been indented.
 The following tokens are allowed to do so::
 
     logical not(!), bitwise not(~), plus(+), minus(-), end of namespace(/-),
-    beginning of string("), digits, identifiers, type declarator (type), function declarator(def),
+    beginning of string("), digits, indentifiers, type declarator (type), function declarator(def),
     variable declarators(var and val) 
 
 
 Therefore, if you were to begin a line with say a multiplication sign(*), the compiler will emit an error.
 
-There are 3 places where identation is ignored by the language: inside parentheses, square brackets and curly braces.
+There are 3 places where indentation is ignored by the language: inside parentheses, square brackets and curly braces.
 This means that you can write function arguments and parameters on multiple lines for better readability.
 
 .. code::
     
-    -- identation inside parentheses is ignored so you can do as you please identation-wise
+    -- indentation inside parentheses is ignored so you can do as you please indentation-wise
     val package = (
         name    = "Input/Output",
         author  = "John Doe",
         version = "0.0.1"
     )
 
-    -- identation inside square brackets is ignored as well
+    -- indentation inside square brackets is ignored as well
     var physicists = [
         "Isaac Newton",
         "Albert Einstein",
@@ -183,7 +183,7 @@ This means that you can write function arguments and parameters on multiple line
         "Donna Strickland"
     ]
 
-    -- identation is ignored inside curly braces as well
+    -- indentation is ignored inside curly braces as well
     var user = {
         "name": "Jane Doe",
         "street": "4683  South Street",
@@ -216,7 +216,7 @@ have the same precedence but associativity is used to decide which is used befor
     12, "&", "Bitwise and", "Left"
     13, "^", "Bitwise xor", "Left"
     14, "\|", "Bitwise or", "Left"
-    15, "===, =!=, ==, !=, >, >=, <, <=, in, not in, next in, prev in, is, is not", "Pattern match, pattern does not match, equal, not equal, greater than, greater or equal to, less than, less or equal to, member of, not member of, next member of, previous member of, reference identical, reference not identical", "Left"
+    15, "===, =!=, ==, !=, >, >=, <, <=, in, not in, next in, prev in, is, is not", "Pattern match, pattern does not match, equal, not equal, greater than, greater or equal to, less than, less or equal to, member of, not member of, next member of, previous member of, reference indentical, reference not indentical", "Left"
     16, "! (not)", "Logical not", "Right"
     17, "&& (and)", "Logical and", "Left"
     18, "|| (or)", "Logical or", "Left"

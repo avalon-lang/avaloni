@@ -56,8 +56,8 @@ Above is the best random number generation function that returns an integer but 
     Obviously, the return type must also be provided for each and every function.
 
 
-After the function signature and the colon that follows it, **an identation is expected**.
-The identation introduces the function body.
+After the function signature and the colon that follows it, **an indentation is expected**.
+The indentation introduces the function body.
 
 Now, imagive our search algorithm can work with any data that's thrown at it, we can parametrize it with a type constraint
 so that the compiler can perform replacements of the constratint with complete types later. Observe a generic function:

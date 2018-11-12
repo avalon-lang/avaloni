@@ -30,7 +30,7 @@ Variable declarations also allow serial initialization. Observe:
     var a = b = c = d = 10
 
 
-Let's note as well that if two or more variables share the same declarator, they can declared on the same line or idented to reflect the sharing.
+Let's note as well that if two or more variables share the same declarator, they can declared on the same line or indented to reflect the sharing.
 
 .. code::
     
@@ -42,7 +42,7 @@ Let's note as well that if two or more variables share the same declarator, they
         destination = 0q0
 
 
-The identation is not necessary in the second example but it helps with readability.
+The indentation is not necessary in the second example but it helps with readability.
 
 Meaning of the declarator on reference variables
 ------------------------------------------------

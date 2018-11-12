@@ -59,7 +59,7 @@ A namespace is created by the following syntax.
 
 
 .. tip::
-    You can choose to ident the declarations inside a namespace (or not). 
+    You can choose to indent the declarations inside a namespace (or not). 
 
 
 One might ask what happens when we don't declare a namespace. If no namespace is provided, then all your declarations go into the global namespace which is the namespace without a name.

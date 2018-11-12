@@ -100,7 +100,7 @@ Let us demonstrate with an example, reusing our previous code:
 
 
 .. note::
-    The SDK that comes with the compiler has a few builtin gates: identity gate,
+    The SDK that comes with the compiler has a few builtin gates: indentity gate,
     Pauli X, Y and Z, rotation about X, Y and Z, controlled X, Y and Z and the Hadamard gate.
     So you do not need to create them. Please see the table at the end of this section to see the list of those gates.
 
@@ -135,7 +135,7 @@ All standard gates live in the ``quant`` package and are bound to the ``Quant`` 
     :header: "Gate name", "Signature", "Example"
     :widths: auto
 
-    "Identity", "id(q : ref qubit) -> void", "Quant.id(ref q)"
+    "Indentity", "id(q : ref qubit) -> void", "Quant.id(ref q)"
     "Pauli X", "px(q : ref qubit) -> void", "Quant.px(ref q)"
     "Pauli Y", "py(q : ref qubit) -> void", "Quant.py(ref q)"
     "Pauli Z", "pz(q : ref qubit) -> void", "Quant.pz(ref q)"
