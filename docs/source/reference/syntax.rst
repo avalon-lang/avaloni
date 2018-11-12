@@ -198,7 +198,7 @@ find in the table below how operators used to form expressions interact.
 The operator at the top binds tighter than the one at the bottom. Those on the same line
 have the same precedence but associativity is used to decide which is used before which.
 
-.. csv-table:: Operator precedence and associativity table
+.. csv-table:: Operator precedence and associativity
     :header: "Precedence", "Operator", "Description", "Associativity"
     :widths: auto
 

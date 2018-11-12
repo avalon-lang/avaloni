@@ -23,7 +23,7 @@ The 2-Qubits, 4-Qubits and 8-Qubits data types are implemented but gates that op
 
 ## Show me the code
 
-Please find below the teleportation code found in examples reproduced for your copy-paste-and-run pleasure.
+Please find below the teleportation code found in examples reproduced for your copy-paste-run pleasure.
 
 ```
 import io
