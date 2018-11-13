@@ -9,6 +9,13 @@ These computers are being built by IBM and Rigetti and Avalon seeks to target bo
 Currently, all you will get is an interpreter to start prototyping on your own system while I'm working on generating QUIL (Rigetti) code.
 The documentation can be found at [Read The Docs](https://avalon-lang.readthedocs.io/en/latest) and please do look in the `tests/integration` folder for sample code to run.
 
+## Why Avalon
+
+Quantum computing is progressing and it needs tools among which programming languages are going to play 
+a vital role. Yes, there exists other programming languages that target hybrid classical-quantum computers 
+but I have found them to be lacking in abstractions and many even exposing hardware primitives 
+making them unfriendly to the novice developer.
+
 ## What it looks like
 
 ![Avalon sample program in my editor](images/entanglement.avl.png "Avalon program in Sublime Text")
