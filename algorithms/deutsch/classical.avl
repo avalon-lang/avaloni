@@ -7,26 +7,7 @@ Classical solution to Deutsch's problem.
 ]-
 
 import io
-
-
--- Oracle for f0
-def f0 = (val input : bit) -> bit:
-    return 0b0
-
-
--- Oracle for f1
-def f1 = (val input : bit) -> bit:
-    return input
-
-
--- Oracle for f2
-def f2 = (val input : bit) -> bit:
-    return ~ input
-
-
--- Oracle for f3
-def f3 = (val input : bit) -> bit:
-    return 0b1
+import oracles.classical
 
 
 def __main__ = (val args : [string]) -> void:
