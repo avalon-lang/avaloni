@@ -19,7 +19,7 @@ def __main__ = (val args : [string]) -> void:
     Quant.had(ref ancilla)
 
     -- step 2 : call the oracle
-    f0(ref input, ref ancilla)
+    Oracle.f0(ref input, ref ancilla)
 
     -- step 3 : apply the Hadamard gate to the input
     Quant.had(ref input)

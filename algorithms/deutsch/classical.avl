@@ -12,10 +12,10 @@ import oracles.classical
 
 def __main__ = (val args : [string]) -> void:
     -- step 1 : call the oracle with 0
-    val left = f0(0b0)
+    val left = Oracle.f0(0b0)
 
     -- step 2 : call the oracle again but with 1
-    val right = f0(0b1)
+    val right = Oracle.f0(0b1)
 
     -- step 3 : compare both results to determine if the oracle is constant or balanced
     if left == right:
