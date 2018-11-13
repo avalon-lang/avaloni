@@ -23,7 +23,7 @@ The 2-Qubits, 4-Qubits and 8-Qubits data types are implemented but gates that op
 
 ## Show me the code
 
-Please find below the teleportation code found in tests/integration reproduced for your copy-paste-run pleasure.
+Please find below the teleportation code found in ``tests/integration/quantum/teleportation.avl`` reproduced for your copy-paste-run pleasure.
 
 ```
 import io
@@ -47,7 +47,7 @@ def __main__ = (val args : [string]) -> void:
     var source_bit = cast(ref source) -> bit,
         ancilla_bit = cast(ref ancilla) -> bit
 
-    -- perform error correction on the destination
+    -- perform phase correction on the destination
     if source_bit == 0b1:
         Quant.pz(ref destination)
     if ancilla_bit == 0b1:

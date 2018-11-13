@@ -27,7 +27,7 @@ def __main__ = (val args : [string]) -> void:
     var source_bit = cast(ref source) -> bit,
         ancilla_bit = cast(ref ancilla) -> bit
 
-    -- perform error correction on the destination
+    -- perform phase correction on the destination
     if source_bit == 0b1:
         Quant.pz(ref destination)
     if ancilla_bit == 0b1:
