@@ -65,10 +65,18 @@ void compile(const std::string& source_path, std::vector<std::string>& argumemts
     // add the current directory to the search path
     comp.add_search_path(fs::current_path());
 
+    // we add the source path directory to the search path
+    // we leave it to later stages of the compiler to decide if the file is valid
+    fs::path s(source_path);
+    if(fs::exists(s) == true && fs::is_directory(s) == false) {
+        fs::path source_dir = s.parent_path();
+        comp.add_search_path(source_dir);
+    }
+
     // add the avalon home directory to the search path - if it exists
     if(const char* avalon_home = std::getenv("AVALON_HOME")) {
         fs::path p(avalon_home);
-        if(fs::exists(p) == true && fs::exists(p) == true && fs::is_directory(p) == true)
+        if(fs::exists(p) == true && fs::is_directory(p) == true)
             comp.add_search_path(p);
     }
 
