@@ -36,7 +36,7 @@ def __main__ = (val args : [string]) -> void:
     -- step 2 : call the oracle again but with 1
     val right = f0(0b1)
 
-    -- step 3 : compare the both results to determine if the oracle is constant or balanced
+    -- step 3 : compare both results to determine if the oracle is constant or balanced
     if left == right:
         Io.println("The oracle contains a constant function.")
     else:

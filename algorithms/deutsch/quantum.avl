@@ -32,6 +32,7 @@ def f2 = (val input : ref qubit, val ancilla : ref qubit) -> void:
 
 -- Oracle for f3
 def f3 = (val input : ref qubit, val ancilla : ref qubit) -> void:
+    Quant.id(input)
     Quant.px(ancilla)
     return
 
