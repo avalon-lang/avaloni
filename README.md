@@ -7,7 +7,7 @@ A hybrid classical-quantum computer has the property of having a classical compu
 These computers are being built by IBM and Rigetti and Avalon seeks to target both, starting with Rigetti.
 
 Currently, all you will get is an interpreter to start prototyping on your own system while I'm working on generating QUIL (Rigetti) code.
-The documentation can be found at [Read The Docs](https://avalon-lang.readthedocs.io/en/latest) and please do look in the `examples` folder for sample code to run.
+The documentation can be found at [Read The Docs](https://avalon-lang.readthedocs.io/en/latest) and please do look in the `tests/integration` folder for sample code to run.
 
 ## What it looks like
 
@@ -23,7 +23,7 @@ The 2-Qubits, 4-Qubits and 8-Qubits data types are implemented but gates that op
 
 ## Show me the code
 
-Please find below the teleportation code found in examples reproduced for your copy-paste-run pleasure.
+Please find below the teleportation code found in tests/integration reproduced for your copy-paste-run pleasure.
 
 ```
 import io

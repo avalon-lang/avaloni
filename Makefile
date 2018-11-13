@@ -16,7 +16,7 @@ inc         := -Isrc -Ideps/qpp
 sysinc      := -isystem deps/boost -isystem deps/eigen
 build_dir   := build
 bin_dir     := bin
-target      := $(bin_dir)/avaloniq
+target      := $(bin_dir)/avaloni
 
 src_ext     := cpp
 sources     := $(shell find $(src_dir) -type f -name *.$(src_ext))

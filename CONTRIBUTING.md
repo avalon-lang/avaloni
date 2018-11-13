@@ -37,7 +37,7 @@ Before contributing, please make sure to have all items on the contributor check
 
 * You must have a Github account. If you don't, please create one using [Github sign up](https://github.com/signup/free).
 
-* [Fork Avalon](https://github.com/avalon-lang/avalon/fork).
+* [Fork Avalon](https://github.com/avalon-lang/avaloni/fork).
 
 * Install the compiler. Instructions are available at [Installing Avalon](https://avalon-lang.readthedocs.io/en/latest/installation.html).
 
