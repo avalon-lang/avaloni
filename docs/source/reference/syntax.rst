@@ -47,13 +47,13 @@ But at the moment, here is a list of reserved words::
     default, if, elif, else, for, empty, while, continue, break, pass, return
 
 
-Indentifiers
+Identifiers
 -----------
 
 Type, function and variable declaration naming rules are similar to that of many languages.
 Unfortunately, for the moment, only ASCII names are supported but in the future Unicode is
 expected to be supported.  
-Indentifiers can start with a letter or underscore followed by more letters, digits and undercores.
+Identifiers can start with a letter or underscore followed by more letters, digits and undercores.
 
 .. danger::
     A single underscore cannot be used as a variable name.
@@ -65,7 +65,7 @@ Indentifiers can start with a letter or underscore followed by more letters, dig
     for builtin functions and variables.
 
 
-Here are examples of valid indentifiers.
+Here are examples of valid identifiers.
 
 .. code::
 
@@ -83,7 +83,7 @@ And the following must be avoid and used under no circumstances.
     _ -- the compiler will reject the presence of this token outside of a pattern matching expression.
     
     -[
-    while these are valid indentifiers, there is always the possibility they will collide with an internal indentifier now or in the future.
+    while these are valid identifiers, there is always the possibility they will collide with an internal identifier now or in the future.
     ]-
     __hello__
     __world
@@ -123,7 +123,7 @@ This is facilitated with the use of a backslash ``\``.
 
 
 Indentation
-----------
+-----------
 
 Indentation is how you form blocks in Avalon. And Avalon is very strict on indentation.  
 Two characters can be used for indentation: whitespace and tabulations.
@@ -156,7 +156,7 @@ Few tokens are allowed to appear at the beginning of a line that's been indented
 The following tokens are allowed to do so::
 
     logical not(!), bitwise not(~), plus(+), minus(-), end of namespace(/-),
-    beginning of string("), digits, indentifiers, type declarator (type), function declarator(def),
+    beginning of string("), digits, identifiers, type declarator (type), function declarator(def),
     variable declarators(var and val) 
 
 
