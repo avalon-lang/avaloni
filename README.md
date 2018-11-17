@@ -22,7 +22,7 @@ making them unfriendly to the novice developer.
 
 ## State of the project
 
-Currently, the classical part is close to 90% finished (exclusing known bugs). The missing feature is pointer types.
+Currently, the classical part is close to 90% finished (excluding known bugs). The missing feature is pointer types.
 Getters and setters are being reworked into a better form. Otherwise the rest works as intended.
 
 The quantum part, 1-Qubit data types and gates that act on them are implemented and can be tested.
