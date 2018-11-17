@@ -280,49 +280,10 @@ namespace avalon {
      * sets the ket value if we have a qubit expression.
      * throws a value_error exception if this literal doesn't contain qubits
      */
-    void literal_expression::set_qubit_value(qpp::ket new_ket, qpp::ket propagation_ket, qubit_propagation_direction direction, bool was_measured) {
+    void literal_expression::set_qubit_value(qpp::ket new_ket) {
         if(m_expr_type == QUBIT_EXPR) {
-            std::size_t m_size = m_ket.size();
-            std::size_t p_size = propagation_ket.size();
-
-            // we update information that's independent of the qubit state
             m_ket = new_ket;
             m_ket_evolved = true;
-            m_was_measured = was_measured;
-
-            // if m_size < p_size then m_ket got tensored with propagation_ket
-            // if m_size > p_size then m_ket may have been measured or one of the ket it is bound to
-            if(m_size != p_size) {
-                // if the ket was the second argument of the tensor product, we increase the index by 1
-                if(direction == RIGHT_PROPAGATION)
-                    m_index += 1;
-                // if a measurement was perform on the current ket, we decrease the index by 1
-                else if(direction == LEFT_PROPAGATION)
-                    m_index -= 1;
-
-                // we go over qubits bound to the current qubit and ask them to update their kets
-                for(auto& bound_qubit : m_bound_qubits) {
-                    // we do nothing if the qubit of interest has already been measured
-                    if(bound_qubit -> was_measured())
-                        continue;
-
-                    // if the bound qubit index is greater than this qubit index, we update indices depending on whether a measurement was performed
-                    if(bound_qubit -> get_index() > m_index) {
-                        if(was_measured)
-                            bound_qubit -> set_qubit_value(propagation_ket, propagation_ket, LEFT_PROPAGATION, false);
-                        else
-                            bound_qubit -> set_qubit_value(propagation_ket, propagation_ket, RIGHT_PROPAGATION, false);
-                    }
-                    // if the bound qubit index is less than this qubit index, we don't update indices
-                    else if(bound_qubit -> get_index() < m_index) {
-                        bound_qubit -> set_qubit_value(propagation_ket, propagation_ket, NO_PROPAGATION, false);
-                    }
-                }
-            }
-
-            // if this qubit was measured, we update the index
-            if(was_measured)
-                m_index = 0;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");

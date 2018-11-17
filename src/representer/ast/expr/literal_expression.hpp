@@ -181,7 +181,7 @@ namespace avalon {
          * sets the ket value if we have a qubit expression.
          * throws a value_error exception if this literal doesn't contain qubits
          */
-        void set_qubit_value(qpp::ket new_ket, qpp::ket propagation_ket, qubit_propagation_direction direction, bool was_measured);
+        void set_qubit_value(qpp::ket new_ket);
 
         /**
          * ket_evolved

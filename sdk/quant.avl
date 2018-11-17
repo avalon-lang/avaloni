@@ -15,6 +15,22 @@ var package = (
     description = "This package contains the definition of quantum gates."
 )
 
+-- Identity gate
+private val idg = Gate(0.0, 0.0, 0.0)
+
+-- Pauli X gate
+private val pxg = Gate(Math.PI, 0.0, Math.PI)
+
+-- Pauli Y gate
+private val pyg = Gate(Math.PI, Math.PI / 2.0, Math.PI / 2.0)
+
+-- Pauli Z gate
+private val pzg = Gate(0.0, 0.0, 2.0 * Math.PI)
+
+-- Hadamard gate
+private val hadg = Gate(Math.PI / 2.0, 0.0, Math.PI)
+
+
 -[
 id
     Applies the identity gate to its argument.
@@ -27,8 +43,25 @@ id
 - nothing   : void
 ]-
 def id = (val q : ref qubit) -> void:
-    val g = Gate(0.0, 0.0, 0.0)
-    apply(g, q)
+    apply(Quant.idg, q)
+    return
+
+-[
+cid
+    Given two qubits, this gate applies a controlled id using the first qubit as control and the second as target.
+
+:params
+- q1        : ref qubit
+    A reference to the control qubit.
+- q2        : ref qubit
+    A reference to the target qubit.
+
+:returns
+- nothing   : void
+]-
+def cid = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    val cg = CGate(Quant.idg)
+    apply(cg, q1, q2)
     return
 
 -[
@@ -43,8 +76,25 @@ px
 - nothing   : void
 ]-
 def px = (val q : ref qubit) -> void:
-    val g = Gate(Math.PI, 0.0, Math.PI)
-    apply(g, q)
+    apply(Quant.pxg, q)
+    return
+
+-[
+cx
+    Given two qubits, this gate applies a controlled X using the first qubit as control and the second as target.
+
+:params
+- q1        : ref qubit
+    A reference to the control qubit.
+- q2        : ref qubit
+    A reference to the target qubit.
+
+:returns
+- nothing   : void
+]-
+def cx = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    val cg = CGate(Quant.pxg)
+    apply(cg, q1, q2)
     return
 
 -[
@@ -59,8 +109,25 @@ py
 - nothing   : void
 ]-
 def py = (val q : ref qubit) -> void:
-    val g = Gate(Math.PI, Math.PI / 2.0, Math.PI / 2.0)
-    apply(g, q)
+    apply(Quant.pyz, q)
+    return
+
+-[
+cy
+    Given two qubits, this gate applies a controlled Y using the first qubit as control and the second as target.
+
+:params
+- q1        : ref qubit
+    A reference to the control qubit.
+- q2        : ref qubit
+    A reference to the target qubit.
+
+:returns
+- nothing   : void
+]-
+def cy = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    val cg = CGate(Quant.pyg)
+    apply(cg, q1, q2)
     return
 
 -[
@@ -75,24 +142,25 @@ pz
 - nothing   : void
 ]-
 def pz = (val q : ref qubit) -> void:
-    val g = Gate(0.0, 0.0, Math.PI)
-    apply(g, q)
+    apply(Quant.pzg, q)
     return
 
 -[
-had
-    Applies the Hadamard gate to its argument.
+cz
+    Given two qubits, this gate applies a controlled Z using the first qubit as control and the second as target.
 
 :params
-- q         : ref qubit
-    A reference to a single qubit to apply the Hadamard gate to.
+- q1        : ref qubit
+    A reference to the control qubit.
+- q2        : ref qubit
+    A reference to the target qubit.
 
 :returns
 - nothing   : void
 ]-
-def had = (val q : ref qubit) -> void:
-    val g = Gate(Math.PI / 2.0, 0.0, Math.PI)
-    apply(g, q)
+def cz = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    val cg = CGate(Quant.pzg)
+    apply(cg, q1, q2)
     return
 
 -[
@@ -114,6 +182,26 @@ def rx = (val q : ref qubit, val theta : float) -> void:
     return
 
 -[
+crx
+    Given a control qubit, a target qubit and the rotation angle, this gate applies a rotation about X on the target qubit if the control qubit is 1.
+
+:params
+- q1        : ref qubit
+    A reference to the control qubit.
+- q2        : ref qubit
+    A reference to the target qubit.
+- theta     : float
+    The angle by which to rotate the target qubit about the X axis.
+
+:returns
+- nothing   : void
+]-
+def crx = (val q1 : ref qubit, val q2 : ref qubit, val theta : float) -> void:
+    val cg = CGate(Gate(theta, - Math.PI / 2.0, Math.PI / 2.0))
+    apply(cg, q1, q2)
+    return
+
+-[
 ry
     Applies the rotation about Y gate to its argument
 
@@ -129,6 +217,26 @@ ry
 def ry = (val q : ref qubit, val theta : float) -> void:
     val g = Gate(theta, 0.0, 0.0)
     apply(g, q)
+    return
+
+-[
+cry
+    Given a control qubit, a target qubit and the rotation angle, this gate applies a rotation about Y on the target qubit if the control qubit is 1.
+
+:params
+- q1        : ref qubit
+    A reference to the control qubit.
+- q2        : ref qubit
+    A reference to the target qubit.
+- theta     : float
+    The angle by which to rotate the target qubit about the Y axis.
+
+:returns
+- nothing   : void
+]-
+def cry = (val q1 : ref qubit, val q2 : ref qubit, val theta : float) -> void:
+    val cg = CGate(Gate(theta, 0.0, 0.0))
+    apply(cg, q1, q2)
     return
 
 -[
@@ -150,44 +258,81 @@ def rz = (val q : ref qubit, val phi : float) -> void:
     return
 
 -[
-cx
-    Given two qubits, this gate applies a controlled X using the first qubit as control and the second as target.
+crz
+    Given a control qubit, a target qubit and the rotation angle, this gate applies a rotation about Z on the target qubit if the control qubit is 1.
 
 :params
 - q1        : ref qubit
     A reference to the control qubit.
 - q2        : ref qubit
     A reference to the target qubit.
+- theta     : float
+    The angle by which to rotate the target qubit about the Z axis.
 
 :returns
 - nothing   : void
 ]-
-def cx = (val q1 : ref qubit, val q2 : ref qubit) -> void:
-    val cg = CGate(Gate(Math.PI, 0.0, Math.PI))
+def crz = (val q1 : ref qubit, val q2 : ref qubit, val phi : float) -> void:
+    val cg = CGate(Gate(0.0, 0.0, phi))
     apply(cg, q1, q2)
     return
 
 -[
-cy
-    Given two qubits, this gate applies a controlled Y using the first qubit as control and the second as target.
+phase
+    Applies the phase shift gate its argument by the angle lambda.
+
+:params
+- q         : ref qubit
+    A reference to a single qubit to apply the Phase shift gate to.
+- lambda    : float
+    The phase shift angle.
+
+:returns
+- nothing   : void
+]-
+def phase = (val q : ref qubit, val lambda : float) -> void:
+    val g = Gate(0.0, 0.0, 2.0 * lambda)
+    apply(g, q)
+    return
+
+-[
+cphase
+    Given a control qubit, a target qubit and the phase shift angle, this gate applies a phase shift on the target qubit if the control qubit is 1.
 
 :params
 - q1        : ref qubit
     A reference to the control qubit.
 - q2        : ref qubit
     A reference to the target qubit.
+- theta     : float
+    The angle by which to phase shift the target qubit.
 
 :returns
 - nothing   : void
 ]-
-def cy = (val q1 : ref qubit, val q2 : ref qubit) -> void:
-    val cg = CGate(Gate(Math.PI, Math.PI / 2.0, Math.PI / 2.0))
+def cphase = (val q1 : ref qubit, val q2 : ref qubit, val lambda : float) -> void:
+    val cg = CGate(Gate(0.0, 0.0, 2.0 * lambda))
     apply(cg, q1, q2)
     return
 
 -[
-cz
-    Given two qubits, this gate applies a controlled Z using the first qubit as control and the second as target.
+s
+    Applies the S phase shift gate its argument.
+
+:params
+- q         : ref qubit
+    A reference to a single qubit to apply the S phase shift gate to.
+
+:returns
+- nothing   : void
+]-
+def s = (val q : ref qubit) -> void:
+    Quant.phase(q, Math.PI / 2.0)
+    return
+
+-[
+cs
+    Given a control qubit, a target qubit and the phase shift angle, this gate applies the S phase shift on the target qubit if the control qubit is 1.
 
 :params
 - q1        : ref qubit
@@ -198,8 +343,95 @@ cz
 :returns
 - nothing   : void
 ]-
-def cz = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+def cs = (val q1 : ref qubit, val q2 : ref qubit) -> void:
     val cg = CGate(Gate(0.0, 0.0, Math.PI))
     apply(cg, q1, q2)
+    return
+
+-[
+t
+    Applies the T phase shift gate its argument.
+
+:params
+- q         : ref qubit
+    A reference to a single qubit to apply the T phase shift gate to.
+
+:returns
+- nothing   : void
+]-
+def t = (val q : ref qubit) -> void:
+    Quant.phase(q, Math.PI / 4.0)
+    return
+
+-[
+ct
+    Given a control qubit, a target qubit and the phase shift angle, this gate applies the T phase shift on the target qubit if the control qubit is 1.
+
+:params
+- q1        : ref qubit
+    A reference to the control qubit.
+- q2        : ref qubit
+    A reference to the target qubit.
+
+:returns
+- nothing   : void
+]-
+def ct = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    val cg = CGate(Gate(0.0, 0.0, Math.PI / 2.0))
+    apply(cg, q1, q2)
+    return
+
+-[
+had
+    Applies the Hadamard gate to its argument.
+
+:params
+- q         : ref qubit
+    A reference to a single qubit to apply the Hadamard gate to.
+
+:returns
+- nothing   : void
+]-
+def had = (val q : ref qubit) -> void:
+    apply(Quant.hadg, q)
+    return
+
+-[
+chad
+    Given a control qubit, a target qubit and the phase shift angle, this gate applies the T phase shift on the target qubit if the control qubit is 1.
+
+:params
+- q1        : ref qubit
+    A reference to the control qubit.
+- q2        : ref qubit
+    A reference to the target qubit.
+- theta     : float
+    The angle by which to phase shift the target qubit.
+
+:returns
+- nothing   : void
+]-
+def chad = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    val cg = CGate(Quant.hadg)
+    apply(cg, q1, q2)
+    return
+
+-[
+swap
+    Given two qubits, this gate swaps the left qubit with the right qubit.
+
+:params
+- left      : ref qubit
+    A reference to the left qubit.
+- right     : ref qubit
+    A reference to the right qubit.
+
+:returns
+- nothing   : void
+]-
+def swap = (val left : ref qubit, val right : ref qubit) -> void:
+    Quant.cx(left, right)
+    Quant.cx(right, left)
+    Quant.cx(left, right)
     return
 /-

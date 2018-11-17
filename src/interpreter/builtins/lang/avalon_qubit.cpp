@@ -166,7 +166,7 @@ namespace avalon {
         qpp::ket result = qpp::apply(qubit, unitary, {qubit_expr -> get_index()});
 
         // 3. set the new evolved qubit on the literal
-        qubit_expr -> set_qubit_value(result, result, NO_PROPAGATION, false);
+        qubit_expr -> set_qubit_value(result);
 
         // DONE.
         return nullptr;
@@ -275,18 +275,22 @@ namespace avalon {
         // 2. build the tensor product of the qubits and set them on the original expressions
         qpp::ket qubit_two = qubit_expr_two -> get_qubit_value();
         qpp::ket qubit_three = qubit_expr_three -> get_qubit_value();
-        qpp::ket qubit = qpp::kron(qubit_two, qubit_three);
 
-        // 3. apply the controlled unitary on the qubit
-        qpp::ket result = qpp::applyCTRL(qubit, unitary, {qubit_expr_two -> get_index()}, {qubit_expr_three -> get_index() + 1});
+        // 3. apply the controlled operation
+        qpp::ket qubit = qpp::kron(qubit_two, qubit_three);
+        qpp::ket result = qpp::applyCTRL(qubit, unitary, {0}, {1});
 
         // 4. set the new evolved qubit on the literal
-        qubit_expr_two -> set_qubit_value(result, result, NO_PROPAGATION, false);
-        qubit_expr_three -> set_qubit_value(result, result, RIGHT_PROPAGATION, false);
+        auto measurement = qpp::measure_seq(result, {0, 1});
+        std::size_t result_two = std::get<0>(measurement)[0];
+        std::size_t result_three = std::get<0>(measurement)[1];
+        // qpp::ket bound_ket = std::get<2>(measurement);
+        qpp::ket ket_two = result_two == 0 ? qpp::mket({0}) : qpp::mket({1});
+        qpp::ket ket_three = result_three == 0 ? qpp::mket({0}) : qpp::mket({1});
 
-        // 5. let the new evolved qubits know that they are bound to each other due the tensor product
-        qubit_expr_two -> add_bound_qubit(qubit_expr_three);
-        qubit_expr_three -> add_bound_qubit(qubit_expr_two);
+        // 5. update kets on qubits
+        qubit_expr_two -> set_qubit_value(ket_two);
+        qubit_expr_three -> set_qubit_value(ket_three);
 
         // DONE.
         return nullptr;
@@ -331,17 +335,8 @@ namespace avalon {
 
         // 2. get the ket it variable references and perform a Pauli Z measurement - equivalent to measurement in the computational basis
         qpp::ket qubit = qubit_expr -> get_qubit_value();
-        
-        // 3. perform the measurement and set the new qubit
-        auto measurement = qpp::measure_seq(qubit, {qubit_expr -> get_index()});
-        std::size_t result = std::get<0>(measurement)[0];
-        qpp::ket bound_ket = std::get<2>(measurement);
-        qpp::ket new_ket{qpp::ket::Zero(2)};
-        if(result == 0)
-            new_ket << 1, 0;
-        else
-            new_ket << 0, 1;
-        qubit_expr -> set_qubit_value(new_ket, bound_ket, NO_PROPAGATION, true);
+        auto measurement = qpp::measure(qubit, qpp::gt.Z, {0});
+        std::size_t result = std::get<0>(measurement);
 
         // 4. we set the qubit measurement result
         qubit_expr -> was_measured(true);
