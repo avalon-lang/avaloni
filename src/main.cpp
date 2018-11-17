@@ -31,6 +31,7 @@
 #include <boost/filesystem.hpp>
 
 #include "compiler/compiler.hpp"
+#include "utils/exceptions/invalid_directory.hpp"
 
 
 void compile(const std::string& source_path, std::vector<std::string>& argumemts);
@@ -70,7 +71,10 @@ void compile(const std::string& source_path, std::vector<std::string>& argumemts
     fs::path s(source_path);
     if(fs::exists(s) == true && fs::is_directory(s) == false) {
         fs::path source_dir = s.parent_path();
-        comp.add_search_path(source_dir);
+        try {
+            comp.add_search_path(source_dir);
+        } catch(const invalid_directory& err) {
+        }
     }
 
     // add the avalon home directory to the search path - if it exists
