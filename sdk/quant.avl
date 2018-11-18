@@ -455,8 +455,6 @@ chad
     A reference to the control qubit.
 - q2        : ref qubit
     A reference to the target qubit.
-- theta     : float
-    The angle by which to phase shift the target qubit.
 
 :returns
 - nothing   : void
