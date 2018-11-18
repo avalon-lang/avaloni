@@ -1036,16 +1036,30 @@ namespace avalon {
         std::shared_ptr<expr>& rval = binary_expr -> get_rval();
 
         // we check both the lval and the rval
-        check(lval, l_scope, ns_name);
-        check(rval, l_scope, ns_name);
+        type_instance lval_instance = check(lval, l_scope, ns_name);
+        type_instance rval_instance = check(rval, l_scope, ns_name);
 
-        // make sure the lval is a reference expression
-        if(lval -> is_reference_expression() == false)
-            throw invalid_expression(lval -> expr_token(), "The l-value operand to the <is> and <is not> operators must be a reference expression.");
+        // make sure the lval contains a reference expression directly or indirectly
+        if(lval -> is_reference_expression() == false) {
+            if(lval -> is_identifier_expression() == false) {
+                throw invalid_expression(lval -> expr_token(), "The l-value operand to the <is> and <is not> operators must be a reference expression or a variable containing a reference expression.");
+            }
+            else {
+                if(lval_instance.is_reference() == false)
+                    throw invalid_expression(lval -> expr_token(), "The l-value operand to the <is> and <is not> operators must be a reference expression or a variable containing a reference expression.");
+            }
+        }
 
-        // make sure the rval is a reference expression
-        if(rval -> is_reference_expression() == false)
-            throw invalid_expression(lval -> expr_token(), "The r-value operand to the <is> and <is not> operators must be a reference expression.");
+        // make sure the rval contains a reference expression directly or indirectly
+        if(rval -> is_reference_expression() == false) {
+            if(rval -> is_identifier_expression() == false) {
+                throw invalid_expression(rval -> expr_token(), "The r-value operand to the <is> and <is not> operators must be a reference expression or a variable containing a reference expression.");
+            }
+            else {
+                if(rval_instance.is_reference() == false)
+                    throw invalid_expression(lval -> expr_token(), "The r-value operand to the <is> and <is not> operators must be a reference expression or a variable containing a reference expression.");
+            }
+        }
 
         return m_inferrer.infer_is_binary(binary_expr, l_scope, ns_name);
     }

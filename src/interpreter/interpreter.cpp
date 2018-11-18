@@ -812,12 +812,33 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         false_expr -> set_expression_type(CONSTRUCTOR_EXPR);
         std::shared_ptr<expr> false_final_expr = false_expr;
 
-        // check if both references in the lval and rval point to the same variable
-        std::shared_ptr<reference_expression> const & lval_ref = std::static_pointer_cast<reference_expression>(lval);
-        std::shared_ptr<reference_expression> const & rval_ref = std::static_pointer_cast<reference_expression>(rval);
-        
-        std::shared_ptr<variable>& lval_var = lval_ref -> get_variable();
-        std::shared_ptr<variable>& rval_var = rval_ref -> get_variable();
+        // we get the variable contained in the lval and rval references
+        std::shared_ptr<variable> lval_var = nullptr;
+        std::shared_ptr<variable> rval_var = nullptr;
+
+        // if the lval is a reference expression
+        if(lval -> is_reference_expression()) {
+            std::shared_ptr<reference_expression> const & lval_ref = std::static_pointer_cast<reference_expression>(lval);
+            lval_var = lval_ref -> get_variable();
+        }
+        // otherwise it is an identifier expression
+        else if(lval -> is_identifier_expression()) {
+            std::shared_ptr<expr> ref_expr = interpret_identifier(lval, l_scope, ns_name);
+            std::shared_ptr<reference_expression> const & lval_ref = std::static_pointer_cast<reference_expression>(ref_expr);
+            lval_var = lval_ref -> get_variable();
+        }
+
+        // if the rval is a reference expression
+        if(rval -> is_reference_expression()) {
+            std::shared_ptr<reference_expression> const & rval_ref = std::static_pointer_cast<reference_expression>(rval);
+            rval_var = rval_ref -> get_variable();
+        }
+        // otherwise it is an identifier expression
+        else if(rval -> is_identifier_expression()) {
+            std::shared_ptr<expr> ref_expr = interpret_identifier(rval, l_scope, ns_name);
+            std::shared_ptr<reference_expression> const & rval_ref = std::static_pointer_cast<reference_expression>(ref_expr);
+            rval_var = rval_ref -> get_variable();
+        }
 
         if(bin_expr -> get_expression_type() == IS_EXPR)
             return (lval_var == rval_var) ? true_expr : false_expr;
