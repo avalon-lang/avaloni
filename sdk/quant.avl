@@ -60,6 +60,11 @@ cid
 - nothing   : void
 ]-
 def cid = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Quant.idg)
     apply(cg, q1, q2)
     return
@@ -93,6 +98,11 @@ cx
 - nothing   : void
 ]-
 def cx = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Quant.pxg)
     apply(cg, q1, q2)
     return
@@ -126,6 +136,11 @@ cy
 - nothing   : void
 ]-
 def cy = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Quant.pyg)
     apply(cg, q1, q2)
     return
@@ -159,6 +174,11 @@ cz
 - nothing   : void
 ]-
 def cz = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Quant.pzg)
     apply(cg, q1, q2)
     return
@@ -197,6 +217,11 @@ crx
 - nothing   : void
 ]-
 def crx = (val q1 : ref qubit, val q2 : ref qubit, val theta : float) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Gate(theta, - Math.PI / 2.0, Math.PI / 2.0))
     apply(cg, q1, q2)
     return
@@ -235,6 +260,11 @@ cry
 - nothing   : void
 ]-
 def cry = (val q1 : ref qubit, val q2 : ref qubit, val theta : float) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Gate(theta, 0.0, 0.0))
     apply(cg, q1, q2)
     return
@@ -273,6 +303,11 @@ crz
 - nothing   : void
 ]-
 def crz = (val q1 : ref qubit, val q2 : ref qubit, val phi : float) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Gate(0.0, 0.0, phi))
     apply(cg, q1, q2)
     return
@@ -311,6 +346,11 @@ cphase
 - nothing   : void
 ]-
 def cphase = (val q1 : ref qubit, val q2 : ref qubit, val lambda : float) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Gate(0.0, 0.0, 2.0 * lambda))
     apply(cg, q1, q2)
     return
@@ -332,7 +372,7 @@ def s = (val q : ref qubit) -> void:
 
 -[
 cs
-    Given a control qubit, a target qubit and the phase shift angle, this gate applies the S phase shift on the target qubit if the control qubit is 1.
+    Given a control qubit and a target qubit, this gate applies the S phase shift on the target qubit if the control qubit is 1.
 
 :params
 - q1        : ref qubit
@@ -344,6 +384,11 @@ cs
 - nothing   : void
 ]-
 def cs = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Gate(0.0, 0.0, Math.PI))
     apply(cg, q1, q2)
     return
@@ -365,7 +410,7 @@ def t = (val q : ref qubit) -> void:
 
 -[
 ct
-    Given a control qubit, a target qubit and the phase shift angle, this gate applies the T phase shift on the target qubit if the control qubit is 1.
+    Given a control qubit and a target qubit, this gate applies the T phase shift on the target qubit if the control qubit is 1.
 
 :params
 - q1        : ref qubit
@@ -377,6 +422,11 @@ ct
 - nothing   : void
 ]-
 def ct = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Gate(0.0, 0.0, Math.PI / 2.0))
     apply(cg, q1, q2)
     return
@@ -398,7 +448,7 @@ def had = (val q : ref qubit) -> void:
 
 -[
 chad
-    Given a control qubit, a target qubit and the phase shift angle, this gate applies the T phase shift on the target qubit if the control qubit is 1.
+    Given a control qubit and a target qubit, this gate applies the hadamard gate on the target qubit if the control qubit is 1.
 
 :params
 - q1        : ref qubit
@@ -412,6 +462,11 @@ chad
 - nothing   : void
 ]-
 def chad = (val q1 : ref qubit, val q2 : ref qubit) -> void:
+    -- make sure that both the control qubit and the target qubit are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     val cg = CGate(Quant.hadg)
     apply(cg, q1, q2)
     return
@@ -430,6 +485,11 @@ swap
 - nothing   : void
 ]-
 def swap = (val left : ref qubit, val right : ref qubit) -> void:
+    -- make sure that both qubits to swap are not the same
+    if q1 is q2:
+        return
+
+    -- apply the controlled gate
     Quant.cx(left, right)
     Quant.cx(right, left)
     Quant.cx(left, right)
