@@ -163,7 +163,7 @@ namespace avalon {
 
         // 2. get the ket it variable references and apply the gate to it
         qpp::ket qubit = qubit_expr -> get_qubit_value();
-        qpp::ket result = qpp::apply(qubit, unitary, {qubit_expr -> get_index()});
+        qpp::ket result = qpp::apply(qubit, unitary, {0});
 
         // 3. set the new evolved qubit on the literal
         qubit_expr -> set_qubit_value(result);
@@ -284,7 +284,6 @@ namespace avalon {
         auto measurement = qpp::measure_seq(result, {0, 1});
         std::size_t result_two = std::get<0>(measurement)[0];
         std::size_t result_three = std::get<0>(measurement)[1];
-        // qpp::ket bound_ket = std::get<2>(measurement);
         qpp::ket ket_two = result_two == 0 ? qpp::mket({0}) : qpp::mket({1});
         qpp::ket ket_three = result_three == 0 ? qpp::mket({0}) : qpp::mket({1});
 
