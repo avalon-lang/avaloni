@@ -210,6 +210,12 @@ namespace avalon {
         type_instance check_functional_binary(binary_expression_type expr_type, std::shared_ptr<binary_expression> const & binary_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
+         * check_is_binary
+         * we make sure that the operands passed to IS or IS_NOT are references
+         */
+        type_instance check_is_binary(std::shared_ptr<binary_expression> const & binary_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+
+        /**
          * check_dot_binary
          * we make sure that the dot expression lval refers to either a namespace or a variable declaration
          */

@@ -740,7 +740,7 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
            expr_type == MUL_EXPR            ||
            expr_type == DIV_EXPR            ||
            expr_type == MOD_EXPR            ||
-           //expr_type == POW_EXPR           ||
+           expr_type == POW_EXPR            ||
            expr_type == LEFT_SHIFT_EXPR     ||
            expr_type == RIGHT_SHIFT_EXPR    ||
            expr_type == LOGICAL_AND_EXPR    ||
@@ -757,6 +757,9 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
 
         ) {
             return interpret_functional_binary(bin_expr, l_scope, ns_name);
+        }
+        else if(expr_type == IS_EXPR || expr_type == IS_NOT_EXPR) {
+            return interpret_is_binary(bin_expr, l_scope, ns_name);
         }
         else if(expr_type == DOT_EXPR) {
             return interpret_dot_binary(bin_expr, l_scope, ns_name);
@@ -787,6 +790,39 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
 
         // "call" the function
         return interpret_function(function_decl, arguments);
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_is_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+        std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+
+        // bool type
+        avalon_bool avl_bool;
+        type_instance bool_instance = avl_bool.get_type_instance();
+
+        // true expression
+        std::shared_ptr<identifier_expression> true_expr = std::make_shared<identifier_expression>(true_cons_tok);
+        true_expr -> set_type_instance(bool_instance);
+        true_expr -> set_expression_type(CONSTRUCTOR_EXPR);
+        std::shared_ptr<expr> true_final_expr = true_expr;
+
+        // false expression
+        std::shared_ptr<identifier_expression> false_expr = std::make_shared<identifier_expression>(false_cons_tok);
+        false_expr -> set_type_instance(bool_instance);
+        false_expr -> set_expression_type(CONSTRUCTOR_EXPR);
+        std::shared_ptr<expr> false_final_expr = false_expr;
+
+        // check if both references in the lval and rval point to the same variable
+        std::shared_ptr<reference_expression> const & lval_ref = std::static_pointer_cast<reference_expression>(lval);
+        std::shared_ptr<reference_expression> const & rval_ref = std::static_pointer_cast<reference_expression>(rval);
+        
+        std::shared_ptr<variable>& lval_var = lval_ref -> get_variable();
+        std::shared_ptr<variable>& rval_var = rval_ref -> get_variable();
+
+        if(bin_expr -> get_expression_type() == IS_EXPR)
+            return (lval_var == rval_var) ? true_expr : false_expr;
+        else
+            return (lval_var == rval_var) ? false_expr : true_expr;
     }
 
     std::shared_ptr<expr> interpreter::interpret_dot_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {

@@ -1456,6 +1456,9 @@ inferer::inferer() {
         ) {
             return infer_functional_binary(expr_type, binary_fun, binary_expr, l_scope, ns_name);
         }
+        else if(expr_type == IS_EXPR || expr_type == IS_NOT_EXPR) {
+            return infer_is_binary(binary_expr, l_scope, ns_name);
+        }
         else if(expr_type == DOT_EXPR) {
             return infer_dot_binary(binary_expr, l_scope, ns_name);
         }
@@ -1554,6 +1557,15 @@ inferer::inferer() {
         token gen_tok(MUL, "*", 0, 0, "__bit__");
         type_instance gen_instance(gen_tok, "*");
         return build_function(binary_fun, binary_expr -> get_token(), fun_name, args_instances, gen_instance, constraint_instances, standins, l_scope, sub_ns_name);
+    }
+
+    /**
+     * infer_is_binary
+     * infers the type instance of the IS and IS NOT expressions
+     */
+    type_instance inferer::infer_is_binary(std::shared_ptr<binary_expression> const & binary_expr, std::shared_ptr<scope> l_scope, const std::string& ns_name) {
+        avalon_bool avl_bool;
+        return avl_bool.get_type_instance();
     }
 
     /**

@@ -267,6 +267,7 @@ namespace avalon {
          */
         std::shared_ptr<expr> interpret_binary(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
         std::shared_ptr<expr> interpret_functional_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_is_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
         std::shared_ptr<expr> interpret_dot_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
         std::shared_ptr<expr> interpret_subscript_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
         std::shared_ptr<expr> interpret_namespace_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);

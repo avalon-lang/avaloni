@@ -194,6 +194,8 @@ namespace avalon {
                     throw invalid_expression(val -> expr_token(), "References to references are not allowed.");
                 // all is fine, we set the variable referenced on the reference expression
                 ref_expr -> set_variable(var_decl);
+                // mark the variable declaration as used
+                var_decl -> is_used(true);
             } catch(symbol_not_found err) {
                 throw invalid_expression(val -> expr_token(), "Reference to an invalid variable.");
             }
@@ -220,6 +222,8 @@ namespace avalon {
                     throw invalid_expression(val -> expr_token(), "References to references are not allowed.");
                 // all is fine, we set the variable referenced on the reference expression
                 ref_expr -> set_variable(var_decl);
+                // mark the variable declaration as used
+                var_decl -> is_used(true);
             } catch(symbol_not_found err) {
                 throw invalid_expression(rval -> expr_token(), "Reference to an invalid variable.");
             }
@@ -968,6 +972,9 @@ namespace avalon {
         ) {
             return check_functional_binary(expr_type, binary_expr, l_scope, ns_name);
         }
+        else if(expr_type == IS_EXPR || expr_type == IS_NOT_EXPR) {
+            return check_is_binary(binary_expr, l_scope, ns_name);
+        }
         else if(expr_type == DOT_EXPR) {
             return check_dot_binary(expr_type, binary_expr, l_scope, ns_name);
         }
@@ -1018,6 +1025,29 @@ namespace avalon {
         type_instance instance = m_inferrer.infer_functional_binary(expr_type, binary_fun, binary_expr, l_scope, ns_name);        
         binary_expr -> set_callee(binary_fun.get_name());
         return instance;
+    }
+
+    /**
+     * check_is_binary
+     * we make sure that the operands passed to IS or IS_NOT are references
+     */
+    type_instance expression_checker::check_is_binary(std::shared_ptr<binary_expression> const & binary_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<expr>& lval = binary_expr -> get_lval();
+        std::shared_ptr<expr>& rval = binary_expr -> get_rval();
+
+        // we check both the lval and the rval
+        check(lval, l_scope, ns_name);
+        check(rval, l_scope, ns_name);
+
+        // make sure the lval is a reference expression
+        if(lval -> is_reference_expression() == false)
+            throw invalid_expression(lval -> expr_token(), "The l-value operand to the <is> and <is not> operators must be a reference expression.");
+
+        // make sure the rval is a reference expression
+        if(rval -> is_reference_expression() == false)
+            throw invalid_expression(lval -> expr_token(), "The r-value operand to the <is> and <is not> operators must be a reference expression.");
+
+        return m_inferrer.infer_is_binary(binary_expr, l_scope, ns_name);
     }
 
     /**

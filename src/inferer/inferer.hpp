@@ -108,6 +108,12 @@ namespace avalon {
         type_instance infer_functional_binary(binary_expression_type& expr_type, function& binary_fun, std::shared_ptr<binary_expression> const & binary_expr, std::shared_ptr<scope> l_scope, const std::string& ns_name);
 
         /**
+         * infer_is_binary
+         * infers the type instance of the IS and IS NOT expressions
+         */
+        type_instance infer_is_binary(std::shared_ptr<binary_expression> const & binary_expr, std::shared_ptr<scope> l_scope, const std::string& ns_name);
+
+        /**
          * infer_getattr_binary
          * infers the type instance of a binary expression arising from the dot operator
          */
