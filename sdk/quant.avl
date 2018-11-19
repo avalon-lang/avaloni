@@ -484,7 +484,7 @@ swap
 ]-
 def swap = (val left : ref qubit, val right : ref qubit) -> void:
     -- make sure that both qubits to swap are not the same
-    if q1 is q2:
+    if left is right:
         return
 
     -- apply the controlled gate
