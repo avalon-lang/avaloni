@@ -42,7 +42,7 @@ namespace avalon {
     /**
      * the constructor expects the operand of the literal operator
      */
-    literal_expression::literal_expression(token& tok, literal_expression_type expr_type, const std::string& val) : m_tok(tok), m_type_instance_from_parser(false), m_expr_type(expr_type), m_val(val), m_index(0), m_ket_evolved(false), m_was_measured(false) {
+    literal_expression::literal_expression(token& tok, literal_expression_type expr_type, const std::string& val) : m_tok(tok), m_type_instance_from_parser(false), m_expr_type(expr_type), m_val(val), m_start_index(0), m_end_index(0), m_was_measured(false) {
     }
 
     /**
@@ -51,10 +51,9 @@ namespace avalon {
     literal_expression::literal_expression(const std::shared_ptr<literal_expression>& lit_expr) : m_tok(lit_expr -> get_token()), m_instance(lit_expr -> get_type_instance()), m_type_instance_from_parser(lit_expr -> type_instance_from_parser()), m_expr_type(lit_expr -> get_expression_type()), m_val(lit_expr -> get_value()) {
         if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
             m_ket = lit_expr -> get_qubit_value();
-            m_index = lit_expr -> get_index();
-            m_ket_evolved = lit_expr -> ket_evolved();
+            m_start_index = lit_expr -> get_start_index();
+            m_end_index = lit_expr -> get_end_index();
             m_was_measured = lit_expr -> was_measured();
-            m_bound_qubits = lit_expr -> get_bound_qubits();
         }
     }
 
@@ -69,10 +68,9 @@ namespace avalon {
         m_val = lit_expr -> get_value();
         if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
             m_ket = lit_expr -> get_qubit_value();
-            m_index = lit_expr -> get_index();
-            m_ket_evolved = lit_expr -> ket_evolved();
+            m_start_index = lit_expr -> get_start_index();
+            m_end_index = lit_expr -> get_end_index();
             m_was_measured = lit_expr -> was_measured();
-            m_bound_qubits = lit_expr -> get_bound_qubits();
         }
         return * this;
     }
@@ -145,6 +143,14 @@ namespace avalon {
      */
     const std::string& literal_expression::get_value() const {
         return m_val;
+    }
+
+    /**
+     * get_length
+     * returns the length of the string representation of the literal within this expression
+     */
+    std::size_t literal_expression::get_length() const {
+        return m_val.length();
     }
 
     /**
@@ -259,16 +265,11 @@ namespace avalon {
      */
     qpp::ket literal_expression::get_qubit_value() {
         if(m_expr_type == QUBIT_EXPR) {
-            if(m_ket_evolved) {
-                return m_ket;
-            }
-            else {
-                std::vector<char> expr_data(m_val.begin(), m_val.end());
-                std::vector<std::size_t> ket_data;
-                std::transform(expr_data.begin(), expr_data.end(), std::back_inserter(ket_data), [](const char bit) { return (std::size_t) bit - '0'; });
-                m_ket = qpp::mket(ket_data);
-                return m_ket;
-            }
+            std::vector<char> expr_data(m_val.begin(), m_val.end());
+            std::vector<std::size_t> ket_data;
+            std::transform(expr_data.begin(), expr_data.end(), std::back_inserter(ket_data), [](const char bit) { return (std::size_t) bit - '0'; });
+            m_ket = qpp::mket(ket_data);
+            return m_ket;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
@@ -283,7 +284,6 @@ namespace avalon {
     void literal_expression::set_qubit_value(qpp::ket new_ket) {
         if(m_expr_type == QUBIT_EXPR) {
             m_ket = new_ket;
-            m_ket_evolved = true;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
@@ -291,13 +291,13 @@ namespace avalon {
     }
 
     /**
-     * ket_evolved
-     * returns true if we have a qubit has had a quantum gate applied
+     * set_start_index
+     * sets the starting index of this qubit inside the quantum processor
      * throws a value_error exception if this lteral doesn't contain qubits
      */
-    bool literal_expression::ket_evolved() {
+    void literal_expression::set_start_index(std::size_t index) {
         if(m_expr_type == QUBIT_EXPR) {
-            return m_ket_evolved;
+            m_start_index = index;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
@@ -305,13 +305,13 @@ namespace avalon {
     }
 
     /**
-     * set_index
-     * sets the index of this qubit inside a ket
+     * get_start_index
+     * returns the starting index of this qubit inside the quantum processor
      * throws a value_error exception if this lteral doesn't contain qubits
      */
-    void literal_expression::set_index(std::size_t index) {
+    std::size_t literal_expression::get_start_index() {
         if(m_expr_type == QUBIT_EXPR) {
-            m_index = index;
+            return m_start_index;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
@@ -319,13 +319,27 @@ namespace avalon {
     }
 
     /**
-     * get_index
-     * returns the index of this qubit inside a ket
+     * set_end_index
+     * sets the ending index of this qubit inside the quantum processor
      * throws a value_error exception if this lteral doesn't contain qubits
      */
-    std::size_t literal_expression::get_index() {
+    void literal_expression::set_end_index(std::size_t index) {
         if(m_expr_type == QUBIT_EXPR) {
-            return m_index;
+            m_end_index = index;
+        }
+        else {
+            throw value_error("This literal expression doesn't contain a qubit string.");
+        }
+    }
+
+    /**
+     * get_end_index
+     * returns the ending index of this qubit inside the quantum processor
+     * throws a value_error exception if this lteral doesn't contain qubits
+     */
+    std::size_t literal_expression::get_end_index() {
+        if(m_expr_type == QUBIT_EXPR) {
+            return m_end_index;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");
@@ -354,34 +368,6 @@ namespace avalon {
     bool literal_expression::was_measured() {
         if(m_expr_type == QUBIT_EXPR) {
             return m_was_measured;
-        }
-        else {
-            throw value_error("This literal expression doesn't contain a qubit string.");
-        }
-    }
-
-    /**
-     * add_bound_qubit
-     * add a qubit bound to this ket if any
-     * throws a value_error exception if this literal doesn't contain qubits
-     */
-    void literal_expression::add_bound_qubit(std::shared_ptr<literal_expression> const & bound_qubit) {
-        if(m_expr_type == QUBIT_EXPR) {
-            m_bound_qubits.push_back(bound_qubit);
-        }
-        else {
-            throw value_error("This literal expression doesn't contain a qubit string.");
-        }
-    }
-
-    /**
-     * get_bound_qubits
-     * returns a vector of qubits bound to this one
-     * throws a value_error exception if this literal doesn't contain qubits
-     */
-    std::vector<std::shared_ptr<literal_expression> >& literal_expression::get_bound_qubits() {
-        if(m_expr_type == QUBIT_EXPR) {
-            return m_bound_qubits;
         }
         else {
             throw value_error("This literal expression doesn't contain a qubit string.");

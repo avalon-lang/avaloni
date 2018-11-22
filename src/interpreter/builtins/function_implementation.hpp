@@ -42,6 +42,9 @@
 #include "interpreter/builtins/lang/avalon_hash.hpp"
 #include "interpreter/builtins/io/avalon_io.hpp"
 
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
+
 
 namespace avalon {
     struct function_implementation {
@@ -241,15 +244,25 @@ namespace avalon {
      * implements the builtin __cast__ function
      */
     struct cast_implementation : function_implementation {
+    public:
+        cast_implementation(std::shared_ptr<qprocessor>& qproc) : m_qproc(qproc) {
+        }
+
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
             token gen_tok(MUL, "*", 0, 0, "__bit__");
             type_instance gen_instance(gen_tok, "*");
-            return avl_cast(arguments, gen_instance);
+            return avl_cast(m_qproc, arguments, gen_instance);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return avl_cast(arguments, ret_instance);
+            return avl_cast(m_qproc, arguments, ret_instance);
         }
+
+    private:
+        /*
+         * the quantum processor that will apply the gate to kets stored in it
+         */
+        std::shared_ptr<qprocessor> m_qproc;
     };
 
     /**
@@ -439,13 +452,23 @@ namespace avalon {
      * implements the builtin apply function
      */
     struct apply_implementation : function_implementation {
+    public:
+        apply_implementation(std::shared_ptr<qprocessor>& qproc) : m_qproc(qproc) {
+        }
+
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return avl_apply(arguments);
+            return avl_apply(m_qproc, arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return avl_apply(arguments);
+            return avl_apply(m_qproc, arguments);
         }
+
+    private:
+        /*
+         * the quantum processor that will apply the gate to kets stored in it
+         */
+        std::shared_ptr<qprocessor> m_qproc;
     };
 
     /**
@@ -453,13 +476,23 @@ namespace avalon {
      * implements the builtin measure function
      */
     struct measure_implementation : function_implementation {
+    public:
+        measure_implementation(std::shared_ptr<qprocessor>& qproc) : m_qproc(qproc) {
+        }
+
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return avl_measure(arguments);
+            return avl_measure(m_qproc, arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return avl_measure(arguments);
+            return avl_measure(m_qproc, arguments);
         }
+
+    private:
+        /*
+         * the quantum processor that will apply the gate to kets stored in it
+         */
+        std::shared_ptr<qprocessor> m_qproc;
     };
 }
 

@@ -121,6 +121,12 @@ namespace avalon {
         const std::string& get_value() const;
 
         /**
+         * get_length
+         * returns the length of the string representation of the literal within this expression
+         */
+        std::size_t get_length() const;
+
+        /**
          * get_int_value
          * returns the integer representation of this literal if it is an integer
          * throws a value_error exception if an attempt to retreive the wrong value type is attempted
@@ -184,25 +190,32 @@ namespace avalon {
         void set_qubit_value(qpp::ket new_ket);
 
         /**
-         * ket_evolved
-         * returns true if we have a qubit has had a quantum gate applied
+         * set_start_index
+         * sets the starting index of this qubit inside the quantum processor
          * throws a value_error exception if this lteral doesn't contain qubits
          */
-        bool ket_evolved();
+        void set_start_index(std::size_t index);
 
         /**
-         * set_index
-         * sets the index of this qubit inside a ket
+         * get_start_index
+         * returns the starting index of this qubit inside the quantum processor
          * throws a value_error exception if this lteral doesn't contain qubits
          */
-        void set_index(std::size_t index);
+        std::size_t get_start_index();
 
         /**
-         * get_index
-         * returns the index of this qubit inside a ket
+         * set_end_index
+         * sets the ending index of this qubit inside the quantum processor
          * throws a value_error exception if this lteral doesn't contain qubits
          */
-        std::size_t get_index();
+        void set_end_index(std::size_t index);
+
+        /**
+         * get_end_index
+         * returns the ending index of this qubit inside the quantum processor
+         * throws a value_error exception if this lteral doesn't contain qubits
+         */
+        std::size_t get_end_index();
 
         /**
          * was_measured
@@ -217,20 +230,6 @@ namespace avalon {
          * throws a value_error exception if this literal doesn't contain qubits
          */
         bool was_measured();
-
-        /**
-         * add_bound_qubit
-         * add a qubit bound to this ket if any
-         * throws a value_error exception if this literal doesn't contain qubits
-         */
-        void add_bound_qubit(std::shared_ptr<literal_expression> const & bound_qubit);
-
-        /**
-         * get_bound_qubits
-         * returns a vector of qubits bound to this one
-         * throws a value_error exception if this literal doesn't contain qubits
-         */
-        std::vector<std::shared_ptr<literal_expression> >& get_bound_qubits();
 
         /**
          * token
@@ -300,25 +299,19 @@ namespace avalon {
         qpp::ket m_ket;
 
         /*
-         * if we have multiqubits, this sets their index in the list of qubits.
-         * the index is from right to left.
+         * the start index in the processor
          */
-        std::size_t m_index;
+        std::size_t m_start_index;
 
         /*
-         * this flag lets us know if a qubit has been evolved from its initial value.
+         * the end index in the processor
          */
-        bool m_ket_evolved;
+        std::size_t m_end_index;
 
         /*
          * this flag lets us know if the qubit in this literal has been measured.
          */
         bool m_was_measured;
-
-        /*
-         * if this literal expression contains a vector of qubits that got tensored with this qubit
-         */
-        std::vector<std::shared_ptr<literal_expression> > m_bound_qubits;
     };
 }
 

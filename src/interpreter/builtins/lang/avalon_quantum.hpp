@@ -31,19 +31,22 @@
 /* AST */
 #include "representer/ast/expr/expr.hpp"
 
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
+
 
 namespace avalon {
     /**
      * avl_apply
      * applies a quantum gate to qubits
      */
-    std::shared_ptr<expr> avl_apply(std::vector<std::shared_ptr<expr> >& arguments);
+    std::shared_ptr<expr> avl_apply(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments);
 
     /**
      * avl_measure
      * measures qubit(s) returning bits
      */
-    std::shared_ptr<expr> avl_measure(std::vector<std::shared_ptr<expr> >& arguments);
+    std::shared_ptr<expr> avl_measure(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif

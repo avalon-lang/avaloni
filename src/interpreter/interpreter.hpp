@@ -22,8 +22,8 @@
  *  SOFTWARE.
  */
 
-#ifndef AVALON_INTERPRETER_HPP_
-#define AVALON_INTERPRETER_HPP_
+#ifndef AVALON_INTERPRETER_INTERPRETER_HPP_
+#define AVALON_INTERPRETER_INTERPRETER_HPP_
 
 #include <stdexcept>
 #include <utility>
@@ -51,6 +51,9 @@
 /* Symtable */
 #include "representer/symtable/gtable.hpp"
 #include "representer/symtable/scope.hpp"
+
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
 
 
 namespace avalon {
@@ -305,6 +308,11 @@ namespace avalon {
          * the global symbol table with programs to interpret
          */
         gtable m_gtable;
+
+        /*
+         * the quantum processor
+         */
+        std::shared_ptr<qprocessor> m_qproc;
 
         /*
          * flag set to true if we are to continue to the next line

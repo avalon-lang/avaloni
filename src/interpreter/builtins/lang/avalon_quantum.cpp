@@ -50,6 +50,9 @@
 #include "interpreter/builtins/lang/avalon_quantum.hpp"
 #include "interpreter/builtins/lang/avalon_qubit.hpp"
 
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
+
 /* Exceptions */
 #include "interpreter/exceptions/invalid_call.hpp"
 
@@ -59,7 +62,7 @@ namespace avalon {
      * avl_apply
      * applies a quantum gate to qubits
      */
-    std::shared_ptr<expr> avl_apply(std::vector<std::shared_ptr<expr> >& arguments) {
+    std::shared_ptr<expr> avl_apply(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments) {
         // qubit type
         avalon_qubit avl_qubit;
         type_instance qubit_instance = avl_qubit.get_type_instance();
@@ -94,7 +97,7 @@ namespace avalon {
                 // start discriminating over the second argument
                 type_instance arg_two_instance_dref = arg_two_instance.get_params()[0];
                 if(type_instance_strong_compare(arg_two_instance_dref, qubit_instance)) {
-                    return qubit_apply(arguments);
+                    return qubit_apply(qproc, arguments);
                 }
                 else {
                     throw invalid_call("[compiler error] the builtin <apply> function did not expect a variable of type instance with reference to <" + mangle_type_instance(arg_two_instance_dref) + "> as a second argument.");
@@ -133,7 +136,7 @@ namespace avalon {
                 type_instance arg_two_instance_dref = arg_two_instance.get_params()[0];
                 type_instance arg_three_instance_dref = arg_three_instance.get_params()[0];
                 if(type_instance_strong_compare(arg_two_instance_dref, qubit_instance) && type_instance_strong_compare(arg_three_instance_dref, qubit_instance)) {
-                    return qubit_capply(arguments);
+                    return qubit_capply(qproc, arguments);
                 }
                 else {
                     throw invalid_call("[compiler error] the builtin <apply> function did not expect the second argument with reference to <" + mangle_type_instance(arg_two_instance_dref) + "> and thrid argument as reference to <" + mangle_type_instance(arg_three_instance_dref) + ">.");
@@ -152,7 +155,7 @@ namespace avalon {
      * avl_measure
      * measures qubit(s) returning bits
      */
-    std::shared_ptr<expr> avl_measure(std::vector<std::shared_ptr<expr> >& arguments) {
+    std::shared_ptr<expr> avl_measure(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments) {
         // qubit type
         avalon_qubit avl_qubit;
         type_instance qubit_instance = avl_qubit.get_type_instance();
@@ -168,7 +171,7 @@ namespace avalon {
             type_instance arg_instance = arg_ref -> get_type_instance();
             type_instance arg_instance_dref = arg_instance.get_params()[0];
             if(type_instance_strong_compare(arg_instance_dref, qubit_instance)) {
-                return qubit_measure(arguments);
+                return qubit_measure(qproc, arguments);
             }
             else {
                 throw invalid_call("[compiler error] the builtin <measure> function did not expect a variable of type instance with reference to <" + mangle_type_instance(arg_instance_dref) + "> as argument.");

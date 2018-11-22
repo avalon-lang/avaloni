@@ -32,13 +32,16 @@
 #include "representer/ast/decl/type.hpp"
 #include "representer/ast/expr/expr.hpp"
 
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
+
 
 namespace avalon {
     /**
      * avl_cast
      * implements the builtin cast function
      */
-    std::shared_ptr<expr> avl_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance);
+    std::shared_ptr<expr> avl_cast(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance);
 
     /**
      * avl_string_cast

@@ -84,6 +84,9 @@
 /* Interpreter */
 #include "interpreter/interpreter.hpp"
 
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
+
 /* Builtin functions implementation */
 #include "interpreter/builtins/avalon_function.hpp"
 
@@ -124,7 +127,8 @@ interpret_error::interpret_error(error& error_handler, token tok, const std::str
  * - the global symbol table with programs to interpret
  * - the error handler to use in order to display errors
  */
-interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(error_handler), m_gtable(gtab), m_continue_loop(false), m_break_loop(false) {
+interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(error_handler), m_gtable(gtab), m_qproc(nullptr), m_continue_loop(false), m_break_loop(false) {
+    m_qproc = std::make_shared<qprocessor>(m_error_handler);
 }
 
     /**
@@ -210,12 +214,12 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
      * evaluates a builtin function by calling its local evaluate method passing it the given arguments
      */
     std::shared_ptr<expr> interpreter::interpret_builtin_function(std::shared_ptr<function>& function_decl, std::vector<std::shared_ptr<expr> >& arguments) {
-        avalon_function avl_function(function_decl);
+        avalon_function avl_function(function_decl, m_qproc);
         return avl_function.run(arguments);
     }
 
     std::shared_ptr<expr> interpreter::interpret_builtin_function(std::shared_ptr<function>& function_decl, std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-        avalon_function avl_function(function_decl);
+        avalon_function avl_function(function_decl, m_qproc);
         return avl_function.run(arguments, ret_instance);
     }
 
@@ -284,6 +288,15 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         std::shared_ptr<expr>& current_value = variable_decl -> get_value();
         std::shared_ptr<expr> new_value = interpret_expression(current_value, l_scope, ns_name);
         variable_decl -> set_value(new_value);
+
+        // if we are dealing with a quantum variable initialization, we need to let the quantum processor know about the new initialization
+        type_instance var_instance = variable_decl -> get_type_instance();
+        if(var_instance.get_type() -> is_quantum()) {
+            std::shared_ptr<literal_expression> const & lit_expr = std::static_pointer_cast<literal_expression>(new_value);
+            std::pair<std::size_t, std::size_t> indices = m_qproc -> add_ket(lit_expr, lit_expr -> get_qubit_value(), lit_expr -> get_length());
+            lit_expr -> set_start_index(indices.first);
+            lit_expr -> set_end_index(indices.second);
+        }
     }
 
     /**

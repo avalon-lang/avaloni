@@ -34,6 +34,8 @@
 #include "representer/ast/decl/type.hpp"
 #include "representer/ast/expr/expr.hpp"
 
+#include "interpreter/qprocessor.hpp"
+
 #include "interpreter/builtins/function_implementation.hpp"
 
 
@@ -43,7 +45,7 @@ namespace avalon {
         /**
          * the constructor expects nothing
          */
-        avalon_function(std::shared_ptr<function>& function_decl);
+        avalon_function(std::shared_ptr<function>& function_decl, std::shared_ptr<qprocessor>& qproc);
 
         /**
          * run
@@ -57,6 +59,11 @@ namespace avalon {
          * the function being currently run
          */
         std::shared_ptr<function>& m_function_decl;
+
+        /*
+         * the quantum processor
+         */
+        std::shared_ptr<qprocessor> m_qproc;
 
         /*
          * a map between function names and their implementations

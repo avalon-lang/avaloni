@@ -57,6 +57,9 @@
 /* Builtin functions */
 #include "interpreter/builtins/lang/avalon_qubit.hpp"
 
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
+
 /* Exceptions */
 #include "interpreter/exceptions/invalid_call.hpp"
 
@@ -94,7 +97,7 @@ namespace avalon {
      * qubit_apply
      * applies a quantum gate to the qubits stored at the given reference
      */
-    std::shared_ptr<expr> qubit_apply(std::vector<std::shared_ptr<expr> >& arguments) {
+    std::shared_ptr<expr> qubit_apply(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments) {
         // qubit type
         avalon_qubit avl_qubit;
         type_instance qubit_instance = avl_qubit.get_type_instance();
@@ -161,12 +164,8 @@ namespace avalon {
         if(qubit_expr -> was_measured())
             throw invalid_call("[compiler error] the quantum <apply> function second argument has already been measured and further gates cannot be applied to it.");
 
-        // 2. get the ket it variable references and apply the gate to it
-        qpp::ket qubit = qubit_expr -> get_qubit_value();
-        qpp::ket result = qpp::apply(qubit, unitary, {0});
-
-        // 3. set the new evolved qubit on the literal
-        qubit_expr -> set_qubit_value(result);
+        // 2. apply the gate to qubit
+        qproc -> apply(unitary, qubit_expr -> get_start_index(), qubit_expr -> get_end_index());
 
         // DONE.
         return nullptr;
@@ -176,7 +175,7 @@ namespace avalon {
      * qubit_capply
      * applies a controlled quantum gate to the qubit given as third argument using the qubit given in second argument as control
      */
-    std::shared_ptr<expr> qubit_capply(std::vector<std::shared_ptr<expr> >& arguments) {
+    std::shared_ptr<expr> qubit_capply(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments) {
         // qubit type
         avalon_qubit avl_qubit;
         type_instance qubit_instance = avl_qubit.get_type_instance();
@@ -272,24 +271,8 @@ namespace avalon {
         if(qubit_expr_three -> was_measured())
             throw invalid_call("[compiler error] the quantum <apply> function third argument has already been measured and further gates cannot be applied to it.");
 
-        // 2. build the tensor product of the qubits and set them on the original expressions
-        qpp::ket qubit_two = qubit_expr_two -> get_qubit_value();
-        qpp::ket qubit_three = qubit_expr_three -> get_qubit_value();
-
-        // 3. apply the controlled operation
-        qpp::ket qubit = qpp::kron(qubit_two, qubit_three);
-        qpp::ket result = qpp::applyCTRL(qubit, unitary, {0}, {1});
-
-        // 4. set the new evolved qubit on the literal
-        auto measurement = qpp::measure_seq(result, {0, 1});
-        std::size_t result_two = std::get<0>(measurement)[0];
-        std::size_t result_three = std::get<0>(measurement)[1];
-        qpp::ket ket_two = result_two == 0 ? qpp::mket({0}) : qpp::mket({1});
-        qpp::ket ket_three = result_three == 0 ? qpp::mket({0}) : qpp::mket({1});
-
-        // 5. update kets on qubits
-        qubit_expr_two -> set_qubit_value(ket_two);
-        qubit_expr_three -> set_qubit_value(ket_three);
+        // 2. apply the controlled operation
+        qproc -> capply(unitary, qubit_expr_two -> get_start_index(), qubit_expr_three -> get_end_index());
 
         // DONE.
         return nullptr;
@@ -299,7 +282,7 @@ namespace avalon {
      * qubit_measure
      * performs a measure on the qubits stored at the given reference in the Z basis
      */
-    std::shared_ptr<expr> qubit_measure(std::vector<std::shared_ptr<expr> >& arguments) {
+    std::shared_ptr<expr> qubit_measure(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments) {
         // qubit type
         avalon_qubit avl_qubit;
         type_instance qubit_instance = avl_qubit.get_type_instance();
@@ -332,13 +315,19 @@ namespace avalon {
         std::shared_ptr<expr>& var_expr = ref_var -> get_value();
         std::shared_ptr<literal_expression> const & qubit_expr = std::static_pointer_cast<literal_expression>(var_expr);
 
-        // 2. get the ket it variable references and perform a Pauli Z measurement - equivalent to measurement in the computational basis
-        qpp::ket qubit = qubit_expr -> get_qubit_value();
-        auto measurement = qpp::measure(qubit, qpp::gt.Z, {0});
-        std::size_t result = std::get<0>(measurement);
+        // 2. check if the qubit has not been measured before
+        // TODO: it doesn't make sense to throw an exception here - best to just return the existing measurement
+        if(qubit_expr -> was_measured())
+            throw invalid_call("[compiler error] The qubit given has already been measured");
+
+        // 3. perform the measurement
+        std::vector<qpp::idx> results = qproc -> measure(qubit_expr -> get_start_index(), qubit_expr -> get_end_index());
+        qpp::idx result = results[0];
 
         // 4. we set the qubit measurement result
         qubit_expr -> was_measured(true);
+        qpp::ket l_ket = result == 0 ? qpp::mket({0}) : qpp::mket({1});
+        qubit_expr -> set_qubit_value(l_ket);
 
         // 5. Create a bit expression with the measurement result
         std::string res_str = std::to_string(result);
@@ -353,13 +342,13 @@ namespace avalon {
      * qubit_cast
      * Performs a measurement of the qubits stored at the given reference in the Z basis
      */
-    std::shared_ptr<expr> qubit_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+    std::shared_ptr<expr> qubit_cast(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
         // bit type
         avalon_bit avl_bit;
         type_instance bit_instance = avl_bit.get_type_instance();
 
         if(type_instance_strong_compare(ret_instance, bit_instance)) {
-            return qubit_measure(arguments);
+            return qubit_measure(qproc, arguments);
         }
         else {
             throw invalid_call("[compiler error] the qubit __cast__ function cannot cast to <" + mangle_type_instance(ret_instance) + ">.");

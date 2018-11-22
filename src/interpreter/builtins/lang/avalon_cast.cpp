@@ -60,6 +60,9 @@
 #include "interpreter/builtins/lang/avalon_int.hpp"
 #include "interpreter/builtins/lang/avalon_bit.hpp"
 
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
+
 /* Exceptions */
 #include "interpreter/exceptions/invalid_call.hpp"
 
@@ -69,7 +72,7 @@ namespace avalon {
      * avl_cast
      * implements the builtin cast function
      */
-    std::shared_ptr<expr> avl_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+    std::shared_ptr<expr> avl_cast(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
         // bool type
         avalon_bool avl_bool;
         type_instance bool_instance = avl_bool.get_type_instance();
@@ -131,7 +134,7 @@ namespace avalon {
 
             type_instance ref_instance = arg_instance.get_params()[0];
             if(type_instance_strong_compare(ref_instance, qubit_instance)) {
-                return qubit_cast(arguments, ret_instance);
+                return qubit_cast(qproc, arguments, ret_instance);
             }
             else {
                 throw invalid_call("[compiler error] unexpected call to builtin function __cast__ using arguments of unsupported type instances");

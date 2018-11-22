@@ -38,6 +38,9 @@
 #include "interpreter/builtins/function_implementation.hpp"
 #include "interpreter/builtins/avalon_function.hpp"
 
+/* Quantum processor */
+#include "interpreter/qprocessor.hpp"
+
 /* Exceptions */
 #include "interpreter/exceptions/invalid_call.hpp"
 
@@ -46,7 +49,7 @@ namespace avalon {
     /**
      * the constructor expects nothing
      */
-    avalon_function::avalon_function(std::shared_ptr<function>& function_decl) : m_function_decl(function_decl) {
+    avalon_function::avalon_function(std::shared_ptr<function>& function_decl, std::shared_ptr<qprocessor>& qproc) : m_function_decl(function_decl), m_qproc(qproc) {
         /* boolean functions */
         and_implementation avl_and_implementation;
         or_implementation avl_or_implementation;
@@ -67,7 +70,7 @@ namespace avalon {
         println_implementation avl_println_implementation;
 
         /* casting functions */
-        cast_implementation avl_cast_implementation;
+        cast_implementation avl_cast_implementation(m_qproc);
         string_cast_implementation avl_string_cast_implementation;
         float_cast_implementation avl_float_cast_implementation;
 
@@ -89,8 +92,8 @@ namespace avalon {
         bnot_implementation avl_bnot_implementation;
 
         /* quantum functions */
-        apply_implementation avl_apply_implementation;
-        measure_implementation avl_measure_implementation;
+        apply_implementation avl_apply_implementation(m_qproc);
+        measure_implementation avl_measure_implementation(m_qproc);
 
         m_implementations = {
             /* boolean functions */
