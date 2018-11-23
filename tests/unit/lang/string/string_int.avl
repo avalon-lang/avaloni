@@ -10,11 +10,18 @@ import io
 import math
 
 def __main__ = (val args : [string]) -> void:
-    val a = cast("12'000") -> maybe(int)
-
-    if a === Just(b:int):
-        Io.println("We got the integer: " + string(b))
+    -- Test case for success
+    val as = cast("12'000") -> maybe(int)
+    if as === Just(bs:int):
+        Io.println("We got the integer: " + string(bs))
     else:
-        Io.println("We got nothing.")
+        Io.println("We got no integer.")
+
+    -- Test case for failure
+    val af = cast("12'000s") -> maybe(int)
+    if af === Just(bf:int):
+        Io.println("We got the integer: " + string(bf))
+    else:
+        Io.println("We got no integer.")
 
     return
