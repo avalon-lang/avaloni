@@ -214,7 +214,7 @@ namespace avalon {
         double arg_two_val = arg_two_lit -> get_float_value();
         double res_val = arg_one_val - arg_two_val;
         std::ostringstream sstr;
-        sstr.precision(20);
+        sstr.precision(36);
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -385,7 +385,7 @@ namespace avalon {
         // create new literal with the new floating point number
         double arg_val = arg_lit -> get_float_value();
         std::ostringstream sstr;
-        sstr.precision(20);
+        sstr << std::setprecision(36) << std::fixed;
         sstr << arg_val;
         std::string float_str = sstr.str();
         if(float_str.find('.') == std::string::npos)

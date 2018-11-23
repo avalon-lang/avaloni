@@ -28,6 +28,7 @@
 #include <memory>
 #include <bitset>
 #include <vector>
+#include <string>
 
 #include "qpp.h"
 
@@ -176,7 +177,7 @@ namespace avalon {
      */
     double literal_expression::get_float_value() {
         if(m_expr_type == FLOATING_POINT_EXPR) {
-            double value = ::atof(m_val.c_str());
+            double value = std::stod(m_val.c_str());
             return value;
         }
         else {

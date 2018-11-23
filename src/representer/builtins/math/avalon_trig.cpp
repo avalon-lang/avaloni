@@ -102,7 +102,7 @@ namespace avalon {
         // set initializer value
         double PI = 3.141592653589793238462643383279502884;
         std::ostringstream sstr;
-        sstr.precision(20);
+        sstr << std::setprecision(36) << std::fixed;
         sstr << PI;
         std::string pi_str = sstr.str();
         token lit_tok(FLOATING_POINT, pi_str, 0, 0, "__bil__");
