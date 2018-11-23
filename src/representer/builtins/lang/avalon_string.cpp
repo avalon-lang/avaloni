@@ -41,6 +41,7 @@
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_string.hpp"
+#include "representer/builtins/lang/avalon_maybe.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 
 
@@ -76,6 +77,10 @@ namespace avalon {
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
 
+        // maybe type
+        avalon_maybe avl_maybe;
+        type_instance maybe_int_instance = avl_maybe.get_type_instance(int_instance);
+
         /* the program FQN */
         fqn l_fqn("__bifqn_string__", "__bifqn_string__");
         m_string_prog.set_fqn(l_fqn);
@@ -97,8 +102,12 @@ namespace avalon {
         l_namespace -> add_declaration(type_decl);
 
         /* manually add declarations to avoid circular dependencies */
+        // int type declaration
         std::shared_ptr<type>& int_type = avl_int.get_type();
         l_scope -> add_type("*", int_type);
+        // maybe type declaration
+        std::shared_ptr<type>& maybe_type = avl_maybe.get_type();
+        l_scope -> add_type("*", maybe_type);
 
         /* add function declarations to the namespace */
         // variables
@@ -150,6 +159,36 @@ namespace avalon {
         string_hash_function -> set_return_type_instance(int_instance);
         std::shared_ptr<decl> hash_function_decl = string_hash_function;
         l_namespace -> add_declaration(hash_function_decl);
+
+        // cast string to int
+        // operator version
+        token string_int_cast_tok(IDENTIFIER, "__cast__", 0, 0, "__bif__");
+        std::shared_ptr<function> string_int_cast_function = std::make_shared<function>(string_int_cast_tok);
+        string_int_cast_function -> set_fqn(l_fqn);
+        string_int_cast_function -> is_public(true);
+        string_int_cast_function -> is_builtin(true);
+        string_int_cast_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> string_int_cast_scope = std::make_shared<scope>();
+        string_int_cast_scope -> set_parent(l_scope);
+        string_int_cast_function -> set_scope(string_int_cast_scope);
+        string_int_cast_function -> add_param(param_one);
+        string_int_cast_function -> set_return_type_instance(maybe_int_instance);
+        std::shared_ptr<decl> string_cast_function_decl = string_int_cast_function;
+        l_namespace -> add_declaration(string_cast_function_decl);
+        // functional version
+        token string_int_tok(IDENTIFIER, "int", 0, 0, "__bif__");
+        std::shared_ptr<function> string_int_function = std::make_shared<function>(string_int_tok);
+        string_int_function -> set_fqn(l_fqn);
+        string_int_function -> is_public(true);
+        string_int_function -> is_builtin(true);
+        string_int_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> string_int_scope = std::make_shared<scope>();
+        string_int_scope -> set_parent(l_scope);
+        string_int_function -> set_scope(string_int_scope);
+        string_int_function -> add_param(param_one);
+        string_int_function -> set_return_type_instance(maybe_int_instance);
+        std::shared_ptr<decl> string_function_decl = string_int_function;
+        l_namespace -> add_declaration(string_function_decl);
 
         /* add the namespace to the program */
         std::shared_ptr<decl> namespace_decl = l_namespace;

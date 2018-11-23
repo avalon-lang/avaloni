@@ -54,6 +54,12 @@ namespace avalon {
      * implements cast to float function
      */
     std::shared_ptr<expr> avl_float_cast(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
+     * avl_int_cast
+     * implements cast to int function
+     */
+    std::shared_ptr<expr> avl_int_cast(std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif

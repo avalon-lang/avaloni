@@ -50,6 +50,18 @@ namespace avalon {
      * computes the hash of a string
      */
     std::shared_ptr<expr> string_hash(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
+     * string_cast
+     * returns an expression that represents the string cast to the given return type
+     */
+    std::shared_ptr<expr> string_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance);
+
+    /**
+     * string_int
+     * returns an integer representation of a string
+     */
+    std::shared_ptr<expr> string_int(std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif

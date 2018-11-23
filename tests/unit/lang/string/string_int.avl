@@ -1,0 +1,20 @@
+-[
+Testing string cast to int.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+import math
+
+def __main__ = (val args : [string]) -> void:
+    val a = cast("12'000") -> maybe(int)
+
+    if a === Just(b:int):
+        Io.println("We got the integer: " + string(b))
+    else:
+        Io.println("We got nothing.")
+
+    return

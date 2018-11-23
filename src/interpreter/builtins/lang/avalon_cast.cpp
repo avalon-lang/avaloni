@@ -51,6 +51,7 @@
 #include "representer/builtins/lang/avalon_bit.hpp"
 
 /* Builtin functions */
+#include "interpreter/builtins/lang/avalon_string.hpp"
 #include "interpreter/builtins/lang/avalon_qubit.hpp"
 #include "interpreter/builtins/lang/avalon_float.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
@@ -93,6 +94,10 @@ namespace avalon {
         avalon_qubit avl_qubit;
         type_instance qubit_instance = avl_qubit.get_type_instance();
 
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
         // make sure we got only one argument
         if(arguments.size() != 1)
             throw invalid_call("[compiler error] the builtin __cast__ function expects only one argument.");
@@ -123,6 +128,9 @@ namespace avalon {
             }
             else if(type_instance_strong_compare(arg_instance, bit_instance)) {
                 return bit_cast(arguments, ret_instance);
+            }
+            else if(type_instance_strong_compare(arg_instance, string_instance)) {
+                return string_cast(arguments, ret_instance);
             }
             else {
                 throw invalid_call("[compiler error] unexpected call to builtin function __cast__ using arguments of unsupported type instances");
@@ -256,6 +264,36 @@ namespace avalon {
         }
         else {
             throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
+        }
+    }
+
+    /**
+     * avl_int_cast
+     * implements cast to int function
+     */
+    std::shared_ptr<expr> avl_int_cast(std::vector<std::shared_ptr<expr> >& arguments) {
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
+        // make sure we got only one argument
+        if(arguments.size() != 1)
+            throw invalid_call("[compiler error] the <int> function expects only one argument.");
+
+        std::shared_ptr<expr>& arg = arguments[0];
+        if(arg -> is_literal_expression()) {
+            std::shared_ptr<literal_expression> const & arg_lit = std::static_pointer_cast<literal_expression>(arg);
+            type_instance& arg_instance = arg_lit -> get_type_instance();
+
+            if(type_instance_strong_compare(arg_instance, string_instance)) {
+                return string_int(arguments);
+            }
+            else {
+                throw invalid_call("[compiler error] unexpected call to the <int> function using arguments of unsupported type instances");
+            }
+        }
+        else {
+            throw invalid_call("[compiler error] unexpected call to the <int> function using arguments of unsupported type instances");
         }
     }
 }

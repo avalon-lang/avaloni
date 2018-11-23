@@ -89,13 +89,13 @@ namespace avalon {
 
     /**
      * int_string
-     * returns a integer representation of a string
+     * returns a string representation of an integer
      */
     std::shared_ptr<expr> int_string(std::vector<std::shared_ptr<expr> >& arguments);
 
     /**
      * int_float
-     * returns a string representation of an integer
+     * returns a float representation of an integer
      */
     std::shared_ptr<expr> int_float(std::vector<std::shared_ptr<expr> >& arguments);
 

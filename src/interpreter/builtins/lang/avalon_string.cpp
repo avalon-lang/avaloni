@@ -30,19 +30,25 @@
 #include <vector>
 #include <string>
 
+/* Error */
+#include "error/error.hpp"
+
 /* Lexer */
 #include "lexer/token_type.hpp"
 #include "lexer/token.hpp"
+#include "lexer/lexer.hpp"
 
 /* AST */
 /* Declarations */
 #include "representer/ast/decl/type.hpp"
 /* Expressions */
 #include "representer/ast/expr/literal_expression.hpp"
+#include "representer/ast/expr/call_expression.hpp"
 #include "representer/ast/expr/expr.hpp"
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_string.hpp"
+#include "representer/builtins/lang/avalon_maybe.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 
 /* Builtin functions */
@@ -182,5 +188,111 @@ namespace avalon {
         hash_lit -> set_type_instance(int_instance);
 
         return hash_lit;
+    }
+
+    /**
+     * string_cast
+     * returns an expression that represents the string cast to the given return type
+     */
+    std::shared_ptr<expr> string_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+        // int type
+        avalon_int avl_int;
+        type_instance int_instance = avl_int.get_type_instance();
+
+        // maybe type
+        avalon_maybe avl_maybe;
+        type_instance maybe_int_instance = avl_maybe.get_type_instance(int_instance);
+
+        if(type_instance_strong_compare(ret_instance, maybe_int_instance)) {
+            return string_int(arguments);
+        }
+        else {
+            throw invalid_call("[compiler error] the integer __cast__ function cannot be cast to <" + mangle_type_instance(ret_instance) + ">.");
+        }
+    }
+
+    /**
+     * string_int
+     * returns an integer representation of a string
+     */
+    std::shared_ptr<expr> string_int(std::vector<std::shared_ptr<expr> >& arguments) {
+        // int type
+        avalon_int avl_int;
+        type_instance int_instance = avl_int.get_type_instance();
+
+        // maybe type
+        avalon_maybe avl_maybe;
+        type_instance maybe_int_instance = avl_maybe.get_type_instance(int_instance);
+
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
+        // prepare None expression
+        std::shared_ptr<call_expression> none_expr = std::make_shared<call_expression>(none_cons_tok);
+        none_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+        none_expr -> set_type_instance(maybe_int_instance);
+
+        // make sure we got only one argument
+        if(arguments.size() != 1)
+            throw invalid_call("[compiler error] the string <int> function expects only one argument.");
+
+        // make sure each argument is an literal expression
+        std::shared_ptr<expr>& arg = arguments[0];
+        if(arg -> is_literal_expression() == false)
+            throw invalid_call("[compiler error] the string <int> function expects its argument to be a string.");
+
+        // get the literal expressions
+        std::shared_ptr<literal_expression> const & arg_lit = std::static_pointer_cast<literal_expression>(arg);
+
+        // double check the type instance
+        type_instance& arg_instance = arg_lit -> get_type_instance();
+        if(type_instance_strong_compare(arg_instance, string_instance) == false)
+            throw invalid_call("[compiler error] the string <int> function expects its argument to be a string.");
+
+        // retrieve the string held inside the literal
+        std::string arg_val = arg_lit -> get_string_value();
+
+        // lex the string and hope to find an integer in it
+        std::string source_path = arg_lit -> get_token() . get_source_path();
+        error error_handler(source_path);
+        lexer lxr(source_path, arg_val, error_handler);
+        try {
+            std::vector<std::shared_ptr<token> >& tokens = lxr.lex();
+            // if we got more or less than three token, we don't have an integer (first token will be the integer, the second will be a new line and the last one an EOF)
+            if(tokens.size() != 3) {
+                std::shared_ptr<expr> final_expr = none_expr;
+                return final_expr;
+            }
+            else {
+                std::shared_ptr<token> tok = tokens[0];
+                // if the token is not an integer literal, we don't have an integer
+                if(tok -> get_type() != INTEGER) {
+                    std::shared_ptr<expr> final_expr = none_expr;
+                    return final_expr;
+                }
+                // we got ourselves an integer, we return it wrapped inside the Just constructor
+                else {
+                    std::shared_ptr<number> const & num = std::static_pointer_cast<number>(tok);
+                    std::string value = num -> get_integral();
+                    value.erase(std::remove(value.begin(), value.end(), '\''), value.end());
+                    std::shared_ptr<literal_expression> int_expr = std::make_shared<literal_expression>(* tok, INTEGER_EXPR, value);
+                    int_expr -> set_type_instance(int_instance);
+                    std::shared_ptr<expr> res_int_expr = int_expr;
+
+                    std::shared_ptr<call_expression> just_expr = std::make_shared<call_expression>(just_cons_tok);
+                    just_expr -> add_argument(star_tok, res_int_expr);
+                    just_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+                    just_expr -> set_type_instance(maybe_int_instance);
+                    std::shared_ptr<expr> final_expr = just_expr;
+                    return final_expr;
+                }
+            }
+        } catch(lex_error err) {
+            err.show();
+            // any lexing error implies the return of None
+            std::shared_ptr<expr> final_expr = none_expr;
+            return final_expr;
+        }
     }
 }

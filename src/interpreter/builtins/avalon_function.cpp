@@ -74,6 +74,7 @@ namespace avalon {
         cast_implementation avl_cast_implementation(m_qproc);
         string_cast_implementation avl_string_cast_implementation;
         float_cast_implementation avl_float_cast_implementation;
+        int_cast_implementation avl_int_cast_implementation;
 
         /* hashing functions */
         hash_implementation avl_hash_implementation;
@@ -121,6 +122,7 @@ namespace avalon {
             {"__cast__", std::make_shared<cast_implementation>(avl_cast_implementation)},
             {"string", std::make_shared<string_cast_implementation>(avl_string_cast_implementation)},
             {"float", std::make_shared<float_cast_implementation>(avl_float_cast_implementation)},
+            {"int", std::make_shared<int_cast_implementation>(avl_int_cast_implementation)},
 
             /* hashing functions */
             {"__hash__", std::make_shared<hash_implementation>(avl_hash_implementation)},

@@ -308,6 +308,20 @@ namespace avalon {
     };
 
     /**
+     * int_cast_implementation
+     * implements the builtin int function
+     */
+    struct int_cast_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return avl_int_cast(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return avl_int_cast(arguments);
+        }
+    };
+
+    /**
      * hash_implementation
      * implements the builtin __hash__ function
      */
