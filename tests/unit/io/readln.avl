@@ -16,7 +16,7 @@ def __main__ = (val args : [string]) -> void:
     -- read the user name from standard input
     val name = Io.readln()
 
-    -- print the number of characters printed
+    -- print the user name
     Io.println("Your name is: " + name)
 
     return
