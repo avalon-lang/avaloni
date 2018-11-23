@@ -10,7 +10,13 @@ import io
 
 
 def __main__ = (val args : [string]) -> void:
-    -- print to stdout with a new line
-    Io.println("Hello World!")
+    -- print to stdout with a new line and get the number of characters printed
+    val chars_count = Io.println("Hello World!")
+
+    -- make sure exacly 13 characters were printed
+    if chars_count != 13:
+        Io.println("Io.println failed.")
+    else:
+        Io.println("Number of characters printed: " + string(chars_count))
 
     return
