@@ -1,0 +1,16 @@
+-[
+Testing print.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+
+
+def __main__ = (val args : [string]) -> void:
+    -- print to stdout without a newline
+    Io.print("Hello World!")
+
+    return
