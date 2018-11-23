@@ -1,0 +1,27 @@
+-[
+Testing string cast to bool.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+import math
+
+def __main__ = (val args : [string]) -> void:
+    -- Test case for success
+    val as = cast("True") -> maybe(bool)
+    if as === Just(bs:bool):
+        Io.println("We got the boolean: " + string(bs))
+    else:
+        Io.println("We got no boolean.")
+
+    -- Test case for failure
+    val af = cast("Fals") -> maybe(bool)
+    if af === Just(bf:bool):
+        Io.println("We got the boolean: " + string(bf))
+    else:
+        Io.println("We got no boolean.")
+
+    return
