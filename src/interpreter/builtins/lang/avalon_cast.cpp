@@ -154,6 +154,99 @@ namespace avalon {
     }
 
     /**
+     * avl_bool_cast
+     * implements cast to bool function
+     */
+    std::shared_ptr<expr> avl_bool_cast(std::vector<std::shared_ptr<expr> >& arguments) {
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
+        // make sure we got only one argument
+        if(arguments.size() != 1)
+            throw invalid_call("[compiler error] the <bool> function expects only one argument.");
+
+        std::shared_ptr<expr>& arg = arguments[0];
+        if(arg -> is_literal_expression()) {
+            std::shared_ptr<literal_expression> const & arg_lit = std::static_pointer_cast<literal_expression>(arg);
+            type_instance& arg_instance = arg_lit -> get_type_instance();
+
+            if(type_instance_strong_compare(arg_instance, string_instance)) {
+                return string_bool(arguments);
+            }
+            else {
+                throw invalid_call("[compiler error] unexpected call to the <bool> function using arguments of unsupported type instances");
+            }
+        }
+        else {
+            throw invalid_call("[compiler error] unexpected call to the <bool> function using arguments of unsupported type instances");
+        }
+    }
+
+    /**
+     * avl_int_cast
+     * implements cast to int function
+     */
+    std::shared_ptr<expr> avl_int_cast(std::vector<std::shared_ptr<expr> >& arguments) {
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
+        // make sure we got only one argument
+        if(arguments.size() != 1)
+            throw invalid_call("[compiler error] the <int> function expects only one argument.");
+
+        std::shared_ptr<expr>& arg = arguments[0];
+        if(arg -> is_literal_expression()) {
+            std::shared_ptr<literal_expression> const & arg_lit = std::static_pointer_cast<literal_expression>(arg);
+            type_instance& arg_instance = arg_lit -> get_type_instance();
+
+            if(type_instance_strong_compare(arg_instance, string_instance)) {
+                return string_int(arguments);
+            }
+            else {
+                throw invalid_call("[compiler error] unexpected call to the <int> function using arguments of unsupported type instances");
+            }
+        }
+        else {
+            throw invalid_call("[compiler error] unexpected call to the <int> function using arguments of unsupported type instances");
+        }
+    }
+
+    /**
+     * avl_flaot_cast
+     * implements cast to float function
+     */
+    std::shared_ptr<expr> avl_float_cast(std::vector<std::shared_ptr<expr> >& arguments) {
+        // int type
+        avalon_int avl_int;
+        type_instance int_instance = avl_int.get_type_instance();
+
+        // make sure we got only one argument
+        if(arguments.size() != 1)
+            throw invalid_call("[compiler error] the <float> function expects only one argument.");
+
+        std::shared_ptr<expr>& arg = arguments[0];
+        if(arg -> is_identifier_expression()) {
+            throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
+        }
+        else if(arg -> is_literal_expression()) {
+            std::shared_ptr<literal_expression> const & arg_lit = std::static_pointer_cast<literal_expression>(arg);
+            type_instance& arg_instance = arg_lit -> get_type_instance();
+
+            if(type_instance_strong_compare(arg_instance, int_instance)) {
+                return int_float(arguments);
+            }
+            else {
+                throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
+            }
+        }
+        else {
+            throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
+        }
+    }
+
+    /**
      * avl_string_cast
      * implements cast to string function
      */
@@ -231,69 +324,6 @@ namespace avalon {
         }
         else {
             throw invalid_call("[compiler error] unexpected call to the <string> function using arguments of unsupported type instances");
-        }
-    }
-
-    /**
-     * avl_flaot_cast
-     * implements cast to float function
-     */
-    std::shared_ptr<expr> avl_float_cast(std::vector<std::shared_ptr<expr> >& arguments) {
-        // int type
-        avalon_int avl_int;
-        type_instance int_instance = avl_int.get_type_instance();
-
-        // make sure we got only one argument
-        if(arguments.size() != 1)
-            throw invalid_call("[compiler error] the <float> function expects only one argument.");
-
-        std::shared_ptr<expr>& arg = arguments[0];
-        if(arg -> is_identifier_expression()) {
-            throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
-        }
-        else if(arg -> is_literal_expression()) {
-            std::shared_ptr<literal_expression> const & arg_lit = std::static_pointer_cast<literal_expression>(arg);
-            type_instance& arg_instance = arg_lit -> get_type_instance();
-
-            if(type_instance_strong_compare(arg_instance, int_instance)) {
-                return int_float(arguments);
-            }
-            else {
-                throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
-            }
-        }
-        else {
-            throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");
-        }
-    }
-
-    /**
-     * avl_int_cast
-     * implements cast to int function
-     */
-    std::shared_ptr<expr> avl_int_cast(std::vector<std::shared_ptr<expr> >& arguments) {
-        // string type
-        avalon_string avl_string;
-        type_instance string_instance = avl_string.get_type_instance();
-
-        // make sure we got only one argument
-        if(arguments.size() != 1)
-            throw invalid_call("[compiler error] the <int> function expects only one argument.");
-
-        std::shared_ptr<expr>& arg = arguments[0];
-        if(arg -> is_literal_expression()) {
-            std::shared_ptr<literal_expression> const & arg_lit = std::static_pointer_cast<literal_expression>(arg);
-            type_instance& arg_instance = arg_lit -> get_type_instance();
-
-            if(type_instance_strong_compare(arg_instance, string_instance)) {
-                return string_int(arguments);
-            }
-            else {
-                throw invalid_call("[compiler error] unexpected call to the <int> function using arguments of unsupported type instances");
-            }
-        }
-        else {
-            throw invalid_call("[compiler error] unexpected call to the <int> function using arguments of unsupported type instances");
         }
     }
 }

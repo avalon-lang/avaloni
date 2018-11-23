@@ -42,6 +42,7 @@
 /* Declarations */
 #include "representer/ast/decl/type.hpp"
 /* Expressions */
+#include "representer/ast/expr/identifier_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/call_expression.hpp"
 #include "representer/ast/expr/expr.hpp"
@@ -49,6 +50,7 @@
 /* Builtins */
 #include "representer/builtins/lang/avalon_string.hpp"
 #include "representer/builtins/lang/avalon_maybe.hpp"
+#include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 
 /* Builtin functions */
@@ -195,6 +197,10 @@ namespace avalon {
      * returns an expression that represents the string cast to the given return type
      */
     std::shared_ptr<expr> string_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+        // bool type
+        avalon_bool avl_bool;
+        type_instance bool_instance = avl_bool.get_type_instance();
+        
         // int type
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
@@ -202,12 +208,105 @@ namespace avalon {
         // maybe type
         avalon_maybe avl_maybe;
         type_instance maybe_int_instance = avl_maybe.get_type_instance(int_instance);
+        type_instance maybe_bool_instance = avl_maybe.get_type_instance(bool_instance);
 
-        if(type_instance_strong_compare(ret_instance, maybe_int_instance)) {
+        if(type_instance_strong_compare(ret_instance, maybe_bool_instance)) {
+            return string_bool(arguments);
+        }
+        else if(type_instance_strong_compare(ret_instance, maybe_int_instance)) {
             return string_int(arguments);
         }
         else {
             throw invalid_call("[compiler error] the integer __cast__ function cannot be cast to <" + mangle_type_instance(ret_instance) + ">.");
+        }
+    }
+
+    /**
+     * string_bool
+     * returns a boolean representation of a string
+     */
+    std::shared_ptr<expr> string_bool(std::vector<std::shared_ptr<expr> >& arguments) {
+        // bool type
+        avalon_bool avl_bool;
+        type_instance bool_instance = avl_bool.get_type_instance();
+
+        // maybe type
+        avalon_maybe avl_maybe;
+        type_instance maybe_bool_instance = avl_maybe.get_type_instance(bool_instance);
+
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
+        // prepare None expression
+        std::shared_ptr<call_expression> none_expr = std::make_shared<call_expression>(none_cons_tok);
+        none_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+        none_expr -> set_type_instance(maybe_bool_instance);
+
+        // make sure we got only one argument
+        if(arguments.size() != 1)
+            throw invalid_call("[compiler error] the string <bool> function expects only one argument.");
+
+        // make sure each argument is a literal expression
+        std::shared_ptr<expr>& arg = arguments[0];
+        if(arg -> is_literal_expression() == false)
+            throw invalid_call("[compiler error] the string <bool> function expects its argument to be a string.");
+
+        // get the literal expressions
+        std::shared_ptr<literal_expression> const & arg_lit = std::static_pointer_cast<literal_expression>(arg);
+
+        // double check the type instance
+        type_instance& arg_instance = arg_lit -> get_type_instance();
+        if(type_instance_strong_compare(arg_instance, string_instance) == false)
+            throw invalid_call("[compiler error] the string <bool> function expects its argument to be a string.");
+
+        // retrieve the string held inside the literal
+        std::string arg_val = arg_lit -> get_string_value();
+
+        // lex the string and hope to find a boolean in it
+        std::string source_path = arg_lit -> get_token() . get_source_path();
+        error error_handler(source_path);
+        lexer lxr(source_path, arg_val, error_handler);
+        try {
+            std::vector<std::shared_ptr<token> >& tokens = lxr.lex();
+            // if we got more or less than three token, we don't have a boolean (first token will be the boolean, the second will be a new line and the last one an EOF)
+            if(tokens.size() != 3) {
+                std::shared_ptr<expr> final_expr = none_expr;
+                return final_expr;
+            }
+            else {
+                std::shared_ptr<token> tok = tokens[0];
+                // if the token is not a identifier, we don't have a boolean
+                if(tok -> get_type() != IDENTIFIER) {
+                    std::shared_ptr<expr> final_expr = none_expr;
+                    return final_expr;
+                }
+                // we got ourselves an identifier, we make sure that it is either <True> or <False>
+                else {
+                    if(* tok == true_cons_tok || * tok == false_cons_tok) {
+                        std::shared_ptr<identifier_expression> bool_expr = std::make_shared<identifier_expression>(* tok);
+                        bool_expr -> set_type_instance(bool_instance);
+                        bool_expr -> set_expression_type(CONSTRUCTOR_EXPR);
+                        std::shared_ptr<expr> res_bool_expr = bool_expr;
+
+                        std::shared_ptr<call_expression> just_expr = std::make_shared<call_expression>(just_cons_tok);
+                        just_expr -> add_argument(star_tok, res_bool_expr);
+                        just_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+                        just_expr -> set_type_instance(maybe_bool_instance);
+                        std::shared_ptr<expr> final_expr = just_expr;
+                        return final_expr;
+                    }
+                    else {
+                        std::shared_ptr<expr> final_expr = none_expr;
+                        return final_expr;
+                    }
+                }
+            }
+        } catch(lex_error err) {
+            err.show();
+            // any lexing error implies the return of None
+            std::shared_ptr<expr> final_expr = none_expr;
+            return final_expr;
         }
     }
 

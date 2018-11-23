@@ -44,10 +44,16 @@ namespace avalon {
     std::shared_ptr<expr> avl_cast(std::shared_ptr<qprocessor>& qproc, std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance);
 
     /**
-     * avl_string_cast
-     * implements cast to string function
+     * avl_bool_cast
+     * implements cast to bool function
      */
-    std::shared_ptr<expr> avl_string_cast(std::vector<std::shared_ptr<expr> >& arguments);
+    std::shared_ptr<expr> avl_bool_cast(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
+     * avl_int_cast
+     * implements cast to int function
+     */
+    std::shared_ptr<expr> avl_int_cast(std::vector<std::shared_ptr<expr> >& arguments);
 
     /**
      * avl_flaot_cast
@@ -56,10 +62,10 @@ namespace avalon {
     std::shared_ptr<expr> avl_float_cast(std::vector<std::shared_ptr<expr> >& arguments);
 
     /**
-     * avl_int_cast
-     * implements cast to int function
+     * avl_string_cast
+     * implements cast to string function
      */
-    std::shared_ptr<expr> avl_int_cast(std::vector<std::shared_ptr<expr> >& arguments);
+    std::shared_ptr<expr> avl_string_cast(std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif

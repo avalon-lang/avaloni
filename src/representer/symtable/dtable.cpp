@@ -274,7 +274,7 @@ dsymbols::dsymbols() {
         try {
             return m_variables.at(name);
         } catch(std::out_of_range err) {
-            throw symbol_not_found("No variable declaration with the given name was found.");
+            throw symbol_not_found("No variable declaration with the given name <" + name + "> was found.");
         }
     }
 

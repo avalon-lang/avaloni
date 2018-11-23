@@ -58,6 +58,12 @@ namespace avalon {
     std::shared_ptr<expr> string_cast(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance);
 
     /**
+     * string_bool
+     * returns a boolean representation of a string
+     */
+    std::shared_ptr<expr> string_bool(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
      * string_int
      * returns an integer representation of a string
      */

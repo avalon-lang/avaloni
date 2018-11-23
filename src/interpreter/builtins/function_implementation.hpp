@@ -280,16 +280,30 @@ namespace avalon {
     };
 
     /**
-     * string_cast_implementation
-     * implements the builtin string function
+     * bool_cast_implementation
+     * implements the builtin bool function
      */
-    struct string_cast_implementation : function_implementation {
+    struct bool_cast_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return avl_string_cast(arguments);
+            return avl_bool_cast(arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return avl_string_cast(arguments);
+            return avl_bool_cast(arguments);
+        }
+    };
+
+    /**
+     * int_cast_implementation
+     * implements the builtin int function
+     */
+    struct int_cast_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return avl_int_cast(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return avl_int_cast(arguments);
         }
     };
 
@@ -308,16 +322,16 @@ namespace avalon {
     };
 
     /**
-     * int_cast_implementation
-     * implements the builtin int function
+     * string_cast_implementation
+     * implements the builtin string function
      */
-    struct int_cast_implementation : function_implementation {
+    struct string_cast_implementation : function_implementation {
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
-            return avl_int_cast(arguments);
+            return avl_string_cast(arguments);
         }
 
         virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
-            return avl_int_cast(arguments);
+            return avl_string_cast(arguments);
         }
     };
 
