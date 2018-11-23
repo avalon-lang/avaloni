@@ -16,6 +16,11 @@ a vital role. Yes, there exists other programming languages that target hybrid c
 but I have found them to be lacking in abstractions and many even exposing hardware primitives 
 making them unfriendly to the novice developer.
 
+Even more important, as we approach the NISQ era, compilers are going to play a vital role 
+in the optimisation of quantum programs when we have little to no error correction 
+built into the hardware. It is the hope that Avalon will come out as the leading 
+programming language for writing programs meant for near-term quantum computers.
+
 ## What it looks like
 
 ![Avalon sample program in my editor](images/entanglement.avl.png "Avalon program in Sublime Text")
