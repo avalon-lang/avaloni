@@ -10,10 +10,44 @@ namespace Io -/
 var package = (
     name        = "I/O package",
     version     = "0.0.1",
-    description = "This package contains functions that read from and print to the standard input/output"
+    description = "This package contains functions that read from and print to the standard input/output."
 )
 
+-[
+print
+    Prints the given string to standard output without adding a new line.
+
+:params
+- str       : string
+    The string to print to the standard output.
+
+:returns
+- int       : the number of characters printed to standard output.
+]-
+def print = (val str : string) -> int:
+    return __print__(str)
+
+-[
+println
+    Prints the given string to standard output followed by a new line.
+
+:params
+- str       : string
+    The string to print to the standard output.
+
+:returns
+- int       : the number of characters printed to standard output including the new line.
+]-
 def println = (val str : string) -> int:
-    __println__(str)
-    return 0
+    return __println__(str)
+
+-[
+readln
+    Reads a string followed by a new line from standard input.
+
+:returns
+- string    : the string that was read from standard input.
+]-
+def readln = () -> string:
+    return __readln__()
 /-

@@ -132,6 +132,20 @@ namespace avalon {
         std::shared_ptr<decl> println_function_decl = println_function;
         l_namespace -> add_declaration(println_function_decl);
 
+        // readln
+        token readln_tok(IDENTIFIER, "__readln__", 0, 0, "__bif__");
+        std::shared_ptr<function> readln_function = std::make_shared<function>(readln_tok);
+        readln_function -> set_fqn(l_fqn);
+        readln_function -> is_public(true);
+        readln_function -> is_builtin(true);
+        readln_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> readln_scope = std::make_shared<scope>();
+        readln_scope -> set_parent(l_scope);
+        readln_function -> set_scope(readln_scope);
+        readln_function -> set_return_type_instance(string_instance);
+        std::shared_ptr<decl> readln_function_decl = readln_function;
+        l_namespace -> add_declaration(readln_function_decl);
+
         /* add the namespace to the program */
         std::shared_ptr<decl> namespace_decl = l_namespace;
         m_io_prog.add_declaration(namespace_decl);

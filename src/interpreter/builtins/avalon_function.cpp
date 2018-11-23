@@ -68,6 +68,7 @@ namespace avalon {
         /* io functions */
         print_implementation avl_print_implementation;
         println_implementation avl_println_implementation;
+        readln_implementation avl_readln_implementation;
 
         /* casting functions */
         cast_implementation avl_cast_implementation(m_qproc);
@@ -114,6 +115,7 @@ namespace avalon {
             /* io functions */
             {"__print__", std::make_shared<print_implementation>(avl_print_implementation)},
             {"__println__", std::make_shared<println_implementation>(avl_println_implementation)},
+            {"__readln__", std::make_shared<readln_implementation>(avl_readln_implementation)},
 
             /* casting functions */
             {"__cast__", std::make_shared<cast_implementation>(avl_cast_implementation)},

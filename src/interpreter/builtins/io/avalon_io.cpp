@@ -23,9 +23,11 @@
  */
 
 
+#include <iostream>
 #include <cstdio>
 #include <memory>
 #include <vector>
+#include <string>
 
 /* Lexer */
 #include "lexer/token.hpp"
@@ -38,6 +40,7 @@
 #include "representer/ast/expr/expr.hpp"
 
 /* Builtins */
+#include "representer/builtins/lang/avalon_string.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 
 /* Builtin functions */
@@ -116,5 +119,30 @@ namespace avalon {
         std::shared_ptr<expr> final_expr = ret_expr;
 
         return final_expr;
+    }
+
+    /**
+     * avl_readln
+     * reads a string followed by a new line from the standard input
+     */
+    std::shared_ptr<expr> avl_readln(std::vector<std::shared_ptr<expr> >& arguments) {
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
+        // make sure we got no arguments
+        if(arguments.size() != 0)
+            throw invalid_call("[compiler error] the builtin __readln__ function doesn't except any argument.");
+
+        // read the string and return it
+        for(std::string input; std::getline(std::cin, input);) {
+            token ret_tok(STRING, input, 0, 0, "__bil__");
+            std::shared_ptr<literal_expression> ret_expr = std::make_shared<literal_expression>(ret_tok, STRING_EXPR, input);
+            ret_expr -> set_type_instance(string_instance);
+            std::shared_ptr<expr> final_expr = ret_expr;
+            return final_expr;
+        }
+
+        return nullptr;
     }
 }

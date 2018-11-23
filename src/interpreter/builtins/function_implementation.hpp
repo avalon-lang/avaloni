@@ -240,6 +240,20 @@ namespace avalon {
     };
 
     /**
+     * readln_implementation
+     * implements the builtin __readln__ function
+     */
+    struct readln_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return avl_readln(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return avl_readln(arguments);
+        }
+    };
+
+    /**
      * cast_implementation
      * implements the builtin __cast__ function
      */

@@ -44,6 +44,12 @@ namespace avalon {
      * prints a string followed by a new line to standard output and returns the number of characters written
      */
     std::shared_ptr<expr> avl_println(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
+     * avl_readln
+     * reads a string followed by a new line from the standard input
+     */
+    std::shared_ptr<expr> avl_readln(std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif
