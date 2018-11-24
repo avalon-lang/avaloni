@@ -297,6 +297,12 @@ namespace avalon {
         std::shared_ptr<expr> assignment();
 
         /**
+         * conditional
+         * matches a conditional expression
+         */
+        std::shared_ptr<expr> conditional();
+
+        /**
          * logical_or
          * matches a logical or expression
          */

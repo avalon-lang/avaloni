@@ -70,6 +70,7 @@
 #include "representer/ast/expr/identifier_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/underscore_expression.hpp"
+#include "representer/ast/expr/conditional_expression.hpp"
 #include "representer/ast/expr/dereference_expression.hpp"
 /* Symbol table */
 #include "representer/symtable/fqn.hpp"
@@ -990,7 +991,7 @@ parser::parser(
      */
     std::shared_ptr<expr> parser::assignment() {
         std::shared_ptr<expr> l_expression = nullptr;
-        std::shared_ptr<expr> lval = logical_or();
+        std::shared_ptr<expr> lval = conditional();
 
         while(match(EQUAL)) {
             std::shared_ptr<token>& op = lookback();
@@ -1000,6 +1001,30 @@ parser::parser(
         }
 
         l_expression = lval;
+        return l_expression;
+    }
+
+    /**
+     * conditional
+     * matches a conditional expression
+     */
+    std::shared_ptr<expr> parser::conditional() {
+        std::shared_ptr<expr> l_expression = nullptr;
+        std::shared_ptr<expr> if_expression = logical_or();
+
+        if(match(IF)) {
+            std::shared_ptr<token>& op = lookback();
+            std::shared_ptr<expr> condition = logical_or();
+            consume(ELSE, "Expected the else branch of the conditional expression.");
+            std::shared_ptr<expr> else_expression = logical_or();
+            std::shared_ptr<conditional_expression> expr = std::make_shared<conditional_expression>(* op);
+            expr -> set_condition(condition);
+            expr -> set_if_expression(if_expression);
+            expr -> set_else_expression(else_expression);
+            if_expression = expr;
+        }
+
+        l_expression = if_expression;
         return l_expression;
     }
 
