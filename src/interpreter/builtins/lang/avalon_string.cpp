@@ -248,8 +248,8 @@ namespace avalon {
         type_instance string_instance = avl_string.get_type_instance();
 
         // prepare None expression
-        std::shared_ptr<call_expression> none_expr = std::make_shared<call_expression>(none_cons_tok);
-        none_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+        std::shared_ptr<identifier_expression> none_expr = std::make_shared<identifier_expression>(none_cons_tok);
+        none_expr -> set_expression_type(CONSTRUCTOR_EXPR);
         none_expr -> set_type_instance(maybe_bool_instance);
 
         // make sure we got only one argument
@@ -337,8 +337,8 @@ namespace avalon {
         type_instance string_instance = avl_string.get_type_instance();
 
         // prepare None expression
-        std::shared_ptr<call_expression> none_expr = std::make_shared<call_expression>(none_cons_tok);
-        none_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+        std::shared_ptr<identifier_expression> none_expr = std::make_shared<identifier_expression>(none_cons_tok);
+        none_expr -> set_expression_type(CONSTRUCTOR_EXPR);
         none_expr -> set_type_instance(maybe_int_instance);
 
         // make sure we got only one argument
@@ -422,8 +422,8 @@ namespace avalon {
         type_instance string_instance = avl_string.get_type_instance();
 
         // prepare None expression
-        std::shared_ptr<call_expression> none_expr = std::make_shared<call_expression>(none_cons_tok);
-        none_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+        std::shared_ptr<identifier_expression> none_expr = std::make_shared<identifier_expression>(none_cons_tok);
+        none_expr -> set_expression_type(CONSTRUCTOR_EXPR);
         none_expr -> set_type_instance(maybe_float_instance);
 
         // make sure we got only one argument
@@ -475,6 +475,7 @@ namespace avalon {
                     std::shared_ptr<literal_expression> float_expr = std::make_shared<literal_expression>(* tok, FLOATING_POINT_EXPR, value);
                     float_expr -> set_type_instance(float_instance);
                     std::shared_ptr<expr> res_float_expr = float_expr;
+
                     std::shared_ptr<call_expression> just_expr = std::make_shared<call_expression>(just_cons_tok);
                     just_expr -> add_argument(star_tok, res_float_expr);
                     just_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
