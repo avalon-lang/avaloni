@@ -10,8 +10,13 @@ import io
 import math
 
 def __main__ = (val args : [string]) -> void:
+    -- using a comparison as condition
     var age = 12
     val status = "Major" if age > 18 else "Minor"
     Io.println(status)
+
+    -- using pattern matching as condition
+    val maybe_age = Just(12)
+    Io.println(string(age) if maybe_age === Just(age:int) else "No age given.")
 
     return
