@@ -27,6 +27,7 @@
 
 /* AST */
 #include "representer/ast/expr/dereference_expression.hpp"
+#include "representer/ast/expr/conditional_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/underscore_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
@@ -142,6 +143,12 @@ namespace avalon {
             std::shared_ptr<assignment_expression> const & assign_expr = std::static_pointer_cast<assignment_expression>(shared_from_this());
             std::shared_ptr<assignment_expression> l_assign_expr = std::make_shared<assignment_expression>(assign_expr);
             std::shared_ptr<expr> new_expression = l_assign_expr;
+            return new_expression;
+        }
+        else if(this -> is_conditional_expression()) {
+            std::shared_ptr<conditional_expression> const & cond_expr = std::static_pointer_cast<conditional_expression>(shared_from_this());
+            std::shared_ptr<conditional_expression> l_cond_expr = std::make_shared<conditional_expression>(cond_expr);
+            std::shared_ptr<expr> new_expression = l_cond_expr;
             return new_expression;
         }
         else {

@@ -64,6 +64,10 @@ namespace avalon {
         virtual bool is_assignment_expression() {
             return false;
         }
+        /** conditional expression **/
+        virtual bool is_conditional_expression() {
+            return false;
+        }
         /** unary expression **/
         virtual bool is_unary_expression() {
             return false;
@@ -134,7 +138,7 @@ namespace avalon {
          * and do decay to function calls, we still need to pass them the type to cast to and
          * this is not supposed by the unary expression class because type instances are not expressions.
          *
-         * IDENTIFIED EXPRESSIONS:
+         * IDENTIFIER EXPRESSIONS:
          * default constructor expressions without arguments and variables expressions all are represented by
          * a single identifier. so during parsing, we have no way to know which is which.
          * we leave it to the checker to disambigue them.
