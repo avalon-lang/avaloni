@@ -1,0 +1,27 @@
+-[
+Testing string cast to float.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+import math
+
+def __main__ = (val args : [string]) -> void:
+    -- Test case for success
+    val as = cast("12.4501") -> maybe(float)
+    if as === Just(bs:float):
+        Io.println("We got the floating point number: " + string(bs))
+    else:
+        Io.println("We got no floating point number.")
+
+    -- Test case for failure
+    val af = cast("12'000") -> maybe(float)
+    if af === Just(bf:float):
+        Io.println("We got the floating point number: " + string(bf))
+    else:
+        Io.println("We got no floating point number.")
+
+    return
