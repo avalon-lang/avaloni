@@ -17,6 +17,6 @@ def __main__ = (val args : [string]) -> void:
 
     -- using pattern matching as condition
     val maybe_age = Just(12)
-    Io.println(string(age) if maybe_age === Just(age:int) else "No age given.")
+    Io.println(string(int_age) if maybe_age === Just(int_age:int) else "No age given.")
 
     return
