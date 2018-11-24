@@ -128,4 +128,12 @@ namespace avalon {
     std::vector<std::shared_ptr<expr> >& list_expression::get_elements() {
         return m_elements;
     }
+
+    /**
+     * get_length
+     * returns the length of the list
+     */
+    std::size_t list_expression::get_length() const {
+        return m_elements.size();
+    }
 }

@@ -127,6 +127,12 @@ namespace avalon {
         const std::string& get_comparator_callee();
 
         /**
+         * get_length
+         * returns the length of the map
+         */
+        std::size_t get_length() const;
+
+        /**
          * token
          * returns this expression token
          * this is useful because it prevents us from casting each expression just to display error messages

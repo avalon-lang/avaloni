@@ -1508,6 +1508,33 @@ namespace avalon {
         if(type_instance_strong_compare(if_instance, else_instance) == false)
             throw invalid_expression(if_expression -> expr_token(), "The if expression has type instance <" + mangle_type_instance(if_instance) + "> while the else expression has type instance <" + mangle_type_instance(else_instance) + ">. Both branches of an if conditional must have the same type instances.");
 
+        // we make sure that if we have strings, they are the same length
+        if(if_expression -> is_literal_expression()) {
+            std::shared_ptr<literal_expression> const & if_expr = std::static_pointer_cast<literal_expression>(if_expression);
+            std::shared_ptr<literal_expression> const & else_expr = std::static_pointer_cast<literal_expression>(else_expression);
+
+            if(if_expr -> get_expression_type() == STRING_EXPR) {
+                if(if_expr -> get_length() != else_expr -> get_length())
+                    throw invalid_expression(else_expr -> get_token(), "The if expression and the else expression must return strings of equal length.");
+            }
+        }
+        // we make sure that if we have lists, they are the same length
+        else if(if_expression -> is_list_expression()) {
+            std::shared_ptr<list_expression> const & if_expr = std::static_pointer_cast<list_expression>(if_expression);
+            std::shared_ptr<list_expression> const & else_expr = std::static_pointer_cast<list_expression>(else_expression);
+
+            if(if_expr -> get_length() != else_expr -> get_length())
+                throw invalid_expression(else_expr -> get_token(), "The if expression and the else expression must return lists of equal length.");
+        }
+        // we make sure that if we have maps, they are the same length
+        else if(if_expression -> is_map_expression()) {
+            std::shared_ptr<map_expression> const & if_expr = std::static_pointer_cast<map_expression>(if_expression);
+            std::shared_ptr<map_expression> const & else_expr = std::static_pointer_cast<map_expression>(else_expression);
+
+            if(if_expr -> get_length() != else_expr -> get_length())
+                throw invalid_expression(else_expr -> get_token(), "The if expression and the else expression must return maps of equal length.");
+        }
+
         // we leave it to the inference engine to deduce the type instance
         type_instance instance = m_inferrer.infer(an_expression, l_scope, ns_name);
         cond_expr -> set_type_instance(instance);

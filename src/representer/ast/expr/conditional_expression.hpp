@@ -133,7 +133,7 @@ namespace avalon {
          * this is useful during checking to make sure that variables and function parameters are not initialized with expressions containing match expressions
          */
         virtual bool has_match_expression() {
-            return m_if_expression -> has_match_expression() || m_else_expression;
+            return m_if_expression -> has_match_expression() || m_else_expression -> has_match_expression();
         }
         
         /**

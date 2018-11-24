@@ -164,4 +164,12 @@ namespace avalon {
     const std::string& map_expression::get_comparator_callee() {
         return m_comp_callee;
     }
+
+    /**
+     * get_length
+     * returns the length of the map
+     */
+    std::size_t map_expression::get_length() const {
+        return m_elements.size();
+    }
 }

@@ -294,6 +294,12 @@ namespace avalon {
         std::shared_ptr<expr> interpret_call_match(std::shared_ptr<expr>& lval_expr, std::shared_ptr<expr>& rval, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
+         * interpret_conditional
+         * returns one of the branches a conditional expression evaluates to.
+         */
+        std::shared_ptr<expr> interpret_conditional(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+
+        /**
          * interpret_assignment
          * get the effective value of the rval and assign it to the variable in the lval
          */

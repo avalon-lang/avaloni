@@ -55,6 +55,7 @@
 #include "representer/ast/stmt/if_stmt.hpp"
 /* Expressions */
 #include "representer/ast/expr/dereference_expression.hpp"
+#include "representer/ast/expr/conditional_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/reference_expression.hpp"
@@ -512,6 +513,9 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         }
         else if(an_expression -> is_match_expression()) {
             return interpret_match(an_expression, l_scope, ns_name);
+        }
+        else if(an_expression -> is_conditional_expression()) {
+            return interpret_conditional(an_expression, l_scope, ns_name);
         }
         else if(an_expression -> is_assignment_expression()) {
             return interpret_assignment(an_expression, l_scope, ns_name);
@@ -1371,6 +1375,29 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
 
         // if we reached here then everything checked out
         return true_final_expr;
+    }
+
+    /**
+     * interpret_conditional
+     * returns one of the branches a conditional expression evaluates to.
+     */
+    std::shared_ptr<expr> interpreter::interpret_conditional(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<conditional_expression> const & cond_expr = std::static_pointer_cast<conditional_expression>(an_expression);
+        std::shared_ptr<expr>& condition = cond_expr -> get_condition();
+        std::shared_ptr<expr>& if_expression = cond_expr -> get_if_expression();
+        std::shared_ptr<expr>& else_expression = cond_expr -> get_else_expression();
+
+        // if the condition evaluates to true, we evaluate and return the if expression
+        std::shared_ptr<expr> final_condition = interpret_expression(condition, l_scope, ns_name);
+        std::shared_ptr<identifier_expression> const & condition_id = std::static_pointer_cast<identifier_expression>(final_condition);
+        
+        // the condition is true, we return the evaluation of the if expression
+        if(condition_id -> get_token() == true_cons_tok) {
+            return interpret_expression(if_expression, l_scope, ns_name);
+        }
+        else {
+            return interpret_expression(else_expression, l_scope, ns_name);
+        }
     }
 
     /**

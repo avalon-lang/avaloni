@@ -133,6 +133,7 @@ namespace avalon {
         void generate_grouped(std::shared_ptr<expr>& an_expression);
         void generate_binary(std::shared_ptr<expr>& an_expression);
         void generate_unary(std::shared_ptr<expr>& an_expression);
+        void generate_conditional(std::shared_ptr<expr>& an_expression);
         void generate_assignment(std::shared_ptr<expr>& an_expression);
 
 

@@ -42,6 +42,7 @@
 #include "representer/ast/stmt/if_stmt.hpp"
 #include "representer/ast/stmt/stmt.hpp"
 /* Expressions */
+#include "representer/ast/expr/conditional_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
 #include "representer/ast/expr/grouped_expression.hpp"
@@ -73,43 +74,6 @@
 
 
 namespace avalon {
-    /*
-    static void replace_instance(type_instance& dest, type_instance& orig) {
-        std::vector<type_instance>& orig_params = orig.get_params();
-
-        // update the name
-        const std::string& orig_name = orig.get_name();
-        dest.set_name(orig_name);
-
-        // we update the token
-        const token& orig_tok = orig.get_token();
-        dest.set_token(orig_tok);
-
-        // we update the category
-        const type_instance_category& orig_category = orig.get_category();
-        dest.set_category(orig_category);
-
-        // we update the namespace
-        const std::string& ns_name = orig.get_namespace();
-        dest.set_namespace(ns_name);
-
-        // we update the type
-        std::shared_ptr<type>& orig_type = orig.get_type();
-        dest.set_type(orig_type);
-
-        // we update the elements count (in the case of lists and map)
-        std::size_t orig_count = orig.get_count();
-        dest.set_count(orig_count);
-
-        // we update the parametrization status
-        dest.is_parametrized(orig.is_parametrized());
-
-        // we set parameters            
-        for(auto& orig_param : orig_params)
-            dest.add_param(orig_param);
-    }
-    */
-
     /**
      * the default constructor expects nothing
      */
@@ -411,6 +375,9 @@ namespace avalon {
         else if(an_expression -> is_unary_expression()) {
             generate_unary(an_expression);
         }
+        else if(an_expression -> is_conditional_expression()) {
+            generate_conditional(an_expression);
+        }
         else if(an_expression -> is_assignment_expression()) {
             generate_assignment(an_expression);
         }
@@ -631,6 +598,22 @@ namespace avalon {
         // work on the expression that is the subject of the unary operator
         std::shared_ptr<expr>& val = unary_expr -> get_val();
         generate_expression(val);
+    }
+
+    void function_generator::generate_conditional(std::shared_ptr<expr>& an_expression) {
+        std::shared_ptr<conditional_expression> const & cond_expr = std::static_pointer_cast<conditional_expression>(an_expression);
+
+        // work on the condition
+        std::shared_ptr<expr>& condition = cond_expr -> get_condition();
+        generate_expression(condition);
+
+        // work on the if expression
+        std::shared_ptr<expr>& if_expression = cond_expr -> get_if_expression();
+        generate_expression(if_expression);
+
+        // work on the if expression
+        std::shared_ptr<expr>& else_expression = cond_expr -> get_else_expression();
+        generate_expression(else_expression);
     }
 
     void function_generator::generate_assignment(std::shared_ptr<expr>& an_expression) {

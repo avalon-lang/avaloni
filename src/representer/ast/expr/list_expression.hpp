@@ -102,6 +102,12 @@ namespace avalon {
         std::vector<std::shared_ptr<expr> >& get_elements();
 
         /**
+         * get_length
+         * returns the length of the list
+         */
+        std::size_t get_length() const;
+
+        /**
          * token
          * returns this expression token
          * this is useful because it prevents us from casting each expression just to display error messages
