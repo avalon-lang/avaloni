@@ -42,6 +42,7 @@
 /* Builtins */
 #include "representer/builtins/lang/avalon_string.hpp"
 #include "representer/builtins/lang/avalon_maybe.hpp"
+#include "representer/builtins/lang/avalon_float.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 
@@ -82,10 +83,15 @@ namespace avalon {
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
 
+        // float type
+        avalon_float avl_float;
+        type_instance float_instance = avl_float.get_type_instance();
+
         // maybe type
         avalon_maybe avl_maybe;
-        type_instance maybe_int_instance = avl_maybe.get_type_instance(int_instance);
         type_instance maybe_bool_instance = avl_maybe.get_type_instance(bool_instance);
+        type_instance maybe_int_instance = avl_maybe.get_type_instance(int_instance);
+        type_instance maybe_float_instance = avl_maybe.get_type_instance(float_instance);
 
         /* the program FQN */
         fqn l_fqn("__bifqn_string__", "__bifqn_string__");
@@ -108,12 +114,15 @@ namespace avalon {
         l_namespace -> add_declaration(type_decl);
 
         /* manually add declarations to avoid circular dependencies */
-        // int type declaration
+        // bool type declaration
         std::shared_ptr<type>& bool_type = avl_bool.get_type();
         l_scope -> add_type("*", bool_type);
         // int type declaration
         std::shared_ptr<type>& int_type = avl_int.get_type();
         l_scope -> add_type("*", int_type);
+        // float type declaration
+        std::shared_ptr<type>& float_type = avl_float.get_type();
+        l_scope -> add_type("*", float_type);
         // maybe type declaration
         std::shared_ptr<type>& maybe_type = avl_maybe.get_type();
         l_scope -> add_type("*", maybe_type);
@@ -228,6 +237,36 @@ namespace avalon {
         string_int_function -> set_return_type_instance(maybe_int_instance);
         std::shared_ptr<decl> string_int_function_decl = string_int_function;
         l_namespace -> add_declaration(string_int_function_decl);
+
+        // cast string to float
+        // operator version
+        token string_float_cast_tok(IDENTIFIER, "__cast__", 0, 0, "__bif__");
+        std::shared_ptr<function> string_float_cast_function = std::make_shared<function>(string_float_cast_tok);
+        string_float_cast_function -> set_fqn(l_fqn);
+        string_float_cast_function -> is_public(true);
+        string_float_cast_function -> is_builtin(true);
+        string_float_cast_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> string_float_cast_scope = std::make_shared<scope>();
+        string_float_cast_scope -> set_parent(l_scope);
+        string_float_cast_function -> set_scope(string_float_cast_scope);
+        string_float_cast_function -> add_param(param_one);
+        string_float_cast_function -> set_return_type_instance(maybe_float_instance);
+        std::shared_ptr<decl> string_float_cast_function_decl = string_float_cast_function;
+        l_namespace -> add_declaration(string_float_cast_function_decl);
+        // functional version
+        token string_float_tok(IDENTIFIER, "float", 0, 0, "__bif__");
+        std::shared_ptr<function> string_float_function = std::make_shared<function>(string_float_tok);
+        string_float_function -> set_fqn(l_fqn);
+        string_float_function -> is_public(true);
+        string_float_function -> is_builtin(true);
+        string_float_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> string_float_scope = std::make_shared<scope>();
+        string_float_scope -> set_parent(l_scope);
+        string_float_function -> set_scope(string_float_scope);
+        string_float_function -> add_param(param_one);
+        string_float_function -> set_return_type_instance(maybe_float_instance);
+        std::shared_ptr<decl> string_float_function_decl = string_float_function;
+        l_namespace -> add_declaration(string_float_function_decl);
 
         /* add the namespace to the program */
         std::shared_ptr<decl> namespace_decl = l_namespace;

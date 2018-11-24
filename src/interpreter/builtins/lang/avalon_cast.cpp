@@ -222,6 +222,10 @@ namespace avalon {
         avalon_int avl_int;
         type_instance int_instance = avl_int.get_type_instance();
 
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
         // make sure we got only one argument
         if(arguments.size() != 1)
             throw invalid_call("[compiler error] the <float> function expects only one argument.");
@@ -236,6 +240,9 @@ namespace avalon {
 
             if(type_instance_strong_compare(arg_instance, int_instance)) {
                 return int_float(arguments);
+            }
+            else if(type_instance_strong_compare(arg_instance, string_instance)) {
+                return string_float(arguments);
             }
             else {
                 throw invalid_call("[compiler error] unexpected call to the <float> function using arguments of unsupported type instances");

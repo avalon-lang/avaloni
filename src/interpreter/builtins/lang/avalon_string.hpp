@@ -68,6 +68,12 @@ namespace avalon {
      * returns an integer representation of a string
      */
     std::shared_ptr<expr> string_int(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
+     * string_float
+     * returns a floating point number representation of a string
+     */
+    std::shared_ptr<expr> string_float(std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif
