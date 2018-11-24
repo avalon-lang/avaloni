@@ -32,6 +32,7 @@
 
 /* Expressions */
 #include "representer/ast/expr/dereference_expression.hpp"
+#include "representer/ast/expr/conditional_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/underscore_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
@@ -321,6 +322,26 @@ static void set_dereference_instance(std::shared_ptr<expr>& an_expression, type_
     set_dereference_instance(dref_expr, new_instance, l_scope, ns_name, sub_ns_name);
 }
 
+static void set_conditional_instance(std::shared_ptr<conditional_expression> const & cond_expr, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+    // we also make that new type instance is complete
+    if(new_instance.is_complete() == false)
+        throw invalid_type(new_instance.get_token(), "The given type instance cannot be on expressions unless it is complete.");
+
+    // since the inferred type instance is incomplete, we replace it with the new complete type instance
+    cond_expr -> set_type_instance(new_instance);
+
+    // work on the contained value
+    std::shared_ptr<expr>& if_expression = cond_expr -> get_if_expression();
+    std::shared_ptr<expr>& else_expression = cond_expr -> get_else_expression();
+    set_type_instance(if_expression, new_instance, l_scope, ns_name, sub_ns_name);
+    set_type_instance(else_expression, new_instance, l_scope, ns_name, sub_ns_name);
+}
+
+static void set_conditional_instance(std::shared_ptr<expr>& an_expression, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+    std::shared_ptr<conditional_expression> const & cond_expr = std::static_pointer_cast<conditional_expression>(an_expression);
+    set_conditional_instance(cond_expr, new_instance, l_scope, ns_name, sub_ns_name);
+}
+
 void set_type_instance(std::shared_ptr<expr>& an_expression, type_instance& new_instance, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
     if(
        an_expression -> is_underscore_expression()  ||
@@ -353,6 +374,9 @@ void set_type_instance(std::shared_ptr<expr>& an_expression, type_instance& new_
     }
     else if(an_expression -> is_dereference_expression()) {
         set_dereference_instance(an_expression, new_instance, l_scope, ns_name, sub_ns_name);
+    }
+    else if(an_expression -> is_conditional_expression()) {
+        set_conditional_instance(an_expression, new_instance, l_scope, ns_name, sub_ns_name);
     }
     else {
         throw std::runtime_error("[compiler error] unexpected expression type in inference engine.");
@@ -510,6 +534,9 @@ inferer::inferer() {
         }
         else if(an_expression -> is_match_expression()) {
             return infer_match(an_expression, l_scope, ns_name);
+        }
+        else if(an_expression -> is_conditional_expression()) {
+            return infer_conditional(an_expression, l_scope, ns_name);
         }
         else if(an_expression -> is_assignment_expression()) {
             return infer_assignment(an_expression, l_scope, ns_name);
@@ -1804,6 +1831,17 @@ inferer::inferer() {
     type_instance inferer::infer_match(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name) {
         avalon_bool avl_bool;
         return avl_bool.get_type_instance();
+    }
+
+    /**
+     * infer_conditional
+     * infers the type instance of a conditional expression
+     */
+    type_instance inferer::infer_conditional(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name) {
+        std::shared_ptr<conditional_expression> const & cond_expr = std::static_pointer_cast<conditional_expression>(an_expression);
+        std::shared_ptr<expr>& if_expression = cond_expr -> get_if_expression();
+
+        return infer(if_expression, l_scope, ns_name);
     }
 
     /**

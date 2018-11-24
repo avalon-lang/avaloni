@@ -245,6 +245,11 @@ namespace avalon {
         type_instance check_match(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
+         * we make sure that both the if expression and the else expression of a conditional expression are the same type instance
+         */
+        type_instance check_conditional(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+
+        /**
          * check_assignment
          * we make sure that the expression on the right side is valid
          * and make sure that it's type is compatible with that of the variable on the left side

@@ -34,6 +34,7 @@
 
 /* Expressions */
 #include "representer/ast/expr/dereference_expression.hpp"
+#include "representer/ast/expr/conditional_expression.hpp"
 #include "representer/ast/expr/assignment_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
 #include "representer/ast/expr/reference_expression.hpp"
@@ -59,6 +60,7 @@
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_string.hpp"
+#include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
 
 /* Scope */
@@ -151,6 +153,9 @@ namespace avalon {
         }
         else if(an_expression -> is_match_expression()) {            
             return check_match(an_expression, l_scope, ns_name);
+        }
+        else if(an_expression -> is_conditional_expression()) {
+            return check_conditional(an_expression, l_scope, ns_name);
         }
         else if(an_expression -> is_assignment_expression()) {
             return check_assignment(an_expression, l_scope, ns_name);
@@ -1478,6 +1483,35 @@ namespace avalon {
         }
 
         return m_inferrer.infer(an_expression, l_scope, ns_name);
+    }
+
+    /**
+     * we make sure that both the if expression and the else expression of a conditional expression are the same type instance
+     */
+    type_instance expression_checker::check_conditional(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<conditional_expression> const & cond_expr = std::static_pointer_cast<conditional_expression>(an_expression);
+        std::shared_ptr<expr>& condition = cond_expr -> get_condition();
+        std::shared_ptr<expr>& if_expression = cond_expr -> get_if_expression();
+        std::shared_ptr<expr>& else_expression = cond_expr -> get_else_expression();
+
+        type_instance condition_instance = check(condition, l_scope, ns_name);
+        type_instance if_instance = check(if_expression, l_scope, ns_name);
+        type_instance else_instance = check(else_expression, l_scope, ns_name);
+
+        // we make sure the condition is a boolean expression
+        avalon_bool avl_bool;
+        type_instance bool_instance =  avl_bool.get_type_instance();
+        if(type_instance_strong_compare(condition_instance, bool_instance) == false)
+            throw invalid_expression(cond_expr -> get_token(), "The condition to a conditional expression must evaluate to a boolean expression.");
+
+        // we make sure both the if expression and the else expression have the type type instance
+        if(type_instance_strong_compare(if_instance, else_instance) == false)
+            throw invalid_expression(if_expression -> expr_token(), "The if expression has type instance <" + mangle_type_instance(if_instance) + "> while the else expression has type instance <" + mangle_type_instance(else_instance) + ">. Both branches of an if conditional must have the same type instances.");
+
+        // we leave it to the inference engine to deduce the type instance
+        type_instance instance = m_inferrer.infer(an_expression, l_scope, ns_name);
+        cond_expr -> set_type_instance(instance);
+        return instance;
     }
 
     /**

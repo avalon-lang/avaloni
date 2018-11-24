@@ -222,6 +222,12 @@ namespace avalon {
         type_instance infer_match(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name);
 
         /**
+         * infer_conditional
+         * infers the type instance of a conditional expression
+         */
+        type_instance infer_conditional(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name);
+
+        /**
          * infer_assignment
          * infers the type instance of an assigment expression
          */
