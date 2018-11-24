@@ -1,0 +1,17 @@
+-[
+Testing conditional expressions.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+import math
+
+def __main__ = (val args : [string]) -> void:
+    var age = 12
+    val status = "Major" if age > 18 else "Minor"
+    Io.println(status)
+
+    return

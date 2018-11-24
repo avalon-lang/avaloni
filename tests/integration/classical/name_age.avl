@@ -1,0 +1,39 @@
+-[
+Testing all existing I/O functions.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+import math
+
+def __main__ = (val args : [string]) -> void:
+    -- welcome the user
+    Io.println("Welcome friend!")
+
+    -- get the name
+    Io.print("Please tell us your name: ")
+    val name = Io.readln()
+
+    -- get the age
+    Io.print("How old are you friend: ")
+    val string_age = Io.readln()
+
+    -- print the year of birth
+    if int(string_age) === Just(age:int):
+        -- calculate the year of birth
+        val yob = 2018 - age
+
+        -- greet the friend
+        Io.println("Hello " + name + ". It appears you were born in " + string(yob) + ".")
+    
+    -- we got an invalid number for age
+    else:
+        Io.println("Invalid age given.")
+
+    -- goodbye
+    Io.println("Goodbye!")
+
+    return
