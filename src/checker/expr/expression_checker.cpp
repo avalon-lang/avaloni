@@ -787,7 +787,11 @@ namespace avalon {
                 var_decl -> is_used(true);
                 var_decl -> check_initializer(false);
                 var_decl -> set_type_instance(parser_type_instance);
-                l_scope -> add_variable("*", var_decl);            
+                try {
+                    l_scope -> add_variable("*", var_decl);            
+                } catch(symbol_can_collide err) {
+                    throw invalid_expression(var_decl -> get_token(), "The captured variable declaration is the same as another variable already declared in the current scope.");
+                }                
 
                 // check the variable declaration
                 variable_checker v_checker;
