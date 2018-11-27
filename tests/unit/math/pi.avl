@@ -11,6 +11,6 @@ import math
 
 def __main__ = (val args : [string]) -> void:
     -- print Math.PI using the builtin precision
-    Io.print(string(math.PI))
+    Io.print(string(Math.PI))
 
     return
