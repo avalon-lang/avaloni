@@ -431,7 +431,8 @@ namespace avalon {
         try {
             source_abs_path = futil.get_source_path(source_path);
         } catch(file_not_found err) {
-            throw err;
+            error_handler.log(err.what());
+            return;
         }
 
         // scan the file for content
