@@ -11,7 +11,6 @@ This is applicable to your comments in the code, commits and issues.
 We seek to form a diverse and inclusive community and people who are seeking to contribute come from all backgrounds 
 and we cannot assume them to know everything that seem familiar to us.
 
-Let us take make special of women, transgender and minorities who are often harassed online as well as offline.
 Any behavior that make anyone feel unwelcome will result in an immediate banned from the community after exactly one warning, no more and no less.
 All infractions will be publicly recorded for future reference before the ban.
 
