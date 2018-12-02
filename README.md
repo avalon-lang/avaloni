@@ -94,6 +94,11 @@ You can reach me at <a href="mailto:nbashige@gmail.com">nbashige@gmail.com</a>
 
 This code is licensed under the MIT license. Please see the LICENSE file for the terms.
 
+## Acknowledgement
+
+Development of Avalon is being supported by the [Unitary Fund](https://unitary.fund) grant.
+My thanks to [Will J. Zeng](willzeng.com) for running the program.
+
 ## Copyright
 
 Copyright (c) 2018 Ntwali Bashige Toussaint
