@@ -1,0 +1,17 @@
+-[
+Testing tuples expressions.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+
+def __main__ = (val args : [string]) -> void:
+    val john = ("John Doe", 32)
+
+    Io.println(john[0])
+    Io.println(string(john[1]))
+
+    return
