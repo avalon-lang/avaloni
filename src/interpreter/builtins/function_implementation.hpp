@@ -35,6 +35,7 @@
 /* Implementations */
 #include "interpreter/builtins/lang/avalon_arithmetic.hpp"
 #include "interpreter/builtins/lang/avalon_comparison.hpp"
+#include "interpreter/builtins/lang/avalon_getters.hpp"
 #include "interpreter/builtins/lang/avalon_quantum.hpp"
 #include "interpreter/builtins/lang/avalon_logic.hpp"
 #include "interpreter/builtins/lang/avalon_bool.hpp"
@@ -535,6 +536,22 @@ namespace avalon {
          * the quantum processor that will apply the gate to kets stored in it
          */
         std::shared_ptr<qprocessor> m_qproc;
+    };
+
+
+
+    /**
+     * refitem_implementation
+     * implements the builtin __refitem__ function
+     */
+    struct refitem_implementation : function_implementation {
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments) {
+            return avl_refitem(arguments);
+        }
+
+        virtual std::shared_ptr<expr> operator()(std::vector<std::shared_ptr<expr> >& arguments, type_instance& ret_instance) {
+            return avl_refitem(arguments);
+        }
     };
 }
 

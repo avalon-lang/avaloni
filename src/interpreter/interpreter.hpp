@@ -45,6 +45,7 @@
 /* Statements */
 #include "representer/ast/stmt/block_stmt.hpp"
 /* Expressions */
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/binary_expression.hpp"
 #include "representer/ast/expr/expr.hpp"
 
@@ -204,12 +205,22 @@ namespace avalon {
          * given a reference expression, ...
          */
         std::shared_ptr<expr> interpret_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_reference_variable(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_reference_tuple(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_reference_list(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_reference_map(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_reference_custom(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
          * interpret_dereference
          * given a dereference expression, ...
          */
         std::shared_ptr<expr> interpret_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_dereference_variable(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_dereference_tuple(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_dereference_list(type_instance& dref_instance, std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_dereference_map(type_instance& dref_instance, std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        std::shared_ptr<expr> interpret_dereference_custom(type_instance& dref_instance, std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
          * interpret_tuple

@@ -74,6 +74,12 @@ namespace avalon {
      * returns a floating point number representation of a string
      */
     std::shared_ptr<expr> string_float(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
+     * string_refitem
+     * returns the effective index where to find the requested substring
+     */
+    std::shared_ptr<expr> string_refitem(std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif

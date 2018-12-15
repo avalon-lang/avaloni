@@ -44,6 +44,9 @@
 #include "representer/builtins/lang/avalon_string.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_bit4.hpp"
+#include "representer/builtins/lang/avalon_bit.hpp"
+#include "representer/builtins/lang/avalon_int.hpp"
+#include "representer/builtins/lang/avalon_ref.hpp"
 
 
 namespace avalon {
@@ -84,6 +87,21 @@ namespace avalon {
         program& bool_prog = avl_bool.get_program();
         type_instance bool_instance = avl_bool.get_type_instance();
 
+        // int type
+        avalon_int avl_int;
+        program& int_prog = avl_int.get_program();
+        type_instance int_instance = avl_int.get_type_instance();
+
+        // bit type
+        avalon_bit avl_bit;
+        program& bit_prog = avl_bit.get_program();
+        type_instance bit_instance = avl_bit.get_type_instance();
+
+        // reference to string type
+        avalon_ref avl_ref;
+        type_instance ref_bit_instance = avl_ref.get_type_instance(bit_instance);
+        type_instance ref_bit4_instance = avl_ref.get_type_instance(m_bit4_instance);
+
         /* the program FQN */
         fqn l_fqn("__bifqn_bit4__", "__bifqn_bit4__");
         m_bit4_prog.set_fqn(l_fqn);
@@ -105,6 +123,14 @@ namespace avalon {
         std::shared_ptr<import> bool_import = std::make_shared<import>(import_tok, bool_prog.get_fqn().get_name());
         std::shared_ptr<decl> final_bool_import = bool_import;
         m_bit4_prog.add_declaration(final_bool_import);
+        // import int program
+        std::shared_ptr<import> int_import = std::make_shared<import>(import_tok, int_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_int_import = int_import;
+        m_bit4_prog.add_declaration(final_int_import);
+        // import bit program
+        std::shared_ptr<import> bit_import = std::make_shared<import>(import_tok, bit_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_bit_import = bit_import;
+        m_bit4_prog.add_declaration(final_bit_import);
 
         /* create the namespace to the program */
         std::shared_ptr<ns> l_namespace = std::make_shared<ns>(star_tok);
@@ -121,6 +147,10 @@ namespace avalon {
         param_one.set_type_instance(m_bit4_instance);
         variable param_two(var_two_tok, false);
         param_two.set_type_instance(m_bit4_instance);
+        variable param_three(var_three_tok, false);
+        param_three.set_type_instance(ref_bit4_instance);
+        variable param_four(var_four_tok, false);
+        param_four.set_type_instance(int_instance);
 
         // bitwise and
         token bit_and_tok(IDENTIFIER, "__band__", 0, 0, "__bif__");
@@ -246,6 +276,22 @@ namespace avalon {
         bit_ne_function -> set_return_type_instance(bool_instance);
         std::shared_ptr<decl> ne_function_decl = bit_ne_function;
         l_namespace -> add_declaration(ne_function_decl);
+
+        // bit4 subscript access by reference
+        token refitem_function_tok(IDENTIFIER, "__refitem__", 0, 0, "__bif__");
+        std::shared_ptr<function> bit4_refitem_function = std::make_shared<function>(refitem_function_tok);
+        bit4_refitem_function -> set_fqn(l_fqn);
+        bit4_refitem_function -> is_public(true);
+        bit4_refitem_function -> is_builtin(true);
+        bit4_refitem_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> bit4_refitem_scope = std::make_shared<scope>();
+        bit4_refitem_scope -> set_parent(l_scope);
+        bit4_refitem_function -> set_scope(bit4_refitem_scope);
+        bit4_refitem_function -> add_param(param_three);
+        bit4_refitem_function -> add_param(param_four);
+        bit4_refitem_function -> set_return_type_instance(ref_bit_instance);
+        std::shared_ptr<decl> refitem_function_decl = bit4_refitem_function;
+        l_namespace -> add_declaration(refitem_function_decl);
 
         /* add the namespace to the program */
         std::shared_ptr<decl> namespace_decl = l_namespace;

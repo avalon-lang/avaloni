@@ -30,7 +30,9 @@
 #include <string>
 
 /* AST */
+#include "representer/ast/expr/dereference_expression.hpp"
 #include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/binary_expression.hpp"
 #include "representer/ast/stmt/expression_stmt.hpp"
 #include "representer/ast/expr/call_expression.hpp"
@@ -99,12 +101,22 @@ namespace avalon {
          * makes sure that the reference expression refers to a variable in the current scope
          */
         type_instance check_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        void check_reference_variable(std::shared_ptr<reference_expression> const & ref_expr, std::shared_ptr<expr>& rval, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        void check_reference_binary(std::shared_ptr<reference_expression> const & ref_expr, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name);
+        void check_reference_attribute(std::shared_ptr<reference_expression> const & ref_expr, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name);
+        void check_reference_subscript(std::shared_ptr<reference_expression> const & ref_expr, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name);
+        void check_reference_subscript_tuple(type_instance& var_instance, std::shared_ptr<expr>& key_expr);
+        void check_reference_subscript_list(type_instance& var_instance, std::shared_ptr<expr>& var_expr);
+        void check_reference_subscript_map(type_instance& var_instance, std::shared_ptr<expr>& var_expr);
+        void check_reference_subscript_custom(type_instance& var_instance, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
-         * check_reference
+         * check_dereference
          * makes sure that the dereference expression refers to a variable in the current scope
          */
         type_instance check_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        void check_dereference_variable(std::shared_ptr<dereference_expression> const & dref_expr, std::shared_ptr<expr>& rval, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        void check_dereference_binary(std::shared_ptr<dereference_expression> const & dref_expr, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name);
 
         /**
          * check_literal

@@ -26,6 +26,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <cstdio>
 #include <tuple>
 
 /* Error */
@@ -77,6 +78,11 @@
 #include "representer/builtins/lang/avalon_list.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_void.hpp"
+#include "representer/builtins/lang/avalon_bit8.hpp"
+#include "representer/builtins/lang/avalon_bit4.hpp"
+#include "representer/builtins/lang/avalon_bit2.hpp"
+#include "representer/builtins/lang/avalon_bit.hpp"
+#include "representer/builtins/lang/avalon_ref.hpp"
 
 /* Symtable */
 #include "representer/symtable/gtable.hpp"
@@ -530,7 +536,275 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
      * given a reference expression, ...
      */
     std::shared_ptr<expr> interpreter::interpret_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        
+        if(ref_expr -> get_expression_type() == REF_VAR_EXPR) {
+            return interpret_reference_variable(an_expression, l_scope, ns_name);
+        }
+        else if(ref_expr -> get_expression_type() == REF_TUPLE_EXPR) {
+            return interpret_reference_tuple(an_expression, l_scope, ns_name);
+        }
+        else if(ref_expr -> get_expression_type() == REF_LIST_EXPR) {
+            return interpret_reference_list(an_expression, l_scope, ns_name);
+        }
+        else if(ref_expr -> get_expression_type() == REF_MAP_EXPR) {
+            return interpret_reference_map(an_expression, l_scope, ns_name);
+        }
+        else if(ref_expr -> get_expression_type() == REF_CUSTOM_EXPR) {
+            return interpret_reference_custom(an_expression, l_scope, ns_name);
+        }
+        else {
+            throw interpretation_error(ref_expr -> get_token(), "[compiler error] Unexpected reference type during interpretation.");
+        }
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_reference_variable(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
         return an_expression;
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_reference_tuple(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_var_val = ref_var -> get_value();
+        std::shared_ptr<reference_expression> const & inner_ref_expr = std::static_pointer_cast<reference_expression>(ref_var_val);
+        std::shared_ptr<variable>& inner_ref_var = inner_ref_expr -> get_variable();
+        std::shared_ptr<expr>& var_expr = inner_ref_var -> get_value();
+        
+        std::shared_ptr<tuple_expression> const & tup_expr = std::static_pointer_cast<tuple_expression>(var_expr);
+        std::vector<std::pair<std::string, std::shared_ptr<expr> > >& elements = tup_expr -> get_elements();
+
+        // get the index expression that will help us locate the element of interest inside the tuple
+        std::shared_ptr<expr>& index_expr = ref_expr -> get_index_expression();
+        // the index inside the tuple where to find the referenced element
+        std::size_t index = 0;
+
+        // if the index expression is an identifier, then we have a named tuple
+        if(index_expr -> is_identifier_expression()) {
+            for(auto& element : elements) {
+                if(element.first == index_expr -> expr_token().get_lexeme()) {
+                    ref_expr -> set_index(index);
+                    break;
+                }
+                else {
+                    index = index + 1;
+                }
+            }
+        }
+        // if the index is a literal, then we have a regular tuple
+        else if(index_expr -> is_literal_expression()) {
+            std::sscanf(index_expr -> expr_token().get_lexeme().c_str(), "%zu", &index);
+            ref_expr -> set_index(index);
+        }
+        // anything else is an error - though this should not happen at all
+        else {
+            throw interpretation_error(index_expr -> expr_token(), "[compiler error] Unexpected expression used as index to access a tuple.");
+        }
+
+        return an_expression;
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_reference_list(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_var_val = ref_var -> get_value();
+        std::shared_ptr<reference_expression> const & inner_ref_expr = std::static_pointer_cast<reference_expression>(ref_var_val);
+        std::shared_ptr<variable>& inner_ref_var = inner_ref_expr -> get_variable();
+        std::shared_ptr<expr>& var_expr = inner_ref_var -> get_value();
+        type_instance var_instance = inner_ref_var -> get_type_instance();
+        var_instance = var_instance.get_params()[0];
+
+        std::shared_ptr<list_expression> const & list_expr = std::static_pointer_cast<list_expression>(var_expr);
+        std::vector<std::shared_ptr<expr> >& elements = list_expr -> get_elements();
+
+        // get the index expression that will help us locate the element of interest inside the list
+        std::shared_ptr<expr>& user_index_expr = ref_expr -> get_index_expression();
+        std::shared_ptr<expr> index_expr = interpret_expression(user_index_expr, l_scope, ns_name);
+        // the index inside the list where to find the referenced element
+        std::size_t index = 0;
+
+        // transform the index expression into a c++ integer
+        if(index_expr -> is_literal_expression() == false)
+            throw interpretation_error(index_expr -> expr_token(), "[compiler error] Expected an integer as index to access a list.");
+
+        std::shared_ptr<literal_expression> const & index_lit = std::static_pointer_cast<literal_expression>(index_expr);
+        if(index_lit -> get_expression_type() != INTEGER_EXPR)
+            throw interpretation_error(index_expr -> expr_token(), "[compiler error] Expected an integer as index to access a list.");
+
+        long long int user_index = index_lit -> get_int_value();
+        if(user_index < 0)
+            throw interpretation_error(index_expr -> expr_token(), "[compiler error] Expected a positive integer as index to access a list.");
+
+        index = (std::size_t) user_index;
+
+        // try to find the element
+        // the type instance of the expression to return
+        avalon_ref avl_ref;
+        type_instance ref_instance = avl_ref.get_type_instance(var_instance.get_params()[0]);
+        avalon_maybe avl_maybe;
+        type_instance ret_instance = avl_maybe.get_type_instance(ref_instance);
+        // the expression to return
+        std::shared_ptr<expr> final_expr = nullptr;
+        if(index >=0 && index < elements.size()) {
+            elements.at(index);
+            ref_expr -> set_index(index);
+            std::shared_ptr<call_expression> ret_expr = std::make_shared<call_expression>(just_cons_tok);
+            ret_expr -> add_argument(star_tok, an_expression);
+            ret_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+            ret_expr -> set_type_instance(ret_instance);
+            final_expr = ret_expr;
+        }
+        else {
+            std::shared_ptr<identifier_expression> ret_expr = std::make_shared<identifier_expression>(none_cons_tok);
+            ret_expr -> set_type_instance(ret_instance);
+            ret_expr -> set_expression_type(CONSTRUCTOR_EXPR);
+            final_expr = ret_expr;
+        }
+
+        return final_expr;
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_reference_map(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_var_val = ref_var -> get_value();
+        std::shared_ptr<reference_expression> const & inner_ref_expr = std::static_pointer_cast<reference_expression>(ref_var_val);
+        std::shared_ptr<variable>& inner_ref_var = inner_ref_expr -> get_variable();
+        std::shared_ptr<expr>& var_expr = inner_ref_var -> get_value();
+
+        std::shared_ptr<map_expression> const & map_expr = std::static_pointer_cast<map_expression>(var_expr);
+        std::vector<std::pair<std::shared_ptr<expr>, std::shared_ptr<expr> > >& elements = map_expr -> get_elements();
+        type_instance& map_instance = map_expr -> get_type_instance();
+
+        // get the index expression that will help us locate the element of interest inside the list
+        std::shared_ptr<expr>& user_index_expr = ref_expr -> get_index_expression();
+        std::shared_ptr<expr> index_expr = interpret_expression(user_index_expr, l_scope, ns_name);
+        // the index inside the list where to find the referenced element
+        std::size_t index = 0;
+
+        // try to find the element
+        // the type instance of the expression to return
+        avalon_ref avl_ref;
+        type_instance ref_instance = avl_ref.get_type_instance(map_instance.get_params()[1]);
+        avalon_maybe avl_maybe;
+        type_instance ret_instance = avl_maybe.get_type_instance(ref_instance);
+        // the expression to return
+        std::shared_ptr<expr> final_expr = nullptr;
+
+        // failure return value
+        std::shared_ptr<identifier_expression> ret_expr = std::make_shared<identifier_expression>(none_cons_tok);
+        ret_expr -> set_type_instance(ret_instance);
+        ret_expr -> set_expression_type(CONSTRUCTOR_EXPR);
+        final_expr = ret_expr;
+
+        // if the map is empty, we return None
+        if(elements.size() == 0) {
+            return final_expr;
+        }
+
+        // get the namespace
+        type_instance& index_instance = index_expr -> expr_type_instance();
+
+        // get the hash function and hash the key
+        std::shared_ptr<function>& hash_function = l_scope -> get_function(index_instance.get_namespace(), map_expr -> get_callee(), 1);
+        std::vector<std::shared_ptr<expr> > hash_arguments = { index_expr };
+        std::shared_ptr<expr> hashed_key = interpret_function(hash_function, hash_arguments);
+
+        // get the key comparator function
+        std::shared_ptr<function>& eq_function = l_scope -> get_function("*", map_expr -> get_comparator_callee(), 2);
+
+        // deduce and return the expression
+        for(auto& element : elements) {
+            std::shared_ptr<expr> key_expr = interpret_expression(element.first, l_scope, ns_name);
+            // hash the map key
+            std::vector<std::shared_ptr<expr> > hash_arguments = { key_expr };
+            std::shared_ptr<expr> hashed_key_expr = interpret_function(hash_function, hash_arguments);
+            // compare it with the given key
+            std::vector<std::shared_ptr<expr> > eq_arguments = { hashed_key, hashed_key_expr };
+            std::shared_ptr<expr> res = interpret_function(eq_function, eq_arguments);
+            // the resulting expression is identifier expression containing a boolean
+            std::shared_ptr<identifier_expression> const & res_id = std::static_pointer_cast<identifier_expression>(res);
+            // while we could build an another boolean comparator function but for now we just compare the names here
+            if(res_id -> get_token() == true_cons_tok) {
+                ref_expr -> set_index(index);
+                std::shared_ptr<call_expression> ret_expr = std::make_shared<call_expression>(just_cons_tok);
+                ret_expr -> add_argument(star_tok, an_expression);
+                ret_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+                ret_expr -> set_type_instance(ret_instance);
+                std::shared_ptr<expr> final_expr = ret_expr;
+                return final_expr;
+            }
+            else {
+                index = index + 1;
+            }
+        }
+
+        // we didn't find the value
+        return final_expr;
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_reference_custom(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_var_val = ref_var -> get_value();
+        std::shared_ptr<reference_expression> const & inner_ref_expr = std::static_pointer_cast<reference_expression>(ref_var_val);
+        std::shared_ptr<variable>& inner_ref_var = inner_ref_expr -> get_variable();
+
+        // get the variable type instance
+        std::shared_ptr<variable>& var_decl = ref_expr -> get_variable();
+        type_instance var_instance = var_decl -> get_type_instance();
+        var_instance = var_instance.get_params()[0];
+
+        // get the variable and index expressions to pass to the function
+        std::shared_ptr<expr> var_expr = inner_ref_var -> get_value();
+        std::shared_ptr<expr> index_expr = interpret_expression(ref_expr -> get_index_expression(), l_scope, ns_name);
+
+        // get the function to call
+        std::shared_ptr<function>& get_function = l_scope -> get_function(var_instance.get_namespace(), ref_expr -> get_callee(), 2);
+
+        // call the function
+        std::vector<std::shared_ptr<expr> > args = {var_expr, index_expr};
+        std::shared_ptr<expr> user_ref_expr = interpret_function(get_function, args);
+
+        // the type instance of the expression to return
+        avalon_ref avl_ref;
+        type_instance ref_instance = avl_ref.get_type_instance(var_instance.get_params()[0]);
+        avalon_maybe avl_maybe;
+        type_instance ret_instance = avl_maybe.get_type_instance(ref_instance);
+
+
+        std::shared_ptr<expr> final_expr = nullptr;
+        // if the returned expression is an identifier expression then the referenced expression could not be found
+        if(user_ref_expr -> is_identifier_expression()) {
+            std::shared_ptr<identifier_expression> ret_expr = std::make_shared<identifier_expression>(none_cons_tok);
+            ret_expr -> set_type_instance(ret_instance);
+            ret_expr -> set_expression_type(CONSTRUCTOR_EXPR);
+            final_expr = ret_expr;
+        }
+        // we got a call expression, then we do have an index. so we set it on the current reference
+        else if(user_ref_expr -> is_call_expression()) {
+            std::shared_ptr<call_expression> const & call_expr = std::static_pointer_cast<call_expression>(user_ref_expr);
+            std::vector<std::pair<token, std::shared_ptr<expr> > >& elements = call_expr -> get_arguments();
+            std::shared_ptr<expr> ref_ret_expr = elements.at(0).second;
+            std::shared_ptr<reference_expression> const & ref_final_expr = std::static_pointer_cast<reference_expression>(ref_ret_expr);
+            ref_expr -> set_index(ref_final_expr -> get_index());
+
+            std::shared_ptr<call_expression> ret_expr = std::make_shared<call_expression>(just_cons_tok);
+            ret_expr -> add_argument(star_tok, an_expression);
+            ret_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+            ret_expr -> set_type_instance(ret_instance);
+            final_expr = ret_expr;
+        }
+        // the last possibility is that we got a pure reference expression so we just update the current reference index
+        else if(user_ref_expr -> is_reference_expression()) {
+            std::shared_ptr<reference_expression> const & ref_final_expr = std::static_pointer_cast<reference_expression>(user_ref_expr);
+            ref_expr -> set_index(ref_final_expr -> get_index());
+            final_expr = an_expression;
+        }
+        else {
+            throw interpretation_error(ref_expr -> get_token(), "[compiler error] unexpected expression type when creating references for custom types.");
+        }
+
+        return final_expr;
     }
 
     /**
@@ -539,14 +813,172 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
      */
     std::shared_ptr<expr> interpreter::interpret_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
         std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(an_expression);
+        type_instance& dref_instance = dref_expr -> get_type_instance();
         std::shared_ptr<variable>& dref_var = dref_expr -> get_variable();
         std::shared_ptr<expr>& ref_expression = dref_var -> get_value();
         std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(ref_expression);
+        
+        if(ref_expr -> get_expression_type() == REF_VAR_EXPR) {
+            return interpret_dereference_variable(ref_expression, l_scope, ns_name);
+        }
+        else if(ref_expr -> get_expression_type() == REF_TUPLE_EXPR) {
+            return interpret_dereference_tuple(ref_expression, l_scope, ns_name);
+        }
+        else if(ref_expr -> get_expression_type() == REF_LIST_EXPR) {
+            return interpret_dereference_list(dref_instance, ref_expression, l_scope, ns_name);
+        }
+        else if(ref_expr -> get_expression_type() == REF_MAP_EXPR) {
+            return interpret_dereference_map(dref_instance, ref_expression, l_scope, ns_name);
+        }
+        else if(ref_expr -> get_expression_type() == REF_CUSTOM_EXPR) {
+            return interpret_dereference_custom(dref_instance, ref_expression, l_scope, ns_name);
+        }
+        else {
+            throw interpretation_error(ref_expr -> get_token(), "[compiler error] Unexpected reference type during interpretation.");
+        }
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_dereference_variable(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
         std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
         std::shared_ptr<expr>& value = ref_var -> get_value();
-        std::shared_ptr<scope>& var_scope = (ref_var -> is_global() == true) ? ref_var -> get_scope() : l_scope;
-        return interpret_expression(value, var_scope, ns_name);
+        return value;
     }
+
+    std::shared_ptr<expr> interpreter::interpret_dereference_tuple(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_var_val = ref_var -> get_value();
+        std::shared_ptr<reference_expression> const & inner_ref_expr = std::static_pointer_cast<reference_expression>(ref_var_val);
+        std::shared_ptr<variable>& inner_ref_var = inner_ref_expr -> get_variable();
+        std::shared_ptr<expr>& var_val = inner_ref_var -> get_value();
+        
+        std::shared_ptr<tuple_expression> const & tup_expr = std::static_pointer_cast<tuple_expression>(var_val);
+        std::vector<std::pair<std::string, std::shared_ptr<expr> > >& elements = tup_expr -> get_elements();
+        
+        return elements.at(ref_expr -> get_index()).second;
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_dereference_list(type_instance& dref_instance, std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_var_val = ref_var -> get_value();
+        std::shared_ptr<reference_expression> const & inner_ref_expr = std::static_pointer_cast<reference_expression>(ref_var_val);
+        std::shared_ptr<variable>& inner_ref_var = inner_ref_expr -> get_variable();
+        std::shared_ptr<expr>& var_val = inner_ref_var -> get_value();
+
+        std::shared_ptr<list_expression> const & list_expr = std::static_pointer_cast<list_expression>(var_val);
+        std::vector<std::shared_ptr<expr> >& elements = list_expr -> get_elements();
+
+        return elements.at(ref_expr -> get_index());
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_dereference_map(type_instance& dref_instance, std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_var_val = ref_var -> get_value();
+        std::shared_ptr<reference_expression> const & inner_ref_expr = std::static_pointer_cast<reference_expression>(ref_var_val);
+        std::shared_ptr<variable>& inner_ref_var = inner_ref_expr -> get_variable();
+        std::shared_ptr<expr>& var_val = inner_ref_var -> get_value();
+
+        std::shared_ptr<map_expression> const & map_expr = std::static_pointer_cast<map_expression>(var_val);
+        std::vector<std::pair<std::shared_ptr<expr>, std::shared_ptr<expr> > >& elements = map_expr -> get_elements();
+        return elements.at(ref_expr -> get_index()).second;
+    }
+
+    std::shared_ptr<expr> interpreter::interpret_dereference_custom(type_instance& dref_instance, std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
+        std::shared_ptr<variable>& ref_var = ref_expr -> get_variable();
+        std::shared_ptr<expr>& ref_var_val = ref_var -> get_value();
+        std::shared_ptr<reference_expression> const & inner_ref_expr = std::static_pointer_cast<reference_expression>(ref_var_val);
+        std::shared_ptr<variable>& inner_ref_var = inner_ref_expr -> get_variable();
+        std::shared_ptr<expr>& var_val = inner_ref_var -> get_value();
+
+        // prepare the return value
+        std::shared_ptr<expr> final_expr = nullptr;
+
+        // if we have a literal expression, we can dereference either bits or strings
+        if(var_val -> is_literal_expression()) {
+            std::shared_ptr<literal_expression> const & lit_expr = std::static_pointer_cast<literal_expression>(var_val);
+            // if we have bits
+            if(lit_expr -> get_expression_type() == BIT_EXPR) {
+                std::size_t index = ref_expr -> get_index();
+                std::size_t length = lit_expr -> get_length();
+                std::size_t string_index = length - index - 1;
+
+                // bit type
+                avalon_bit avl_bit;
+                type_instance bit_instance = avl_bit.get_type_instance();
+
+                // if we have a bitset of size 1
+                if(length == 1) {
+                    std::string lit_val = lit_expr -> get_value().substr(string_index, 1);
+                    token lit_tok(BITS, lit_val, 0, 0, "__bil__");
+                    std::shared_ptr<literal_expression> ret_expr = std::make_shared<literal_expression>(lit_tok, BIT_EXPR, lit_val);
+                    ret_expr -> set_type_instance(bit_instance);
+                    final_expr = ret_expr;
+                }
+                // if we have a bitset of size 2
+                else if(length == 2) {
+                    std::string lit_val = lit_expr -> get_value().substr(string_index, 1);
+                    token lit_tok(BITS, lit_val, 0, 0, "__bil__");
+                    std::shared_ptr<literal_expression> ret_expr = std::make_shared<literal_expression>(lit_tok, BIT_EXPR, lit_val);
+                    ret_expr -> set_type_instance(bit_instance);
+                    final_expr = ret_expr;
+                }
+                // if we have a bitset of size 4
+                else if(length == 4) {
+                    std::string lit_val = lit_expr -> get_value().substr(string_index, 1);
+                    token lit_tok(BITS, lit_val, 0, 0, "__bil__");
+                    std::shared_ptr<literal_expression> ret_expr = std::make_shared<literal_expression>(lit_tok, BIT_EXPR, lit_val);
+                    ret_expr -> set_type_instance(bit_instance);
+                    final_expr = ret_expr;
+                }
+                // if we have a bitset of size 8
+                else if(length == 8) {
+                    // bit8 type
+                    avalon_bit8 avl_bit8;
+                    type_instance bit8_instance = avl_bit8.get_type_instance();
+
+                    std::string lit_val = lit_expr -> get_value().substr(string_index, 1);
+                    token lit_tok(BITS, lit_val, 0, 0, "__bil__");
+                    std::shared_ptr<literal_expression> ret_expr = std::make_shared<literal_expression>(lit_tok, BIT_EXPR, lit_val);
+                    ret_expr -> set_type_instance(bit_instance);
+                    final_expr = ret_expr;
+                }
+                else {
+                    throw interpretation_error(lit_expr -> get_token(), "[compiler error] unexpected bit of size <" + std::to_string(length) + ">.");
+                }
+            }
+            else if(lit_expr -> get_expression_type() == STRING_EXPR) {
+                // string type
+                avalon_string avl_string;
+                type_instance string_instance = avl_string.get_type_instance();
+
+                // build the new string
+                std::string lit_val = lit_expr -> get_string_value().substr(ref_expr -> get_index(), 1);
+                token lit_tok(STRING, lit_val, 0, 0, "__bil__");
+                std::shared_ptr<literal_expression> ret_expr = std::make_shared<literal_expression>(lit_tok, STRING_EXPR, lit_val);
+                ret_expr -> set_type_instance(string_instance);
+                final_expr = ret_expr;
+            }
+            else if(lit_expr -> get_expression_type() == QUBIT_EXPR) {
+                throw interpretation_error(lit_expr -> get_token(), "[compiler error] a reference to a qubit cannot be dereferenced.");
+            }
+        }
+        // if we have a call expression, then the user did a pattern match inside a default or record constructor
+        else if(var_val -> is_call_expression()) {
+            std::shared_ptr<call_expression> const & call_expr = std::static_pointer_cast<call_expression>(var_val);
+            std::vector<std::pair<token, std::shared_ptr<expr> > >& elements = call_expr -> get_arguments();
+            final_expr = elements.at(ref_expr -> get_index()).second;
+        }
+        else {
+            throw interpretation_error(ref_expr -> get_token(), "[compiler error] unexpected dereference of a user-defined data type.");
+        }
+
+        return final_expr;
+    }
+
 
     /**
      * interpret_tuple
@@ -675,8 +1107,9 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
             try {
                 std::shared_ptr<variable>& variable_decl = l_scope -> get_variable(id_expr -> get_namespace(), id_expr -> get_name());
                 std::shared_ptr<expr>& value = variable_decl -> get_value();
-                std::shared_ptr<scope>& var_scope = (variable_decl -> is_global() == true) ? variable_decl -> get_scope() : l_scope;
-                return interpret_expression(value, var_scope, ns_name);
+                // std::shared_ptr<scope>& var_scope = (variable_decl -> is_global() == true) ? variable_decl -> get_scope() : l_scope;
+                // return interpret_expression(value, var_scope, ns_name);
+                return value;
             } catch(symbol_not_found err) {
                 throw interpretation_error(id_expr -> get_token(), err.what());
             }
@@ -1080,7 +1513,7 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         std::shared_ptr<expr>& lval = bin_expr -> get_lval();
         std::shared_ptr<expr>& rval = bin_expr -> get_rval();
 
-        // get the list expression inside the lval (which is a variable expression)
+        // get the map expression inside the lval (which is a variable expression)
         std::shared_ptr<identifier_expression> const & id_expr = std::static_pointer_cast<identifier_expression>(lval);
         std::shared_ptr<variable>& var_decl = l_scope -> get_variable(id_expr -> get_namespace(), id_expr -> get_name());
         std::shared_ptr<scope>& var_scope = (var_decl -> is_global() == true) ? var_decl -> get_scope() : l_scope;
@@ -1334,8 +1767,16 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
                 // we have variable, we put the lval value into it
                 else {
                     std::shared_ptr<variable>& var_decl = l_scope -> get_variable(rval_id -> get_namespace(), rval_id -> get_name());
-                    std::shared_ptr<expr> var_value = interpret_expression(lval_it -> second, l_scope, ns_name);
-                    var_decl -> set_value(var_value);
+
+                    // if we are capturing a reference expression, we must avoid performing a second interpretation
+                    // this is because if we do, the interpret_reference function will wrap the reference expression inside the <Just> constructor defeating the whole point of pattern matching
+                    if(lval_it -> second -> is_reference_expression()) {
+                        var_decl -> set_value(lval_it -> second);
+                    }
+                    else {
+                        std::shared_ptr<expr> var_value = interpret_expression(lval_it -> second, l_scope, ns_name);
+                        var_decl -> set_value(var_value);
+                    }
                 }
             }
             // we have a call expression, then we perform a recursive call to this function

@@ -45,6 +45,7 @@
 #include "representer/builtins/lang/avalon_float.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_int.hpp"
+#include "representer/builtins/lang/avalon_ref.hpp"
 
 
 namespace avalon {
@@ -87,11 +88,16 @@ namespace avalon {
         avalon_float avl_float;
         type_instance float_instance = avl_float.get_type_instance();
 
+        // reference to string type
+        avalon_ref avl_ref;
+        type_instance ref_string_instance = avl_ref.get_type_instance(m_string_instance);
+
         // maybe type
         avalon_maybe avl_maybe;
         type_instance maybe_bool_instance = avl_maybe.get_type_instance(bool_instance);
         type_instance maybe_int_instance = avl_maybe.get_type_instance(int_instance);
         type_instance maybe_float_instance = avl_maybe.get_type_instance(float_instance);
+        type_instance maybe_ref_string_instance = avl_maybe.get_type_instance(ref_string_instance);
 
         /* the program FQN */
         fqn l_fqn("__bifqn_string__", "__bifqn_string__");
@@ -133,6 +139,10 @@ namespace avalon {
         param_one.set_type_instance(m_string_instance);
         variable param_two(var_two_tok, false);
         param_two.set_type_instance(m_string_instance);
+        variable param_three(var_three_tok, false);
+        param_three.set_type_instance(ref_string_instance);
+        variable param_four(var_four_tok, false);
+        param_four.set_type_instance(int_instance);
 
         // string reverse
         std::shared_ptr<function> string_neg_function = std::make_shared<function>(neg_function_tok);
@@ -267,6 +277,22 @@ namespace avalon {
         string_float_function -> set_return_type_instance(maybe_float_instance);
         std::shared_ptr<decl> string_float_function_decl = string_float_function;
         l_namespace -> add_declaration(string_float_function_decl);
+
+        // string subscript access by reference
+        token refitem_function_tok(IDENTIFIER, "__refitem__", 0, 0, "__bif__");
+        std::shared_ptr<function> string_refitem_function = std::make_shared<function>(refitem_function_tok);
+        string_refitem_function -> set_fqn(l_fqn);
+        string_refitem_function -> is_public(true);
+        string_refitem_function -> is_builtin(true);
+        string_refitem_function -> set_namespace(l_namespace -> get_name());
+        std::shared_ptr<scope> string_refitem_scope = std::make_shared<scope>();
+        string_refitem_scope -> set_parent(l_scope);
+        string_refitem_function -> set_scope(string_refitem_scope);
+        string_refitem_function -> add_param(param_three);
+        string_refitem_function -> add_param(param_four);
+        string_refitem_function -> set_return_type_instance(maybe_ref_string_instance);
+        std::shared_ptr<decl> refitem_function_decl = string_refitem_function;
+        l_namespace -> add_declaration(refitem_function_decl);
 
         /* add the namespace to the program */
         std::shared_ptr<decl> namespace_decl = l_namespace;

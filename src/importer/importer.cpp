@@ -48,11 +48,11 @@
 #include "representer/builtins/lang/avalon_gate.hpp"
 #include "representer/builtins/lang/avalon_void.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
-#include "representer/builtins/lang/avalon_bit2.hpp"
-#include "representer/builtins/lang/avalon_bit4.hpp"
 #include "representer/builtins/lang/avalon_bit8.hpp"
-#include "representer/builtins/lang/avalon_int.hpp"
+#include "representer/builtins/lang/avalon_bit4.hpp"
+#include "representer/builtins/lang/avalon_bit2.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
+#include "representer/builtins/lang/avalon_int.hpp"
 
 /* Builtin OS interface programs */
 #include "representer/builtins/io/avalon_io.hpp"
@@ -268,6 +268,12 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         m_sorted_deps.push(trig_prog.get_fqn().get_name());
         m_gtable.add_program(trig_prog);
 
+        // integer declarations
+        avalon_int avl_int;
+        program& int_prog = avl_int.get_program();
+        m_sorted_deps.push(int_prog.get_fqn().get_name());
+        m_gtable.add_program(int_prog);
+
         // bit declarations
         avalon_bit avl_bit;
         program& bit_prog = avl_bit.get_program();
@@ -315,12 +321,6 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         program& qubit8_prog = avl_qubit8.get_program();
         m_sorted_deps.push(qubit8_prog.get_fqn().get_name());
         m_gtable.add_program(qubit8_prog);
-
-        // integer declarations
-        avalon_int avl_int;
-        program& int_prog = avl_int.get_program();
-        m_sorted_deps.push(int_prog.get_fqn().get_name());
-        m_gtable.add_program(int_prog);
 
         // IO declarations
         avalon_io avl_io;
@@ -465,19 +465,12 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<decl> final_void_import = void_import;
         to.add_declaration(final_void_import);
 
-        // bit declarations
-        avalon_bit avl_bit;
-        program& bit_prog = avl_bit.get_program();
-        std::shared_ptr<import> bit_import = std::make_shared<import>(import_tok, bit_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_bit_import = bit_import;
-        to.add_declaration(final_bit_import);
-
-        // bit2 declarations
-        avalon_bit2 avl_bit2;
-        program& bit2_prog = avl_bit2.get_program();
-        std::shared_ptr<import> bit2_import = std::make_shared<import>(import_tok, bit2_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_bit2_import = bit2_import;
-        to.add_declaration(final_bit2_import);
+        // bit8 declarations
+        avalon_bit8 avl_bit8;
+        program& bit8_prog = avl_bit8.get_program();
+        std::shared_ptr<import> bit8_import = std::make_shared<import>(import_tok, bit8_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_bit8_import = bit8_import;
+        to.add_declaration(final_bit8_import);
 
         // bit4 declarations
         avalon_bit4 avl_bit4;
@@ -486,12 +479,19 @@ importer::importer(program& prog, std::vector<std::string>& search_paths, error&
         std::shared_ptr<decl> final_bit4_import = bit4_import;
         to.add_declaration(final_bit4_import);
 
-        // bit8 declarations
-        avalon_bit8 avl_bit8;
-        program& bit8_prog = avl_bit8.get_program();
-        std::shared_ptr<import> bit8_import = std::make_shared<import>(import_tok, bit8_prog.get_fqn().get_name());
-        std::shared_ptr<decl> final_bit8_import = bit8_import;
-        to.add_declaration(final_bit8_import);
+        // bit2 declarations
+        avalon_bit2 avl_bit2;
+        program& bit2_prog = avl_bit2.get_program();
+        std::shared_ptr<import> bit2_import = std::make_shared<import>(import_tok, bit2_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_bit2_import = bit2_import;
+        to.add_declaration(final_bit2_import);
+
+        // bit declarations
+        avalon_bit avl_bit;
+        program& bit_prog = avl_bit.get_program();
+        std::shared_ptr<import> bit_import = std::make_shared<import>(import_tok, bit_prog.get_fqn().get_name());
+        std::shared_ptr<decl> final_bit_import = bit_import;
+        to.add_declaration(final_bit_import);
 
         // bool declarations
         avalon_bool avl_bool;

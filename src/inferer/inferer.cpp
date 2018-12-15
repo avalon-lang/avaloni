@@ -566,15 +566,184 @@ inferer::inferer() {
         std::shared_ptr<reference_expression> const & ref_expr = std::static_pointer_cast<reference_expression>(an_expression);
         std::shared_ptr<expr>& val = ref_expr -> get_val();
 
-        // we infer the type instance that we will refer to
-        type_instance val_instance = infer(val, l_scope, ns_name);
+        type_instance inferred_instance;
 
-        // create a new type instance that refers to the type instance of the expression referenced
+        // if we have a variable, we validate the variable
+        if(val -> is_identifier_expression()) {
+            inferred_instance = infer_reference_variable(val, l_scope, ns_name);
+            ref_expr -> set_type_instance(inferred_instance);
+        }
+        // if we have a namespaced variable
+        else if(val -> is_binary_expression()) {
+            std::shared_ptr<binary_expression> const & bin_expr = std::static_pointer_cast<binary_expression>(val);
+            std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+            std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+
+            // we begin by checking if the lval is a namespace name
+            const std::string& sub_ns_name = lval -> expr_token().get_lexeme();
+            if(l_scope -> has_namespace(sub_ns_name)) {
+                // if the rval is an identifier expression expression, then we have a binary expression of the form namespace.variable
+                if(rval -> is_identifier_expression()) {
+                    inferred_instance = infer_reference_variable(rval, l_scope, sub_ns_name);
+                    ref_expr -> set_type_instance(inferred_instance);
+                }
+                // if the rval is a binary expression, then we have an expression of the form namespace.value[index] or namespace.value.attribute
+                else if(rval -> is_binary_expression()) {
+                    std::shared_ptr<binary_expression> const & bin_rval = std::static_pointer_cast<binary_expression>(rval);
+                    inferred_instance = infer_reference_binary(bin_rval, l_scope, ns_name, sub_ns_name);
+                    ref_expr -> set_type_instance(inferred_instance);
+                }
+                // anything else is invalid
+                else {
+                    throw invalid_expression(rval -> expr_token(), "Excepted a variable expression or a subscript expression or an attribute expression after the namesapce name in order to the reference.");
+                }
+            }
+            // if the lval is not a namespace, then we have a binary expression of the form value[index] or value.attribute
+            else {
+                inferred_instance = infer_reference_binary(bin_expr, l_scope, ns_name, ns_name);
+                ref_expr -> set_type_instance(inferred_instance);
+            }
+        }
+        else {
+            throw invalid_expression(val -> expr_token(), "The expression to reference must be a variable expression.");
+        }
+
+        // typecheck the inferred type instance
+        try {
+            type_instance_checker::complex_check(inferred_instance, l_scope, ns_name);
+        } catch(invalid_type err) {
+            throw invalid_expression(err.get_token(), err.what());
+        }
+
+        return inferred_instance;
+    }
+
+    type_instance inferer::infer_reference_variable(std::shared_ptr<expr>& val, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
         avalon_ref avl_ref;
+        type_instance val_instance = infer(val, l_scope, ns_name);
         type_instance ref_instance = avl_ref.get_type_instance(val_instance);
-        ref_expr -> set_type_instance(ref_instance);
-
         return ref_instance;
+    }
+
+    type_instance inferer::infer_reference_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+        // if we have a subscript access expression
+        if(bin_expr -> get_expression_type() == SUBSCRIPT_EXPR) {
+            return infer_reference_subscript(bin_expr, l_scope, ns_name, sub_ns_name);
+        }
+        // if we have an attribute access expression
+        else if(bin_expr -> get_expression_type() == DOT_EXPR) {
+            return infer_reference_attribute(bin_expr, l_scope, ns_name, sub_ns_name);
+        }
+        else {
+            throw invalid_expression(bin_expr -> get_token(), "Expected a subscript or attribute access expression.");
+        }
+    }
+
+    type_instance inferer::infer_reference_attribute(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+        throw invalid_expression(bin_expr -> get_token(), "Attribute expressions cannot be oeprands to the reference operator at the moment.");
+    }
+
+    type_instance inferer::infer_reference_subscript(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+        std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+        std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+
+        // get the variable of interest to work with
+        try {
+            std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, lval -> expr_token().get_lexeme());
+            // we deduce the type instance of the variable declaration and decide if we have a tuple, list, map or user object
+            type_instance var_instance = var_decl -> get_type_instance();
+            
+            // we make sure that we are given a reference as variable to access by index
+            if(var_instance.is_reference() == false)
+                throw invalid_expression(lval -> expr_token(), "This variable must be a reference to another variable.");
+            else
+                var_instance = var_instance.get_params()[0];
+
+            // if we have a tuple, we inspect the content to make sure the element being accessed is not a reference expression
+            if(var_instance.get_category() == TUPLE) {
+                return infer_reference_subscript_tuple(var_instance, rval);
+            }
+            // if we have a list, we make sure that it is not a list of references
+            else if(var_instance.get_category() == LIST) {
+                return infer_reference_subscript_list(var_instance);
+            }
+            // if we have a map, we make sure that the values it contains are not references
+            else if(var_instance.get_category() == MAP) {
+                return infer_reference_subscript_map(var_instance);
+            }
+            // if we have a user created type, we find the __getitem__ function and make sure it returns by reference
+            else {
+                return infer_reference_subscript_custom(var_instance, bin_expr, l_scope, ns_name);
+            }
+        } catch(symbol_not_found err) {
+            throw invalid_expression(lval -> expr_token(), "Expected a variable expression.");
+        }
+    }
+
+    type_instance inferer::infer_reference_subscript_tuple(type_instance& var_instance, std::shared_ptr<expr>& key_expr) {
+        std::vector<type_instance>& params = var_instance.get_params();
+        const token& key_tok = key_expr -> expr_token();
+        std::size_t key = 0;
+
+        // make sure the rval is a literal integer expression
+        if(key_expr -> is_literal_expression() == false) {
+            throw invalid_expression(key_tok, "Expected an integer as key to access the tuple.");
+        }
+        else {
+            std::shared_ptr<literal_expression> const & key_lit = std::static_pointer_cast<literal_expression>(key_expr);
+            if(key_lit -> get_expression_type() == INTEGER_EXPR) {
+                std::sscanf(key_tok.get_lexeme().c_str(), "%zu", &key);
+            }
+            else {
+                throw invalid_expression(key_tok, "Expected an integer as key to access the tuple.");
+            }
+        }
+
+        // we have the key, we get the type instance of the element at that key
+        type_instance element_instance = params[key];
+        avalon_ref avl_ref;
+        type_instance ref_instance = avl_ref.get_type_instance(element_instance);
+        return ref_instance;
+    }
+
+    type_instance inferer::infer_reference_subscript_list(type_instance& var_instance) {
+        std::vector<type_instance>& params = var_instance.get_params();
+        type_instance element_instance = params[0];
+        avalon_ref avl_ref;
+        type_instance ref_instance = avl_ref.get_type_instance(element_instance);
+        avalon_maybe avl_maybe;
+        type_instance ret_instance = avl_maybe.get_type_instance(ref_instance);
+        return ret_instance;
+    }
+
+    type_instance inferer::infer_reference_subscript_map(type_instance& var_instance) {
+        std::vector<type_instance>& params = var_instance.get_params();
+        type_instance value_instance = params[1];
+        avalon_ref avl_ref;
+        type_instance ref_instance = avl_ref.get_type_instance(value_instance);
+        avalon_maybe avl_maybe;
+        type_instance ret_instance = avl_maybe.get_type_instance(ref_instance);
+        return ret_instance;
+    }
+
+    type_instance inferer::infer_reference_subscript_custom(type_instance& var_instance, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+        std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+        const token& bin_tok = bin_expr -> get_token();
+
+        std::string call_name = "__refitem__";
+        token call_tok(bin_tok.get_type(), call_name, bin_tok.get_line(), bin_tok.get_column(), bin_tok.get_source_path());
+        
+        // build the call expression
+        std::shared_ptr<call_expression> getitem_expr = std::make_shared<call_expression>(call_tok);
+        getitem_expr -> set_namespace(var_instance.get_namespace());
+        // argument 1 is a variable expression, to be found in the lval
+        getitem_expr -> add_argument(star_tok, lval);
+        // argument 2 is the index, to be found in the rval
+        getitem_expr -> add_argument(star_tok, rval);
+
+        function binary_fun(star_tok);
+        return infer_function_call(binary_fun, getitem_expr, l_scope, ns_name);
     }
 
     /**
@@ -583,11 +752,68 @@ inferer::inferer() {
      */
     type_instance inferer::infer_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name) {
         std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(an_expression);
-        std::shared_ptr<variable>& var = dref_expr -> get_variable();
-        type_instance var_instance = var -> get_type_instance();
+        std::shared_ptr<variable>& var_decl = dref_expr -> get_variable();
+        type_instance var_instance = var_decl -> get_type_instance();
+        std::shared_ptr<expr>& val = dref_expr -> get_val();
+        type_instance inferred_instance;
+
+        // if we have a variable, we validate the variable
+        if(val -> is_identifier_expression()) {
+            inferred_instance = infer_dereference_variable(var_instance);
+            dref_expr -> set_type_instance(inferred_instance);
+        }
+        // if we have a namespaced variable
+        else if(val -> is_binary_expression()) {
+            std::shared_ptr<binary_expression> const & bin_expr = std::static_pointer_cast<binary_expression>(val);
+            std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+            std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+
+            // we begin by checking if the lval is a namespace name
+            const std::string& sub_ns_name = lval -> expr_token().get_lexeme();
+            if(l_scope -> has_namespace(sub_ns_name)) {
+                // if the rval is an identifier expression expression, then we have a binary expression of the form namespace.variable
+                if(rval -> is_identifier_expression()) {
+                    inferred_instance = infer_dereference_variable(var_instance);
+                    dref_expr -> set_type_instance(inferred_instance);
+                }
+                // if the rval is a binary expression, then we have an expression of the form namespace.value[index] or namespace.value.attribute
+                else if(rval -> is_binary_expression()) {
+                    std::shared_ptr<binary_expression> const & bin_rval = std::static_pointer_cast<binary_expression>(rval);
+                    inferred_instance = infer_dereference_binary(bin_rval);
+                    dref_expr -> set_type_instance(inferred_instance);
+                }
+                // anything else is invalid
+                else {
+                    throw invalid_expression(rval -> expr_token(), "Excepted a variable expression or a subscript expression or an attribute expression after the namesapce name in order to dereference.");
+                }
+            }
+            // if the lval is not a namespace, then we have a binary expression of the form value[index] or value.attribute
+            else {
+                inferred_instance = infer_dereference_binary(bin_expr);
+                dref_expr -> set_type_instance(inferred_instance);
+            }
+        }
+        else {
+            throw invalid_expression(val -> expr_token(), "The expression to dereference must be a variable expression or a subscript expression or an attribute expression.");
+        }
+
+        // typecheck the inferred type instance
+        try {
+            type_instance_checker::complex_check(inferred_instance, l_scope, ns_name);
+        } catch(invalid_type err) {
+            throw invalid_expression(err.get_token(), err.what());
+        }
+
+        return inferred_instance;
+    }
+
+    type_instance inferer::infer_dereference_variable(type_instance& var_instance) {
         type_instance dref_instance = var_instance.get_params()[0];
-        dref_expr -> set_type_instance(dref_instance);
         return dref_instance;
+    }
+
+    type_instance inferer::infer_dereference_binary(std::shared_ptr<binary_expression> const & bin_expr) {
+        throw invalid_expression(bin_expr -> get_token(), "Subscript and attribute expressions cannot be operands to the dereference operator at the moment.");
     }
 
     /**

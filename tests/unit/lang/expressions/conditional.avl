@@ -7,7 +7,6 @@ Testing conditional expressions.
 ]-
 
 import io
-import math
 
 def __main__ = (val args : [string]) -> void:
     -- using a comparison as condition

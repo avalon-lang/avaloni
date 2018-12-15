@@ -31,6 +31,9 @@
 /* AST */
 #include "representer/ast/decl/type.hpp"
 
+/* Built-ins */
+#include "representer/builtins/lang/avalon_ref.hpp"
+
 /* Symtable */
 #include "representer/symtable/scope.hpp"
 
@@ -70,6 +73,9 @@ namespace avalon {
 
         // if we have a reference type instance, we check its parameter instead
         if(instance.is_reference()) {
+            avalon_ref avl_ref;
+            std::shared_ptr<type>& ref_type = avl_ref.get_type();
+            instance.set_type(ref_type);
             ret = type_instance_checker::complex_check(instance_params[0], l_scope, ns_name, standins);
             instance.is_parametrized(ret.second);
             return ret;

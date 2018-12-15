@@ -183,131 +183,359 @@ namespace avalon {
 
         // if we have a variable, we validate the variable
         if(val -> is_identifier_expression()) {
-            // check the referenced variable
-            try {
-                check_identifier(val, l_scope, ns_name);
-            } catch(invalid_expression err) {
-                throw invalid_expression(ref_expr -> get_token(), "Reference to an invalid variable.");
-            }
-
-            // the variable might xists, we get it and set it on the reference expression
-            try {
-                std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, val -> expr_token().get_lexeme());
-                // we make sure that references to references are not allowed
-                type_instance var_instance = var_decl -> get_type_instance();
-                if(var_instance.is_reference())
-                    throw invalid_expression(val -> expr_token(), "References to references are not allowed.");
-                // all is fine, we set the variable referenced on the reference expression
-                ref_expr -> set_variable(var_decl);
-                // mark the variable declaration as used
-                var_decl -> is_used(true);
-            } catch(symbol_not_found err) {
-                throw invalid_expression(val -> expr_token(), "Reference to an invalid variable.");
-            }
+            check_reference_variable(ref_expr, val, l_scope, ns_name);
         }
         // if we have a namespaced variable
         else if(val -> is_binary_expression()) {
-            // check the referenced variable
-            try {
-                check_binary(val, l_scope, ns_name);
-            } catch(invalid_expression err) {
-                throw invalid_expression(ref_expr -> get_token(), "Reference to an invalid variable.");
-            }
-
-            // the variable might xists, we get it and set it on the reference expression
             std::shared_ptr<binary_expression> const & bin_expr = std::static_pointer_cast<binary_expression>(val);
             std::shared_ptr<expr>& lval = bin_expr -> get_lval();
             std::shared_ptr<expr>& rval = bin_expr -> get_rval();
 
-            try {
-                std::shared_ptr<variable>& var_decl = l_scope -> get_variable(lval -> expr_token().get_lexeme(), rval -> expr_token().get_lexeme());
-                // we make sure that references to references are not allowed
-                type_instance var_instance = var_decl -> get_type_instance();
-                if(var_instance.is_reference())
-                    throw invalid_expression(val -> expr_token(), "References to references are not allowed.");
-                // all is fine, we set the variable referenced on the reference expression
-                ref_expr -> set_variable(var_decl);
-                // mark the variable declaration as used
-                var_decl -> is_used(true);
-            } catch(symbol_not_found err) {
-                throw invalid_expression(rval -> expr_token(), "Reference to an invalid variable.");
+            // we begin by checking if the lval is a namespace name
+            const std::string& sub_ns_name = lval -> expr_token().get_lexeme();
+            if(l_scope -> has_namespace(sub_ns_name)) {
+                // if the rval is an identifier expression expression, then we have a binary expression of the form namespace.variable
+                if(rval -> is_identifier_expression()) {
+                    check_reference_variable(ref_expr, rval, l_scope, sub_ns_name);
+                }
+                // if the rval is a binary expression, then we have an expression of the form namespace.value[index] or namespace.value.attribute
+                else if(rval -> is_binary_expression()) {
+                    std::shared_ptr<binary_expression> const & bin_rval = std::static_pointer_cast<binary_expression>(rval);
+                    check_reference_binary(ref_expr, bin_rval, l_scope, ns_name, sub_ns_name);
+                    ref_expr -> set_callee(bin_rval -> get_callee());
+                }
+                // anything else is invalid
+                else {
+                    throw invalid_expression(rval -> expr_token(), "Excepted a variable expression or a subscript expression or an attribute expression after the namesapce name for reference.");
+                }
+            }
+            // if the lval is not a namespace, then we have a binary expression of the form value[index] or value.attribute
+            else {
+                check_reference_binary(ref_expr, bin_expr, l_scope, ns_name, ns_name);
+                ref_expr -> set_callee(bin_expr -> get_callee());
             }
         }
         else {
-            throw invalid_expression(val -> expr_token(), "The expression to reference must be a variable expression.");
+            throw invalid_expression(val -> expr_token(), "The expression to reference must be a variable expression or a subscript expression or an attribute expression.");
         }
 
         return m_inferrer.infer(an_expression, l_scope, ns_name);
     }
 
+    void expression_checker::check_reference_variable(std::shared_ptr<reference_expression> const & ref_expr, std::shared_ptr<expr>& val, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<identifier_expression> const & id_expr = std::static_pointer_cast<identifier_expression>(val);
+        id_expr -> set_namespace(ns_name);
+
+        try {
+            std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, id_expr -> get_name());
+            // we make sure that references to references are not allowed
+            type_instance var_instance = var_decl -> get_type_instance();
+            if(var_instance.is_reference())
+                throw invalid_expression(id_expr -> get_token(), "References to references are not allowed.");
+            // all is fine, we set the variable referenced on the reference expression
+            ref_expr -> set_variable(var_decl);
+            // set the type of expression we have
+            ref_expr -> set_expression_type(REF_VAR_EXPR);
+            // mark the variable declaration as used
+            var_decl -> is_used(true);
+        } catch(symbol_not_found err) {
+            throw invalid_expression(id_expr -> get_token(), "Expected a variable expression.");
+        }
+    }
+
+    void expression_checker::check_reference_binary(std::shared_ptr<reference_expression> const & ref_expr, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+        std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+        std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+
+        // set the variable expression on the reference expression
+        ref_expr -> set_variable_expression(lval);
+
+        // set the index expression on the reference expression
+        check(rval, l_scope, ns_name);
+        ref_expr -> set_index_expression(rval);
+
+        // make sure the lval is an identifier expression which represents the variable we are trying to access
+        if(lval -> is_identifier_expression()) {
+            std::shared_ptr<identifier_expression> const & id_expr = std::static_pointer_cast<identifier_expression>(lval);
+            id_expr -> set_namespace(sub_ns_name);
+        }
+        else {
+            throw invalid_expression(lval -> expr_token(), "Excepted a variable expression.");
+        }
+
+        // if we have a subscript access expression
+        if(bin_expr -> get_expression_type() == SUBSCRIPT_EXPR) {
+            check_reference_subscript(ref_expr, bin_expr, l_scope, ns_name, sub_ns_name);
+        }
+        // if we have an attribute access expression
+        else if(bin_expr -> get_expression_type() == DOT_EXPR) {
+            check_reference_attribute(ref_expr, bin_expr, l_scope, ns_name, sub_ns_name);
+        }
+        else {
+            throw invalid_expression(bin_expr -> get_token(), "Expected a subscript or attribute access expression.");
+        }
+    }
+
+    void expression_checker::check_reference_attribute(std::shared_ptr<reference_expression> const & ref_expr, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+        throw invalid_expression(bin_expr -> get_token(), "Attribute expressions cannot be oeprands to the reference operator at the moment.");
+    }
+
+    void expression_checker::check_reference_subscript(std::shared_ptr<reference_expression> const & ref_expr, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+        std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+        std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+
+        // get the variable of interest to work with
+        try {
+            std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, lval -> expr_token().get_lexeme());
+            // we deduce the type instance of the variable declaration and decide if we have a tuple, list, map or user object
+            type_instance var_instance = var_decl -> get_type_instance();
+            
+            // we make sure that we are given a reference as variable to access by index
+            if(var_instance.is_reference() == false)
+                throw invalid_expression(lval -> expr_token(), "This variable must be a reference to another variable or a reference to a subscript or attribute.");
+            else
+                var_instance = var_instance.get_params()[0];
+
+            // if we have a tuple, we inspect the content to make sure the element being accessed is not a reference expression
+            if(var_instance.get_category() == TUPLE) {
+                check_reference_subscript_tuple(var_instance, rval);
+                ref_expr -> set_expression_type(REF_TUPLE_EXPR);
+            }
+            // if we have a list, we make sure that it is not a list of references
+            else if(var_instance.get_category() == LIST) {
+                check_reference_subscript_list(var_instance, lval);
+                ref_expr -> set_expression_type(REF_LIST_EXPR);
+            }
+            // if we have a map, we make sure that the values it contains are not references
+            else if(var_instance.get_category() == MAP) {
+                check_reference_subscript_map(var_instance, lval);
+                ref_expr -> set_expression_type(REF_MAP_EXPR);
+            }
+            // if we have a user created type, we find the __getitem__ function and make sure it returns by reference
+            else {
+                check_reference_subscript_custom(var_instance, bin_expr, l_scope, ns_name);
+                ref_expr -> set_expression_type(REF_CUSTOM_EXPR);
+            }
+
+            // all is fine, we set the variable referenced on the reference expression
+            ref_expr -> set_variable(var_decl);
+            // mark the variable declaration as used
+            var_decl -> is_used(true);
+        } catch(symbol_not_found err) {
+            throw invalid_expression(lval -> expr_token(), "Expected a variable expression.");
+        }
+    }
+
+    void expression_checker::check_reference_subscript_tuple(type_instance& var_instance, std::shared_ptr<expr>& key_expr) {
+        std::vector<type_instance>& params = var_instance.get_params();
+        const token& key_tok = key_expr -> expr_token();
+        std::size_t key = 0;
+
+        // make sure the rval is a literal integer expression
+        if(key_expr -> is_literal_expression() == false) {
+            throw invalid_expression(key_tok, "Expected an integer literal as key to access the tuple.");
+        }
+        else {
+            std::shared_ptr<literal_expression> const & key_lit = std::static_pointer_cast<literal_expression>(key_expr);
+            if(key_lit -> get_expression_type() == INTEGER_EXPR) {
+                std::sscanf(key_tok.get_lexeme().c_str(), "%zu", &key);
+            }
+            else {
+                throw invalid_expression(key_tok, "Expected an integer literal as key to access the tuple.");
+            }
+        }
+
+        // make sure the key is positive
+        if(key < 0)
+            throw invalid_expression(key_tok, "The key must be a positive integer.");
+
+        // we have the key, we get the type instance of the element at that key
+        try {
+            type_instance element_instance = params.at(key);
+
+            // we now ensure that the type instance of the element at the given key is not a reference
+            if(element_instance.has_reference())
+                throw invalid_expression(key_tok, "The element at the given key is a reference expression and must be accessed by value, not by reference.");
+        } catch(const std::out_of_range& err) {
+            throw invalid_expression(key_tok, "The tuple has no element at the given key.");
+        }
+    }
+
+    void expression_checker::check_reference_subscript_list(type_instance& var_instance, std::shared_ptr<expr>& var_expr) {
+        if(var_instance.has_reference())
+            throw invalid_expression(var_expr -> expr_token(), "A list of references cannot be accessed by reference. Please request the element by value.");
+    }
+
+    void expression_checker::check_reference_subscript_map(type_instance& var_instance, std::shared_ptr<expr>& var_expr) {
+        type_instance value_instance = var_instance.get_params()[1];
+        if(value_instance.has_reference())
+            throw invalid_expression(var_expr -> expr_token(), "A map which values are references cannot be accessed by reference. Please request the element by value.");
+    }
+
+    void expression_checker::check_reference_subscript_custom(type_instance& var_instance, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<expr>& lval = bin_expr -> get_lval();
+        std::shared_ptr<expr>& rval = bin_expr -> get_rval();
+        const token& bin_tok = bin_expr -> get_token();
+
+        // special check for bits
+        if(
+            var_instance.get_type() -> get_name() == "bit"     ||
+            var_instance.get_type() -> get_name() == "bit2"    ||
+            var_instance.get_type() -> get_name() == "bit4"    ||
+            var_instance.get_type() -> get_name() == "bit8"    ||
+            var_instance.get_type() -> get_name() == "qubit"   ||
+            var_instance.get_type() -> get_name() == "qubit2"  ||
+            var_instance.get_type() -> get_name() == "qubit4"  ||
+            var_instance.get_type() -> get_name() == "qubit8"
+        ) {
+            const token& key_tok = rval -> expr_token();
+            std::size_t key = 0;
+
+            // make sure the rval is a literal integer expression
+            if(rval -> is_literal_expression() == false) {
+                throw invalid_expression(key_tok, "Expected an integer literal as key to access a variable holding bits or qubits.");
+            }
+            else {
+                std::shared_ptr<literal_expression> const & key_lit = std::static_pointer_cast<literal_expression>(rval);
+                if(key_lit -> get_expression_type() == INTEGER_EXPR) {
+                    std::sscanf(key_tok.get_lexeme().c_str(), "%zu", &key);
+                }
+                else {
+                    throw invalid_expression(key_tok, "Expected an integer literal as key to access a variable holding bits or qubits.");
+                }
+            }
+
+            // make sure the key is positive
+            if(key < 0)
+                throw invalid_expression(key_tok, "The key to access a variable holding bits or qubits must be a positive integer.");
+
+            if(var_instance.get_type() -> get_name() == "bit" || var_instance.get_type() -> get_name() == "qubit") {
+                if(key != 0)
+                    throw invalid_expression(key_tok, "The key to access a single bit or a single qubit must be 0.");
+            }
+            else if(var_instance.get_type() -> get_name() == "bit2" || var_instance.get_type() -> get_name() == "qubit2") {
+                if(key < 0 || key > 1)
+                    throw invalid_expression(key_tok, "The key to access a 2-bits variable or a 2-qubits variable must be between 0 and 1.");
+            }
+            else if(var_instance.get_type() -> get_name() == "bit4" || var_instance.get_type() -> get_name() == "qubit4") {
+                if(key < 0 || key > 3)
+                    throw invalid_expression(key_tok, "The key to access a 4-bits variable or a 4-qubits variable must be between 0 and 3.");
+            }
+            else if(var_instance.get_type() -> get_name() == "bit8" || var_instance.get_type() -> get_name() == "qubit8") {
+                if(key < 0 || key > 7)
+                    throw invalid_expression(key_tok, "The key to access a 8-bits variable or a 8-qubits variable must be between 0 and 7.");
+            }
+        }
+
+        std::string call_name = "__refitem__";
+        token call_tok(bin_tok.get_type(), call_name, bin_tok.get_line(), bin_tok.get_column(), bin_tok.get_source_path());
+
+        // build the call expression
+        std::shared_ptr<call_expression> getitem_expr = std::make_shared<call_expression>(call_tok);
+        getitem_expr -> set_namespace(var_instance.get_namespace());
+        // argument 1 is a variable expression, to be found in the lval
+        getitem_expr -> add_argument(star_tok, lval);
+        // argument 2 is the index, to be found in the rval
+        getitem_expr -> add_argument(star_tok, rval);
+
+        // check the call expression
+        type_instance instance = check_function_call(getitem_expr, l_scope, ns_name);
+        // we expect the user to return a maybe type parametrized by the reference
+        // this is to account for the possibility that the referenced element could not be found
+        try {
+            type_instance_checker::complex_check(instance, l_scope, ns_name);
+            // we expect the user to return the reference wrapped into a maybe type in case of errors
+            if(instance.get_type() -> get_name() == "maybe") {
+                type_instance ref_instance = instance.get_params()[0];
+                if(ref_instance.is_reference() == false)
+                    throw invalid_expression(bin_tok, "The user defined function called to access the given index must return the maybe <Just> constructor containing a reference to the requested element or <None> if the element could not be found.");
+            }
+            // the builtin bits and qubits types __refitem__ return pure references and not references wrapped in maybe so we account for that
+            else {
+                if(instance.is_reference() == false)
+                    throw invalid_expression(bin_tok, "The user defined function called to access the given index must return the maybe <Just> constructor containing a reference to the requested element or <None> if the element could not be found.");
+            }
+        } catch(invalid_type err) {
+            throw invalid_expression(err.get_token(), err.what());
+        }
+
+        // set the callee of the expression to be used when we need to interpret this expression
+        auto callee = getitem_expr -> get_callee();
+        const std::string& callee_name = std::get<1>(callee);
+        bin_expr -> set_callee(callee_name);
+    }
+
     /**
-     * check_reference
+     * check_dereference
      * makes sure that the dereference expression refers to a variable in the current scope
      */
     type_instance expression_checker::check_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
-        std::shared_ptr<dereference_expression> const & dref = std::static_pointer_cast<dereference_expression>(an_expression);
-        std::shared_ptr<expr>& val = dref -> get_val();
+        std::shared_ptr<dereference_expression> const & dref_expr = std::static_pointer_cast<dereference_expression>(an_expression);
+        std::shared_ptr<expr>& val = dref_expr -> get_val();
 
         // if we have a variable, we validate the variable
         if(val -> is_identifier_expression()) {
-            // check the referenced variable
-            try {
-                check_identifier(val, l_scope, ns_name);
-            } catch(invalid_expression err) {
-                throw invalid_expression(dref -> get_token(), "Dereference of an invalid variable.");
-            }
-
-            // the variable might xists, we get it and set it on the reference expression
-            try {
-                std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, val -> expr_token().get_lexeme());
-                // we make sure that only variables with references are dereferenced
-                type_instance var_instance = var_decl -> get_type_instance();
-                if(var_instance.is_reference() == false)
-                    throw invalid_expression(val -> expr_token(), "Only variables containing references can be dereferenced.");
-                // all is fine, we set the variable dereferenced on the dereference expression
-                dref -> set_variable(var_decl);
-            } catch(symbol_not_found err) {
-                throw invalid_expression(val -> expr_token(), "Dereference of an invalid variable.");
-            }
+            check_dereference_variable(dref_expr, val, l_scope, ns_name);
         }
         // if we have a namespaced variable
         else if(val -> is_binary_expression()) {
-            // check the referenced variable
-            try {
-                check_binary(val, l_scope, ns_name);
-            } catch(invalid_expression err) {
-                throw invalid_expression(dref -> get_token(), "Dereference of an invalid variable.");
-            }
-
-            // the variable might xists, we get it and set it on the reference expression
             std::shared_ptr<binary_expression> const & bin_expr = std::static_pointer_cast<binary_expression>(val);
             std::shared_ptr<expr>& lval = bin_expr -> get_lval();
             std::shared_ptr<expr>& rval = bin_expr -> get_rval();
 
-            try {
-                std::shared_ptr<variable>& var_decl = l_scope -> get_variable(lval -> expr_token().get_lexeme(), rval -> expr_token().get_lexeme());
-                // we make sure that only variables with references are dereferenced
-                type_instance var_instance = var_decl -> get_type_instance();
-                if(var_instance.is_reference() == false)
-                    throw invalid_expression(val -> expr_token(), "Only variables containing references can be dereferenced.");
-                // all is fine, we set the variable dereferenced on the dereference expression
-                dref -> set_variable(var_decl);
-            } catch(symbol_not_found err) {
-                throw invalid_expression(rval -> expr_token(), "Dereference of an invalid variable.");
+            // we begin by checking if the lval is a namespace name
+            const std::string& sub_ns_name = lval -> expr_token().get_lexeme();
+            if(l_scope -> has_namespace(sub_ns_name)) {
+                // if the rval is an identifier expression expression, then we have a binary expression of the form namespace.variable
+                if(rval -> is_identifier_expression()) {
+                    check_dereference_variable(dref_expr, rval, l_scope, sub_ns_name);
+                }
+                // if the rval is a binary expression, then we have an expression of the form namespace.value[index] or namespace.value.attribute
+                else if(rval -> is_binary_expression()) {
+                    std::shared_ptr<binary_expression> const & bin_rval = std::static_pointer_cast<binary_expression>(rval);
+                    check_dereference_binary(dref_expr, bin_rval, l_scope, ns_name, sub_ns_name);
+                    // dref_expr -> set_callee(bin_rval -> get_callee());
+                }
+                // anything else is invalid
+                else {
+                    throw invalid_expression(rval -> expr_token(), "Excepted a variable expression or a subscript expression or an attribute expression after the namesapce name for dereference.");
+                }
+            }
+            // if the lval is not a namespace, then we have a binary expression of the form value[index] or value.attribute
+            else {
+                check_dereference_binary(dref_expr, bin_expr, l_scope, ns_name, ns_name);
+                // dref_expr -> set_callee(bin_expr -> get_callee());
             }
         }
         else {
-            throw invalid_expression(val -> expr_token(), "The expression to dereference must be a variable expression.");
+            throw invalid_expression(val -> expr_token(), "The expression to dereference must be a variable expression or a subscript expression or an attribute expression.");
         }
 
-        type_instance dref_instance = m_inferrer.infer(an_expression, l_scope, ns_name);
-        if(dref_instance.is_complete()) {
-            std::shared_ptr<type>& dref_type = dref_instance.get_type();
-            if(dref_type -> is_quantum())
-                throw invalid_expression(dref -> get_token(), "Cannot dereference a quantum variable.");
-        }
+        return m_inferrer.infer(an_expression, l_scope, ns_name);
+    }
 
-        return dref_instance;
+    void expression_checker::check_dereference_variable(std::shared_ptr<dereference_expression> const & dref_expr, std::shared_ptr<expr>& val, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {
+        std::shared_ptr<identifier_expression> const & id_expr = std::static_pointer_cast<identifier_expression>(val);
+        id_expr -> set_namespace(ns_name);
+
+        // the variable might exists, we get it and set it on the reference expression
+        try {
+            std::shared_ptr<variable>& var_decl = l_scope -> get_variable(ns_name, id_expr -> get_name());
+            // we make sure that only variables with references are dereferenced
+            type_instance var_instance = var_decl -> get_type_instance();
+            if(var_instance.is_reference() == false)
+                throw invalid_expression(val -> expr_token(), "Only variables containing references can be dereferenced.");
+            // all is fine, we set the variable dereferenced on the dereference expression
+            dref_expr -> set_variable(var_decl);
+            // mark the variable as used
+            var_decl -> is_used(true);
+        } catch(symbol_not_found err) {
+            throw invalid_expression(val -> expr_token(), "Dereference of an invalid variable.");
+        }
+    }
+
+    void expression_checker::check_dereference_binary(std::shared_ptr<dereference_expression> const & dref_expr, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name) {
+        throw invalid_expression(bin_expr -> get_token(), "Subscript and attribute expressions cannot be operands to the dereference operator at the moment.");
     }
 
     /**
@@ -1343,7 +1571,7 @@ namespace avalon {
 
         // make sure the rval is a literal integer expression
         if(rval -> is_literal_expression() == false) {
-            throw invalid_expression(rval_tok, "Expected an integer as key to access the tuple.");
+            throw invalid_expression(rval_tok, "Expected an integer literal as key to access the tuple.");
         }
         else {
             std::shared_ptr<literal_expression> const & key_expr = std::static_pointer_cast<literal_expression>(rval);
@@ -1351,7 +1579,7 @@ namespace avalon {
                 std::sscanf(rval_tok.get_lexeme().c_str(), "%zu", &key);
             }
             else {
-                throw invalid_expression(rval_tok, "Expected an integer as key to access the tuple.");
+                throw invalid_expression(rval_tok, "Expected an integer literal as key to access the tuple.");
             }
         }
 
@@ -1373,7 +1601,7 @@ namespace avalon {
         // make sure the rval is a integer expression
         type_instance rval_instance = check(rval, l_scope, ns_name);
         if(type_instance_strong_compare(rval_instance, int_instance) == false)
-            throw invalid_expression(rval_tok, "Expected an integer as key to access the list.");
+            throw invalid_expression(rval_tok, "Expected an integer literal as key to access the list.");
 
         // return the type instance
         return m_inferrer.infer_list_subscript(var_instance, rval, l_scope, ns_name);

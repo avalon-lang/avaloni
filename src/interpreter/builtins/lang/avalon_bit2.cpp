@@ -35,6 +35,7 @@
 #include "representer/ast/decl/type.hpp"
 /* Expressions */
 #include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/expr.hpp"
 
@@ -42,6 +43,7 @@
 #include "representer/builtins/lang/avalon_string.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
 #include "representer/builtins/lang/avalon_bit2.hpp"
+#include "representer/builtins/lang/avalon_int.hpp"
 
 /* Builtin functions */
 #include "interpreter/builtins/lang/avalon_bit2.hpp"
@@ -420,5 +422,65 @@ namespace avalon {
             return true_final_expr;
         else
             return false_final_expr;
+    }
+
+    /**
+     * bit2_refitem
+     * returns the effective index where to find the requested bit
+     */
+    std::shared_ptr<expr> bit2_refitem(std::vector<std::shared_ptr<expr> >& arguments) {
+        // bit2 type
+        avalon_bit2 avl_bit2;
+        type_instance bit2_instance = avl_bit2.get_type_instance();
+
+        // int type
+        avalon_int avl_int;
+        type_instance int_instance = avl_int.get_type_instance();
+
+        // make sure we got exactly two arguments
+        if(arguments.size() != 2)
+            throw invalid_call("[compiler error] the bit2 __refitem__ function expects exactly two arguments.");
+
+        // make sure each the first argument in a bit literal
+        std::shared_ptr<expr>& arg_one = arguments[0];
+        if(arg_one -> is_literal_expression() == false)
+            throw invalid_call("[compiler error] the bit2 __refitem__ function expects its first argument to be the referenced bit.");
+
+        // make sure each the first argument in a integer literal
+        std::shared_ptr<expr>& arg_two = arguments[1];
+        if(arg_two -> is_literal_expression() == false)
+            throw invalid_call("[compiler error] the bit2 __refitem__ function expects its second argument to be an integer index.");
+
+        // get the literal expressions
+        std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
+        std::shared_ptr<literal_expression> const & arg_two_lit = std::static_pointer_cast<literal_expression>(arg_two);
+
+        // double check the type instances
+        type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
+        if(type_instance_strong_compare(arg_one_instance, bit2_instance) == false)
+            throw invalid_call("[compiler error] the bit2 __refitem__ function expects its first argument to be an bit.");
+
+        // make sure the second argument is an integer
+        type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
+        if(type_instance_strong_compare(arg_two_instance, int_instance) == false)
+            throw invalid_call("[compiler error] the bit2 __refitem__ function expects its second argument to be an integer.");
+
+        // get the index
+        long long int user_index = arg_two_lit -> get_int_value();
+        if(user_index < 0)
+            throw invalid_call("[compiler error] the bit2 __refitem__ function expects the index to be a positive integer.");
+
+        std::size_t index = (std::size_t) user_index;
+
+        // if the index is not between 0 and 1, the checker failed
+        if(index < 0 || index > 1)
+            throw invalid_call("[compiler error] trying to access a bit using an index not between 0 and 1 bit the <bit2> type.");
+
+        // we return the reference holding the integer index
+        token gen_tok(MUL, "*", 0, 0, "__dummy__");
+        std::shared_ptr<reference_expression> ref_expr = std::make_shared<reference_expression>(gen_tok, nullptr);
+        ref_expr -> set_index(index);
+        std::shared_ptr<expr> final_ref_expr = ref_expr;
+        return final_ref_expr;
     }
 }

@@ -43,6 +43,7 @@
 #include "representer/ast/decl/type.hpp"
 /* Expressions */
 #include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/call_expression.hpp"
 #include "representer/ast/expr/expr.hpp"
@@ -94,7 +95,7 @@ namespace avalon {
         std::reverse(res_str.begin(), res_str.end());
 
         // create new literal with the new string
-        token lit_tok(INTEGER, res_str, 0, 0, "__bil__");
+        token lit_tok(STRING, res_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> res_lit = std::make_shared<literal_expression>(lit_tok, STRING_EXPR, res_str);
         res_lit -> set_type_instance(string_instance);
 
@@ -488,6 +489,81 @@ namespace avalon {
             err.show();
             // any lexing error implies the return of None
             std::shared_ptr<expr> final_expr = none_expr;
+            return final_expr;
+        }
+    }
+
+    /**
+     * string_refitem
+     * returns the effective index where to find the requested substring
+     */
+    std::shared_ptr<expr> string_refitem(std::vector<std::shared_ptr<expr> >& arguments) {
+        // string type
+        avalon_string avl_string;
+        type_instance string_instance = avl_string.get_type_instance();
+
+        // int type
+        avalon_int avl_int;
+        type_instance int_instance = avl_int.get_type_instance();
+
+        // make sure we got exactly two arguments
+        if(arguments.size() != 2)
+            throw invalid_call("[compiler error] the string __refitem__ function expects exactly two arguments.");
+
+        // make sure each the first argument in a string literal
+        std::shared_ptr<expr>& arg_one = arguments[0];
+        if(arg_one -> is_literal_expression() == false)
+            throw invalid_call("[compiler error] the string __refitem__ function expects its first argument to be the referenced string.");
+
+        // make sure each the first argument in a integer literal
+        std::shared_ptr<expr>& arg_two = arguments[1];
+        if(arg_two -> is_literal_expression() == false)
+            throw invalid_call("[compiler error] the string __refitem__ function expects its second argument to be an integer index.");
+
+        // get the literal expressions
+        std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
+        std::shared_ptr<literal_expression> const & arg_two_lit = std::static_pointer_cast<literal_expression>(arg_two);
+
+        // double check the type instances
+        type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
+        if(type_instance_strong_compare(arg_one_instance, string_instance) == false)
+            throw invalid_call("[compiler error] the string __refitem__ function expects its first argument to be an string.");
+
+        // make sure the second argument is an integer
+        type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
+        if(type_instance_strong_compare(arg_two_instance, int_instance) == false)
+            throw invalid_call("[compiler error] the string __refitem__ function expects its second argument to be an integer.");
+
+        // get the index
+        long long int user_index = arg_two_lit -> get_int_value();
+        if(user_index < 0)
+            throw invalid_call("[compiler error] the string __refitem__ function expects the index to be a positive integer.");
+
+        std::size_t index = (std::size_t) user_index;
+
+        // get the string
+        std::string user_string = arg_one_lit -> get_string_value();
+
+        // if the user index is within the string length, we return a reference with the effective index where the substring was found
+        std::shared_ptr<expr> final_expr = nullptr;
+        if(index < user_string.length()) {
+            // we create a dummy reference expression and set on it the most important information: the index where to find the substring
+            token gen_tok(MUL, "*", 0, 0, "__dummy__");
+            std::shared_ptr<reference_expression> ref_expr = std::make_shared<reference_expression>(gen_tok, nullptr);
+            ref_expr -> set_index(index);
+            std::shared_ptr<expr> final_ref_expr = ref_expr;
+            
+            // we create an incomplete call expression with the dummy reference expression set as the argument to the <Just> constructor
+            std::shared_ptr<call_expression> ret_expr = std::make_shared<call_expression>(just_cons_tok);
+            ret_expr -> add_argument(star_tok, final_ref_expr);
+            ret_expr -> set_expression_type(DEFAULT_CONSTRUCTOR_EXPR);
+            final_expr = ret_expr;
+            return final_expr;
+        }
+        else {
+            std::shared_ptr<identifier_expression> ret_expr = std::make_shared<identifier_expression>(none_cons_tok);
+            ret_expr -> set_expression_type(CONSTRUCTOR_EXPR);
+            final_expr = ret_expr;
             return final_expr;
         }
     }

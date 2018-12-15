@@ -1,0 +1,57 @@
+-[
+Testing subscript reference expressions.
+
+- author     ntwali bashige
+- copyright  2018 (c) ntwali bashige
+- license    MIT license
+]-
+
+import io
+
+def __main__ = (val args : [string]) -> void:
+    -- access tuple by reference
+    val tuple_a = ("John Doe", 32),
+        tuple_b = ref tuple_a
+    val tuple_c = ref tuple_b[1]
+    Io.println("Your age is : " + string(dref tuple_c))
+
+
+    -- access list by reference
+    val list_a = ["John Doe", "32"],
+        list_b = ref list_a
+    val list_c = ref list_b[0]
+    if list_c === Just(list_d:ref string):
+        Io.println(dref list_d)
+    else:
+        Io.println("Element not found.")
+
+
+    -- access map by reference
+    val map_a = {
+        "first_name": "John",
+        "last_name": "Doe"
+    }, map_b = ref map_a
+    val map_c = ref map_b["first_name"]
+    if map_c === Just(map_d:ref string):
+        Io.println(dref map_d)
+    else:
+        Io.println("Element not found.")
+
+
+    -- access string by reference
+    val stirng_a = "Hello World!",
+        stirng_b = ref stirng_a
+    val stirng_c = ref stirng_b[1]
+    if stirng_c === Just(stirng_d:ref string):
+        Io.println(dref stirng_d)
+    else:
+        Io.println("Element not found.")
+
+
+    -- access bit by reference
+    val bit_a = 0b1001,
+        bit_b = ref bit_a
+    val bit_c = ref bit_b[3]
+    Io.println(string(dref bit_c))
+
+    return

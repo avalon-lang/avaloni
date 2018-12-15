@@ -98,6 +98,9 @@ namespace avalon {
         apply_implementation avl_apply_implementation(m_qproc);
         measure_implementation avl_measure_implementation(m_qproc);
 
+        /* getters functions */
+        refitem_implementation avl_refitem_implementation;
+
         m_implementations = {
             /* boolean functions */
             {"__and__", std::make_shared<and_implementation>(avl_and_implementation)},
@@ -146,6 +149,9 @@ namespace avalon {
             /* quantum functions */
             {"apply", std::make_shared<apply_implementation>(avl_apply_implementation)},
             {"measure", std::make_shared<measure_implementation>(avl_measure_implementation)},
+
+            /* getter functions */
+            {"__refitem__", std::make_shared<refitem_implementation>(avl_refitem_implementation)},
         };
     }
 

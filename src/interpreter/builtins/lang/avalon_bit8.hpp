@@ -81,6 +81,12 @@ namespace avalon {
      * returns a bit indicating whether its arguments are not equal
      */
     std::shared_ptr<expr> bit8_ne(std::vector<std::shared_ptr<expr> >& arguments);
+
+    /**
+     * bit8_refitem
+     * returns the effective index where to find the requested bit
+     */
+    std::shared_ptr<expr> bit8_refitem(std::vector<std::shared_ptr<expr> >& arguments);
 }
 
 #endif

@@ -148,12 +148,22 @@ namespace avalon {
          * infers the type instance of a reference
          */
         type_instance infer_reference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name);
+        type_instance infer_reference_variable(std::shared_ptr<expr>& rval, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
+        type_instance infer_reference_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name);
+        type_instance infer_reference_attribute(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name);
+        type_instance infer_reference_subscript(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name, const std::string& sub_ns_name);
+        type_instance infer_reference_subscript_tuple(type_instance& var_instance, std::shared_ptr<expr>& key_expr);
+        type_instance infer_reference_subscript_list(type_instance& var_instance);
+        type_instance infer_reference_subscript_map(type_instance& var_instance);
+        type_instance infer_reference_subscript_custom(type_instance& var_instance, std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name);
 
         /**
          * infer_reference
          * infers the type instance of a dereference
          */
         type_instance infer_dereference(std::shared_ptr<expr>& an_expression, std::shared_ptr<scope> l_scope, const std::string& ns_name);
+        type_instance infer_dereference_variable(type_instance& var_instance);
+        type_instance infer_dereference_binary(std::shared_ptr<binary_expression> const & bin_expr);
 
         /**
          * infer_literal

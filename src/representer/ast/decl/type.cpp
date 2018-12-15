@@ -802,7 +802,7 @@ type_instance::type_instance(token& tok, std::shared_ptr<type>& ty, const std::s
 
         // reference type instances are special cases that need special handling
         if(instance.is_reference()) {
-            mangled_name += "ref'";
+            mangled_name += "ref ";
             mangled_name += mangle_type_instance(params[0]);
             return mangled_name;
         }

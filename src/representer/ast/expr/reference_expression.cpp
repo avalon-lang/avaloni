@@ -35,13 +35,13 @@ namespace avalon {
     /**
      * the constructor expects the operand of the reference operator
      */
-    reference_expression::reference_expression(token& tok, std::shared_ptr<expr> val) : m_tok(tok), m_val(val), m_var(nullptr) {
+    reference_expression::reference_expression(token& tok, std::shared_ptr<expr> val) : m_tok(tok), m_expression_type(REF_VAR_EXPR), m_val(val), m_var(nullptr), m_var_expr(nullptr), m_index_expr(nullptr), m_index(0), m_callee("") {
     }
 
     /**
      * copy constructor
      */
-    reference_expression::reference_expression(const std::shared_ptr<reference_expression>& ref_expr) : m_tok(ref_expr -> get_token()), m_instance(ref_expr -> get_type_instance()), m_val(ref_expr -> get_val() -> copy()), m_var(ref_expr -> get_variable()) {
+    reference_expression::reference_expression(const std::shared_ptr<reference_expression>& ref_expr) : m_tok(ref_expr -> get_token()), m_instance(ref_expr -> get_type_instance()), m_expression_type(ref_expr -> get_expression_type()), m_val(ref_expr -> get_val() -> copy()), m_var(ref_expr -> get_variable()), m_var_expr(ref_expr -> get_variable_expression()), m_index_expr(ref_expr -> get_index_expression()), m_index(ref_expr -> get_index()), m_callee(ref_expr -> get_callee()) {
     }
 
     /**
@@ -50,8 +50,13 @@ namespace avalon {
     reference_expression& reference_expression::operator=(const std::shared_ptr<reference_expression>& ref_expr) {
         m_tok = ref_expr -> get_token();
         m_instance = ref_expr -> get_type_instance();
+        m_expression_type = ref_expr -> get_expression_type();
         m_val = ref_expr -> get_val() -> copy();
         m_var = ref_expr -> get_variable();
+        m_var_expr = ref_expr -> get_variable_expression();
+        m_index_expr = ref_expr -> get_index_expression();
+        m_index = ref_expr -> get_index();
+        m_callee = ref_expr -> get_callee();
         return * this;
     }
 
@@ -91,6 +96,23 @@ namespace avalon {
     }
 
     /**
+     * set_expression_type
+     * set the type of reference expression we are dealing with.
+     * this can be a reference to a variable, to inside a tuple, list, map or a user defined value (and builtin values as bits, qubits and strings)
+     */
+    void reference_expression::set_expression_type(reference_expression_type expr_type) {
+        m_expression_type = expr_type;
+    }
+
+    /**
+     * get_expression_type
+     * returns the type of expression we are dealing
+     */
+    const reference_expression_type& reference_expression::get_expression_type() const {
+        return m_expression_type;
+    }
+
+    /**
      * get_val
      * returns the unary operator operand
      */
@@ -112,5 +134,69 @@ namespace avalon {
      */
     std::shared_ptr<variable>& reference_expression::get_variable() {
         return m_var;
+    }
+
+    /**
+     * set_variable_expression
+     * set the variable expression where to find the value inside tuples, lists, maps or custom values
+     */
+    void reference_expression::set_variable_expression(std::shared_ptr<expr>& var_expr) {
+        m_var_expr = var_expr;
+    }
+
+    /**
+     * get_variable_expression
+     * get the variable expression where to find the value inside tuples, lists, maps or custom values
+     */
+    std::shared_ptr<expr>& reference_expression::get_variable_expression() {
+        return m_var_expr;
+    }
+
+    /**
+     * set_index_expression
+     * set the index expression where to find the value inside tuples, lists, maps or custom values
+     */
+    void reference_expression::set_index_expression(std::shared_ptr<expr>& index_expr) {
+        m_index_expr = index_expr;
+    }
+
+    /**
+     * get_index_expression
+     * get the index expression where to find the value inside tuples, lists, maps or custom values
+     */
+    std::shared_ptr<expr>& reference_expression::get_index_expression() {
+        return m_index_expr;
+    }
+
+    /**
+     * set_index
+     * set the index where to find the value inside tuples, lists, maps or custom values
+     */
+    void reference_expression::set_index(std::size_t index) {
+        m_index = index;
+    }
+
+    /**
+     * get_index
+     * get the index where to find the value inside tuples, lists, maps or custom values
+     */
+    const std::size_t reference_expression::get_index() const {
+        return m_index;
+    }
+
+    /**
+     * set_callee
+     * sets the function name to call in case this reference expression points to a user type
+     */
+    void reference_expression::set_callee(const std::string& callee_name) {
+        m_callee = callee_name;
+    }
+
+    /**
+     * get_callee
+     * returns the function name to call in case this reference expression points to a user type
+     */
+    const std::string& reference_expression::get_callee() {
+        return m_callee;
     }
 }

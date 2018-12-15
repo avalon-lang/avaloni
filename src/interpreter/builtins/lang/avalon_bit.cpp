@@ -35,12 +35,14 @@
 #include "representer/ast/decl/type.hpp"
 /* Expressions */
 #include "representer/ast/expr/identifier_expression.hpp"
+#include "representer/ast/expr/reference_expression.hpp"
 #include "representer/ast/expr/literal_expression.hpp"
 #include "representer/ast/expr/expr.hpp"
 
 /* Builtins */
 #include "representer/builtins/lang/avalon_string.hpp"
 #include "representer/builtins/lang/avalon_bool.hpp"
+#include "representer/builtins/lang/avalon_int.hpp"
 #include "representer/builtins/lang/avalon_bit.hpp"
 
 /* Builtin functions */
@@ -345,62 +347,62 @@ namespace avalon {
     }
 
     /**
-     * bit_ne
-     * returns a bit indicating whether its arguments are not equal
+     * bit_refitem
+     * returns the effective index where to find the requested bit
      */
-    std::shared_ptr<expr> bit_ne(std::vector<std::shared_ptr<expr> >& arguments) {
+    std::shared_ptr<expr> bit_refitem(std::vector<std::shared_ptr<expr> >& arguments) {
         // bit type
         avalon_bit avl_bit;
         type_instance bit_instance = avl_bit.get_type_instance();
 
-        // bool type
-        avalon_bool avl_bool;
-        type_instance bool_instance = avl_bool.get_type_instance();
+        // int type
+        avalon_int avl_int;
+        type_instance int_instance = avl_int.get_type_instance();
 
-        // true expression
-        std::shared_ptr<identifier_expression> true_expr = std::make_shared<identifier_expression>(true_cons_tok);
-        true_expr -> set_type_instance(bool_instance);
-        true_expr -> set_expression_type(CONSTRUCTOR_EXPR);
-        std::shared_ptr<expr> true_final_expr = true_expr;
-
-        // false expression
-        std::shared_ptr<identifier_expression> false_expr = std::make_shared<identifier_expression>(false_cons_tok);
-        false_expr -> set_type_instance(bool_instance);
-        false_expr -> set_expression_type(CONSTRUCTOR_EXPR);
-        std::shared_ptr<expr> false_final_expr = false_expr;
-
-        // make sure we got only two arguments
+        // make sure we got exactly two arguments
         if(arguments.size() != 2)
-            throw invalid_call("[compiler error] the bitwise __ne__ function expects only two arguments.");
+            throw invalid_call("[compiler error] the bit __refitem__ function expects exactly two arguments.");
 
-        // make sure each argument is an literal expression
-        std::shared_ptr<expr>& arg_one = arguments[0];        
+        // make sure each the first argument in a bit literal
+        std::shared_ptr<expr>& arg_one = arguments[0];
         if(arg_one -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the bitwise __ne__ function expects its arguments to be bits.");
+            throw invalid_call("[compiler error] the bit __refitem__ function expects its first argument to be the referenced bit.");
 
+        // make sure each the first argument in a integer literal
         std::shared_ptr<expr>& arg_two = arguments[1];
         if(arg_two -> is_literal_expression() == false)
-            throw invalid_call("[compiler error] the bitwise __ne__ function expects its arguments to be bits.");
+            throw invalid_call("[compiler error] the bit __refitem__ function expects its second argument to be an integer index.");
 
         // get the literal expressions
         std::shared_ptr<literal_expression> const & arg_one_lit = std::static_pointer_cast<literal_expression>(arg_one);
         std::shared_ptr<literal_expression> const & arg_two_lit = std::static_pointer_cast<literal_expression>(arg_two);
 
-        // double check the type instance
+        // double check the type instances
         type_instance& arg_one_instance = arg_one_lit -> get_type_instance();
         if(type_instance_strong_compare(arg_one_instance, bit_instance) == false)
-            throw invalid_call("[compiler error] the bitwise __ne__ function expects its argument to be bits.");
+            throw invalid_call("[compiler error] the bit __refitem__ function expects its first argument to be an bit.");
 
+        // make sure the second argument is an integer
         type_instance& arg_two_instance = arg_two_lit -> get_type_instance();
-        if(type_instance_strong_compare(arg_two_instance, bit_instance) == false)
-            throw invalid_call("[compiler error] the bitwise __ne__ function expects its argument to be bits.");
+        if(type_instance_strong_compare(arg_two_instance, int_instance) == false)
+            throw invalid_call("[compiler error] the bit __refitem__ function expects its second argument to be an integer.");
 
-        // compare both arguments
-        std::bitset<1> arg_one_val = arg_one_lit -> get_bit_value();
-        std::bitset<1> arg_two_val = arg_two_lit -> get_bit_value();
-        if(arg_one_val != arg_two_val)
-            return true_final_expr;
-        else
-            return false_final_expr;
+        // get the index
+        long long int user_index = arg_two_lit -> get_int_value();
+        if(user_index < 0)
+            throw invalid_call("[compiler error] the bit __refitem__ function expects the index to be a positive integer.");
+
+        std::size_t index = (std::size_t) user_index;
+
+        // if the index is not 0, then the checker did not do its job properly
+        if(index != 0)
+            throw invalid_call("[compiler error] trying to access a bit using index different from 0.");
+
+        // we return the reference holding the integer index
+        token gen_tok(MUL, "*", 0, 0, "__dummy__");
+        std::shared_ptr<reference_expression> ref_expr = std::make_shared<reference_expression>(gen_tok, nullptr);
+        ref_expr -> set_index(index);
+        std::shared_ptr<expr> final_ref_expr = ref_expr;
+        return final_ref_expr;
     }
 }
