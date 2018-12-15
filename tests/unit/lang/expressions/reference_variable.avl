@@ -9,10 +9,10 @@ Testing reference expressions.
 import io
 
 def __main__ = (val args : [string]) -> void:
-    val a = "John Doe"
-    val b = ref a
+    val user = "John Doe"
+    val user_ref = ref user
 
     -- derefence and print the content of b
-    Io.println(dref b)
+    Io.println(dref user_ref)
 
     return
