@@ -110,7 +110,7 @@ namespace avalon {
         double arg_val = arg_lit -> get_float_value();
         double res_val = -arg_val;
         std::ostringstream sstr;
-        sstr.precision(20);
+        sstr << std::setprecision(36) << std::fixed;
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -162,7 +162,7 @@ namespace avalon {
         double arg_two_val = arg_two_lit -> get_float_value();
         double res_val = arg_one_val + arg_two_val;
         std::ostringstream sstr;
-        sstr.precision(20);
+        sstr << std::setprecision(36) << std::fixed;
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -214,7 +214,7 @@ namespace avalon {
         double arg_two_val = arg_two_lit -> get_float_value();
         double res_val = arg_one_val - arg_two_val;
         std::ostringstream sstr;
-        sstr.precision(36);
+        sstr << std::setprecision(36) << std::fixed;
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -266,7 +266,7 @@ namespace avalon {
         double arg_two_val = arg_two_lit -> get_float_value();
         double res_val = arg_one_val * arg_two_val;
         std::ostringstream sstr;
-        sstr.precision(20);
+        sstr << std::setprecision(36) << std::fixed;
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -323,7 +323,7 @@ namespace avalon {
 
         double res_val = arg_one_val / arg_two_val;
         std::ostringstream sstr;
-        sstr.precision(20);
+        sstr << std::setprecision(36) << std::fixed;
         sstr << res_val;
         std::string res_str = sstr.str();
 
@@ -331,8 +331,9 @@ namespace avalon {
         token lit_tok(FLOATING_POINT, res_str, 0, 0, "__bil__");
         std::shared_ptr<literal_expression> res_lit = std::make_shared<literal_expression>(lit_tok, FLOATING_POINT_EXPR, res_str);
         res_lit -> set_type_instance(float_instance);
+        std::shared_ptr<expr> final_expr = res_lit;
 
-        return res_lit;
+        return final_expr;
     }
 
     /**

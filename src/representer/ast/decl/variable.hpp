@@ -185,33 +185,6 @@ namespace avalon {
         validation_state is_valid();
 
         /**
-         * token
-         * returns this declaration token
-         */
-        virtual const token& decl_token() const {
-            return m_tok;
-        }
-
-        /**
-         * is_variable
-         * a function used to allow safe casting of pointers from decl to this class
-         */
-        virtual bool is_variable() {
-            return true;
-        }
-
-        /**
-         * is_public
-         * sets and returns a boolean indicating whether this declaration can be imported
-         */
-        virtual bool is_public() {
-            return m_is_public;
-        }
-        virtual void is_public(bool public_) {
-            m_is_public = public_;
-        }
-
-        /**
          * is_global
          * sets and returns a boolean indicating whether this variable is a global variable
          */
@@ -239,6 +212,40 @@ namespace avalon {
          */
         void is_temporary(bool temporary);
         bool is_temporary() const;
+
+        /**
+         * is_interpreted
+         * sets and returns a boolean indicating if this variable's initializer has been interpreted
+         */
+        void is_interpreted(bool interpreted);
+        bool is_interpreted() const;
+
+        /**
+         * token
+         * returns this declaration token
+         */
+        virtual const token& decl_token() const {
+            return m_tok;
+        }
+
+        /**
+         * is_variable
+         * a function used to allow safe casting of pointers from decl to this class
+         */
+        virtual bool is_variable() {
+            return true;
+        }
+
+        /**
+         * is_public
+         * sets and returns a boolean indicating whether this declaration can be imported
+         */
+        virtual bool is_public() {
+            return m_is_public;
+        }
+        virtual void is_public(bool public_) {
+            m_is_public = public_;
+        }
 
         /**
          * is_reachable
@@ -349,6 +356,14 @@ namespace avalon {
          * whether this variable is a local variable to a function
          */
         bool m_is_temporary;
+
+        /**
+         * whether the variable initializer has been interpreted so we don't interpret it again.
+         * this is especially useful when dealing with reference initializer because a second interpretation creates a double-reference
+         * or the value getting wrapped again in a maybe type.
+         * this is a hack until I settle on a general method for dealing with this special case
+         */
+        bool m_is_interpreted;
 
         /*
          * this variable is true if this variable declaration will be executable

@@ -304,6 +304,9 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
             lit_expr -> set_start_index(indices.first);
             lit_expr -> set_end_index(indices.second);
         }
+
+        // mark the variable as having been interpreted
+        variable_decl -> is_interpreted(true);
     }
 
     /**
@@ -1107,9 +1110,14 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
             try {
                 std::shared_ptr<variable>& variable_decl = l_scope -> get_variable(id_expr -> get_namespace(), id_expr -> get_name());
                 std::shared_ptr<expr>& value = variable_decl -> get_value();
-                // std::shared_ptr<scope>& var_scope = (variable_decl -> is_global() == true) ? variable_decl -> get_scope() : l_scope;
-                // return interpret_expression(value, var_scope, ns_name);
-                return value;
+                if(variable_decl -> is_interpreted()) {
+                    return value;
+                }
+                else {
+                    std::shared_ptr<scope>& var_scope = (variable_decl -> is_global() == true) ? variable_decl -> get_scope() : l_scope;
+                    return interpret_expression(value, var_scope, ns_name);
+                }
+                // return value;
             } catch(symbol_not_found err) {
                 throw interpretation_error(id_expr -> get_token(), err.what());
             }
@@ -1265,35 +1273,47 @@ interpreter::interpreter(gtable& gtab, error& error_handler) : m_error_handler(e
         // we get the variable contained in the lval and rval references
         std::shared_ptr<variable> lval_var = nullptr;
         std::shared_ptr<variable> rval_var = nullptr;
+        std::size_t lval_index = 0;
+        std::size_t rval_index = 0;
+        reference_expression_type lval_type = REF_VAR_EXPR;
+        reference_expression_type rval_type = REF_VAR_EXPR;
 
         // if the lval is a reference expression
         if(lval -> is_reference_expression()) {
             std::shared_ptr<reference_expression> const & lval_ref = std::static_pointer_cast<reference_expression>(lval);
             lval_var = lval_ref -> get_variable();
+            lval_index = lval_ref -> get_index();
+            lval_type = lval_ref -> get_expression_type();
         }
         // otherwise it is an identifier expression
         else if(lval -> is_identifier_expression()) {
             std::shared_ptr<expr> ref_expr = interpret_identifier(lval, l_scope, ns_name);
             std::shared_ptr<reference_expression> const & lval_ref = std::static_pointer_cast<reference_expression>(ref_expr);
             lval_var = lval_ref -> get_variable();
+            lval_index = lval_ref -> get_index();
+            lval_type = lval_ref -> get_expression_type();
         }
 
         // if the rval is a reference expression
         if(rval -> is_reference_expression()) {
             std::shared_ptr<reference_expression> const & rval_ref = std::static_pointer_cast<reference_expression>(rval);
             rval_var = rval_ref -> get_variable();
+            rval_index = rval_ref -> get_index();
+            rval_type = rval_ref -> get_expression_type();
         }
         // otherwise it is an identifier expression
         else if(rval -> is_identifier_expression()) {
             std::shared_ptr<expr> ref_expr = interpret_identifier(rval, l_scope, ns_name);
             std::shared_ptr<reference_expression> const & rval_ref = std::static_pointer_cast<reference_expression>(ref_expr);
             rval_var = rval_ref -> get_variable();
+            rval_index = rval_ref -> get_index();
+            rval_type = rval_ref -> get_expression_type();
         }
 
         if(bin_expr -> get_expression_type() == IS_EXPR)
-            return (lval_var == rval_var) ? true_expr : false_expr;
+            return (lval_var == rval_var && lval_index == rval_index && lval_type == rval_type) ? true_expr : false_expr;
         else
-            return (lval_var == rval_var) ? false_expr : true_expr;
+            return (lval_var == rval_var && lval_index == rval_index && lval_type == rval_type) ? false_expr : true_expr;
     }
 
     std::shared_ptr<expr> interpreter::interpret_dot_binary(std::shared_ptr<binary_expression> const & bin_expr, std::shared_ptr<scope>& l_scope, const std::string& ns_name) {

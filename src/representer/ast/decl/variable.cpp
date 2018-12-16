@@ -58,17 +58,17 @@ namespace avalon {
      * - whether the variable is mutable
      * - the validation state of the variable
      */
-    variable::variable(token& tok, bool is_mutable, validation_state is_valid) : m_name(tok.get_lexeme()), m_tok(tok), m_is_mutable(is_mutable), m_namespace("*"), m_parent_scope(nullptr), m_value(nullptr), m_is_valid(is_valid), m_is_public(true), m_is_global(false), m_is_used(false), m_is_reference(false), m_is_temporary(false), m_reachable(false), m_terminates(false) {        
+    variable::variable(token& tok, bool is_mutable, validation_state is_valid) : m_name(tok.get_lexeme()), m_tok(tok), m_is_mutable(is_mutable), m_namespace("*"), m_parent_scope(nullptr), m_value(nullptr), m_is_valid(is_valid), m_is_public(true), m_is_global(false), m_is_used(false), m_is_reference(false), m_is_temporary(false), m_is_interpreted(false), m_reachable(false), m_terminates(false) {        
     }
 
     /**
      * copy constructor
      */
-    variable::variable(const std::shared_ptr<variable>& a_variable) : m_name(a_variable -> get_name()), m_tok(a_variable -> get_token()), m_is_mutable(a_variable -> is_mutable()), m_fqn(a_variable -> get_fqn()), m_namespace(a_variable -> get_namespace()), m_parent_scope(a_variable -> get_scope()), m_type_instance(a_variable -> get_type_instance()), m_value(a_variable -> get_value() -> copy()), m_is_valid(a_variable -> is_valid()), m_check_initializer(a_variable -> check_initializer()), m_is_public(a_variable -> is_public()), m_is_global(a_variable -> is_global()), m_is_used(a_variable -> is_used()), m_is_reference(a_variable -> is_reference()), m_is_temporary(a_variable -> is_temporary()), m_reachable(a_variable -> is_reachable()), m_terminates(a_variable -> terminates()) {
+    variable::variable(const std::shared_ptr<variable>& a_variable) : m_name(a_variable -> get_name()), m_tok(a_variable -> get_token()), m_is_mutable(a_variable -> is_mutable()), m_fqn(a_variable -> get_fqn()), m_namespace(a_variable -> get_namespace()), m_parent_scope(a_variable -> get_scope()), m_type_instance(a_variable -> get_type_instance()), m_value(a_variable -> get_value() -> copy()), m_is_valid(a_variable -> is_valid()), m_check_initializer(a_variable -> check_initializer()), m_is_public(a_variable -> is_public()), m_is_global(a_variable -> is_global()), m_is_used(a_variable -> is_used()), m_is_reference(a_variable -> is_reference()), m_is_temporary(a_variable -> is_temporary()), m_is_interpreted(a_variable -> is_interpreted()), m_reachable(a_variable -> is_reachable()), m_terminates(a_variable -> terminates()) {
         m_type_instance.copy(a_variable -> get_type_instance());
     }
 
-    variable::variable(variable& a_variable) : m_name(a_variable.get_name()), m_tok(a_variable.get_token()), m_is_mutable(a_variable.is_mutable()), m_fqn(a_variable.get_fqn()), m_namespace(a_variable.get_namespace()), m_parent_scope(a_variable.get_scope()), m_type_instance(a_variable.get_type_instance()), m_value(a_variable.get_value() -> copy()), m_is_valid(a_variable.is_valid()), m_check_initializer(a_variable.check_initializer()), m_is_public(a_variable.is_public()), m_is_global(a_variable.is_global()), m_is_used(a_variable.is_used()), m_is_reference(a_variable.is_reference()), m_is_temporary(a_variable.is_temporary()), m_reachable(a_variable.is_reachable()), m_terminates(a_variable.terminates()) {
+    variable::variable(variable& a_variable) : m_name(a_variable.get_name()), m_tok(a_variable.get_token()), m_is_mutable(a_variable.is_mutable()), m_fqn(a_variable.get_fqn()), m_namespace(a_variable.get_namespace()), m_parent_scope(a_variable.get_scope()), m_type_instance(a_variable.get_type_instance()), m_value(a_variable.get_value() -> copy()), m_is_valid(a_variable.is_valid()), m_check_initializer(a_variable.check_initializer()), m_is_public(a_variable.is_public()), m_is_global(a_variable.is_global()), m_is_used(a_variable.is_used()), m_is_reference(a_variable.is_reference()), m_is_temporary(a_variable.is_temporary()), m_is_interpreted(a_variable.is_interpreted()), m_reachable(a_variable.is_reachable()), m_terminates(a_variable.terminates()) {
         m_type_instance.copy(a_variable.get_type_instance());
     }
 
@@ -91,6 +91,7 @@ namespace avalon {
         m_is_used = a_variable.is_used();
         m_is_reference = a_variable.is_reference();
         m_is_temporary = a_variable.is_temporary();
+        m_is_interpreted = a_variable.is_interpreted();
         m_reachable = a_variable.is_reachable();
         m_terminates = a_variable.terminates();
         return * this;
@@ -312,6 +313,18 @@ namespace avalon {
 
     bool variable::is_temporary() const {
         return m_is_temporary;
+    }
+
+    /**
+     * is_interpreted
+     * sets and returns a boolean indicating if this variable's initializer has been interpreted
+     */
+    void variable::is_interpreted(bool interpreted) {
+        m_is_interpreted = interpreted;
+    }
+
+    bool variable::is_interpreted() const {
+        return m_is_interpreted;
     }
 
     /**

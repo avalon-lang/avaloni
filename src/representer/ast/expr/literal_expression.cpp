@@ -181,7 +181,7 @@ namespace avalon {
             return value;
         }
         else {
-            throw value_error("This literal expression doesn't contain a decimal.");
+            throw value_error("This literal expression doesn't contain a floating point number.");
         }
     }
 
